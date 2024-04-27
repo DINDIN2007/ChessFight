@@ -6,30 +6,33 @@ import java.util.Vector;
 
 public class ChessBoard {
     String pieceType, pieceColor;
-    int pieceX, pieceY;
+    int pieceX, pieceY, pieceValue;
     int[][] possibleMoves;
     Boolean hasMoved = false;
 
-    public static String[][] board = new String[8][8];
+    public static ChessBoard[][] pieceLocations = new ChessBoard[8][8];
 
     public ChessBoard(String pieceType, String pieceColor, int pieceX, int pieceY) {
         this.pieceType = pieceType; this.pieceColor = pieceColor;
         this.pieceX = pieceX; this.pieceY = pieceY;
 
         int[][] hDirection = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
-        int[][] dDirection = {{1, -1}, {-1, -1}, {1, 1}, {1, -1}};
+        int[][] dDirection = {{1, -1}, {-1, -1}, {1, 1}, {-1, 1}};
 
         switch (this.pieceType) {
             case "Pawn":
-                this.possibleMoves = new int[][]{{0, 1}, {-1, 1}, {1, 1}, {0, 2}}; break;
+                this.possibleMoves = new int[][]{{0, 1}, {-1, 1}, {1, 1}, {0, 2}};
+                this.pieceValue = 1; break;
             case "Knight":
-                this.possibleMoves = new int[][]{{-2, 1}, {-1, 2}, {1, 2}, {2,1}, {-2, -1}, {-1, -2}, {2, -1}, {1, -2}}; break;
+                this.possibleMoves = new int[][]{{-2, 1}, {-1, 2}, {1, 2}, {2,1}, {-2, -1}, {-1, -2}, {2, -1}, {1, -2}};
+                this.pieceValue = 3; break;
             case "Rook":
                 possibleMoves = new int[28][2];
                 for (int i = 0; i < 4; i++) {
                 for (int j = 1; j < 8; j++) {
                     possibleMoves[7 * i + j - 1] = new int[]{hDirection[i][0] * j, hDirection[i][1] * j};
                 }}
+                this.pieceValue = 3;
                 break;
             case "Bishop":
                 possibleMoves = new int[28][2];
@@ -37,36 +40,88 @@ public class ChessBoard {
                 for (int j = 1; j < 8; j++) {
                     possibleMoves[7 * i + j - 1] = new int[]{dDirection[i][0] * j, dDirection[i][1] * j};
                 }}
+                this.pieceValue = 3;
+                break;
             case "Queen":
                 possibleMoves = new int[56][2];
                 for (int i = 0; i < 4; i++) {
                 for (int j = 1; j < 8; j++) {
                     possibleMoves[7 * i + j - 1] = new int[]{hDirection[i][0] * j, hDirection[i][1] * j};
-                    possibleMoves[2 * (7 * i + j - 1)] = new int[]{dDirection[i][0] * j, dDirection[i][1] * j};
+                    possibleMoves[28 + (7 * i + j - 1)] = new int[]{dDirection[i][0] * j, dDirection[i][1] * j};
                 }}
+                this.pieceValue = 9;
                 break;
             case "King":
                 possibleMoves = new int[][] {
                         hDirection[0], hDirection[1], hDirection[2], hDirection[3],
                         dDirection[0], dDirection[1], dDirection[2], dDirection[3],
                 };
+                this.pieceValue = 1000000;
         }
+
+        pieceLocations[this.pieceX][this.pieceY] = this;
+    }
+
+    public static boolean checkBoardBound(int x, int y) {
+        return x < 0 || x >= 8 || y < 0 || y >= 8;
     }
 
     public Vector<Pair<Integer, Integer>> getPossibleMoves() {
         Vector<Pair<Integer, Integer>> moves = new Vector<>();
-        for (int[] coord : this.possibleMoves) {
-            Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
-            if (newCoords.getKey() < 0 || newCoords.getKey() >= 8) continue;
-            if (newCoords.getValue() < 0 || newCoords.getValue() >= 8) continue;
-            moves.add(newCoords);
+
+        switch (this.pieceType) {
+            case "Pawn":
+                for (int[] coord : this.possibleMoves) {
+                    Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
+                    if (ChessBoard.checkBoardBound(newCoords.getKey(), newCoords.getValue())) moves.add(newCoords);
+                }
+                if (this.hasMoved) moves.removeLast();
+            case "Knight": case "King":
+                for (int[] coord : this.possibleMoves) {
+                    Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
+                    if (ChessBoard.checkBoardBound(newCoords.getKey(), newCoords.getValue())) moves.add(newCoords);
+                }
+            case "Bishop": case "Rook": case "Queen":
+                for (int i = 0; i < this.possibleMoves.length; i++) {
+                    int[] coord = this.possibleMoves[i];
+                    Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
+                    if (!ChessBoard.checkBoardBound(newCoords.getKey(), newCoords.getValue())) {
+                        moves.add(newCoords);
+                        if (ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()] != null) {
+                            int determiningValue = Math.max(Math.abs(coord[0]), Math.abs(coord[1]));
+                            i += 7 - determiningValue;
+                        }
+                    }
+                }
         }
+
         return moves;
     }
 
     public static void moveChessPiece(ChessBoard piece, int newX, int newY) {
-        board[newX][newY] = piece.pieceType;
-        board[piece.pieceX][piece.pieceY] = null;
+        pieceLocations[newX][newY] = piece;
+        pieceLocations[piece.pieceX][piece.pieceY] = null;
         piece.pieceX = newX; piece.pieceY = newY;
+    }
+
+    public static String printBoard() {
+        StringBuilder builder = new StringBuilder();
+        for (int y = 7; y >= 0; y--) {
+            for (int x = 0; x < 8; x++) {
+                ChessBoard piece = pieceLocations[x][y];
+                builder.append((piece != null) ? piece.pieceType.charAt(0) + " " : "x ");
+            }
+            builder.append("\n");
+        }
+        return builder.toString();
+    }
+
+    public static void newGameSample() {
+        for (int i = 0; i < 8; i++) {
+            pieceLocations[i][1] = new ChessBoard("Pawn", "White", i, 1);
+            pieceLocations[i][6] = new ChessBoard("Pawn", "Black", i, 6);
+        }
+
+        pieceLocations[3][3] = new ChessBoard("Bishop", "White", 3, 3);
     }
 }

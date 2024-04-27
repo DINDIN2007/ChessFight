@@ -22,11 +22,18 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.show();
 
-        ChessBoard testPiece = new ChessBoard("Rook", "Black", 4, 4);
-        Vector<Pair<Integer, Integer>> test123 = testPiece.getPossibleMoves();
-        for (Pair<Integer, Integer> pair : test123) {
-            System.out.println(pair.getKey() + " " + pair.getValue());
+        // THIS AREA IS TO TEST THE CHESSBOARD CLASS JAVA
+
+        ChessBoard.newGameSample();
+        System.out.println(ChessBoard.printBoard()  + "\n");
+
+        // ChessBoard.moveChessPiece(ChessBoard.pieceLocations[3][1], 3, 3);
+        Vector<Pair<Integer, Integer>> possibleMoves = ChessBoard.pieceLocations[3][3].getPossibleMoves();
+        for (Pair<Integer, Integer> p : possibleMoves) {
+            ChessBoard.pieceLocations[p.getKey()][p.getValue()] = new ChessBoard("Bishop", "Black", p.getKey(), p.getValue());
         }
+
+        System.out.println(ChessBoard.printBoard());
     }
 
     public static void main(String[] args) {launch();}
