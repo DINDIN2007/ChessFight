@@ -109,7 +109,7 @@ public class ChessBoard {
         for (int y = 7; y >= 0; y--) {
             for (int x = 0; x < 8; x++) {
                 ChessBoard piece = pieceLocations[x][y];
-                builder.append((piece != null) ? piece.pieceType.charAt(0) + " " : "x ");
+                builder.append((piece != null) ? piece.pieceType.charAt(0) + " " : ". ");
             }
             builder.append("\n");
         }
@@ -122,6 +122,22 @@ public class ChessBoard {
             pieceLocations[i][6] = new ChessBoard("Pawn", "Black", i, 6);
         }
 
-        pieceLocations[3][3] = new ChessBoard("Bishop", "White", 3, 3);
+        pieceLocations[0][0] = new ChessBoard("Rook", "White", 0, 0);
+        pieceLocations[1][0] = new ChessBoard("Knight", "White", 1, 0);
+        pieceLocations[2][0] = new ChessBoard("Bishop", "White", 2, 0);
+        pieceLocations[3][0] = new ChessBoard("Queen", "White", 3, 0);
+        pieceLocations[4][0] = new ChessBoard("King", "White", 4, 0);
+        pieceLocations[5][0] = new ChessBoard("Bishop", "White", 5, 0);
+        pieceLocations[6][0] = new ChessBoard("Knight", "White", 6, 0);
+        pieceLocations[7][0] = new ChessBoard("Rook", "White", 7, 0);
+
+        pieceLocations[0][7] = new ChessBoard("Rook", "Black", 0, 7);
+        pieceLocations[1][7] = new ChessBoard("Knight", "Black", 1, 7);
+        pieceLocations[2][7] = new ChessBoard("Bishop", "Black", 2, 7);
+        pieceLocations[3][7] = new ChessBoard("Queen", "Black", 3, 7);
+        pieceLocations[4][7] = new ChessBoard("King", "Black", 4, 7);
+        pieceLocations[5][7] = new ChessBoard("Bishop", "Black", 5, 7);
+        pieceLocations[6][7] = new ChessBoard("Knight", "Black", 6, 7);
+        pieceLocations[7][7] = new ChessBoard("Rook", "Black", 7, 7);
     }
 }
