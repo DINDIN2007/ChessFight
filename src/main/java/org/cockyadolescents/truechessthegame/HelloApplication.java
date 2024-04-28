@@ -24,6 +24,14 @@ public class HelloApplication extends Application {
 
         // THIS AREA IS TO TEST THE CHESSBOARD CLASS JAVA
         ChessBoard.newGameSample();
+        System.out.println(ChessBoard.printBoard()  + "\n");
+
+        // ChessBoard.moveChessPiece(ChessBoard.pieceLocations[3][1], 3, 3);
+        Vector<Pair<Integer, Integer>> possibleMoves = ChessBoard.pieceLocations[7][1].getPossibleMoves();
+        for (Pair<Integer, Integer> p : possibleMoves) {
+            ChessBoard.pieceLocations[p.getKey()][p.getValue()] = new ChessBoard("X", "White", p.getKey(), p.getValue());
+        }
+
         System.out.println(ChessBoard.printBoard());
     }
 

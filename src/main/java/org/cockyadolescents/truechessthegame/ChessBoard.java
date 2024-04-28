@@ -21,7 +21,7 @@ public class ChessBoard {
 
         switch (this.pieceType) {
             case "Pawn":
-                this.possibleMoves = new int[][]{{0, 1}, {-1, 1}, {1, 1}, {0, 2}};
+                this.possibleMoves = new int[][]{{-1, 1}, {0, 1}, {1, 1}, {0, 2}};
                 this.pieceValue = 1; break;
             case "Knight":
                 this.possibleMoves = new int[][]{{-2, 1}, {-1, 2}, {1, 2}, {2,1}, {-2, -1}, {-1, -2}, {2, -1}, {1, -2}};
@@ -57,12 +57,14 @@ public class ChessBoard {
                         dDirection[0], dDirection[1], dDirection[2], dDirection[3],
                 };
                 this.pieceValue = 1000000;
+            case "X":
+                this.pieceValue = -1;
         }
 
         pieceLocations[this.pieceX][this.pieceY] = this;
     }
 
-    public static boolean checkBoardBound(int x, int y) {
+    public static boolean isOutOfBound(int x, int y) {
         return x < 0 || x >= 8 || y < 0 || y >= 8;
     }
 
@@ -71,28 +73,44 @@ public class ChessBoard {
 
         switch (this.pieceType) {
             case "Pawn":
-                for (int[] coord : this.possibleMoves) {
-                    Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
-                    if (ChessBoard.checkBoardBound(newCoords.getKey(), newCoords.getValue())) moves.add(newCoords);
+                for (int i = 0; i < 4; i++) {
+                    Pair<Integer, Integer> newCoords = new Pair<>(this.possibleMoves[i][0] + this.pieceX, this.possibleMoves[i][1] + this.pieceY);
+
+                    if (!ChessBoard.isOutOfBound(newCoords.getKey(), newCoords.getValue())) {
+                        ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
+                        if (pieceOnThatPosition == null) {
+                            if (i % 2 == 1) moves.add(newCoords);
+                        }
+                        else if (pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
+                    }
                 }
                 if (this.hasMoved) moves.removeLast();
+                this.hasMoved = true;
+                break;
             case "Knight": case "King":
                 for (int[] coord : this.possibleMoves) {
                     Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
-                    if (ChessBoard.checkBoardBound(newCoords.getKey(), newCoords.getValue())) moves.add(newCoords);
+                    if (ChessBoard.isOutOfBound(newCoords.getKey(), newCoords.getValue())) continue;
+
+                    ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
+                    if (pieceOnThatPosition == null || !pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
                 }
+                break;
             case "Bishop": case "Rook": case "Queen":
                 for (int i = 0; i < this.possibleMoves.length; i++) {
                     int[] coord = this.possibleMoves[i];
                     Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
-                    if (!ChessBoard.checkBoardBound(newCoords.getKey(), newCoords.getValue())) {
+                    if (ChessBoard.isOutOfBound(newCoords.getKey(), newCoords.getValue())) continue;
+
+                    ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
+                    if (pieceOnThatPosition == null || !pieceOnThatPosition.pieceColor.equals(this.pieceColor)) {
                         moves.add(newCoords);
                         if (ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()] != null) {
-                            int determiningValue = Math.max(Math.abs(coord[0]), Math.abs(coord[1]));
-                            i += 7 - determiningValue;
+                            i += 7 - Math.max(Math.abs(coord[0]), Math.abs(coord[1]));
                         }
                     }
                 }
+                break;
         }
 
         return moves;
