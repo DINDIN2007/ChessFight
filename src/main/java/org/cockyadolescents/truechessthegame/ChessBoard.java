@@ -68,6 +68,7 @@ public class ChessBoard {
         return x < 0 || x >= 8 || y < 0 || y >= 8;
     }
 
+    // This method returns a vector of pairs that indicate every plausible move the selected piece
     public Vector<Pair<Integer, Integer>> getPossibleMoves() {
         Vector<Pair<Integer, Integer>> moves = new Vector<>();
 
@@ -140,22 +141,14 @@ public class ChessBoard {
             pieceLocations[i][6] = new ChessBoard("Pawn", "Black", i, 6);
         }
 
-        pieceLocations[0][0] = new ChessBoard("Rook", "White", 0, 0);
-        pieceLocations[1][0] = new ChessBoard("Knight", "White", 1, 0);
-        pieceLocations[2][0] = new ChessBoard("Bishop", "White", 2, 0);
-        pieceLocations[3][0] = new ChessBoard("Queen", "White", 3, 0);
-        pieceLocations[4][0] = new ChessBoard("King", "White", 4, 0);
-        pieceLocations[5][0] = new ChessBoard("Bishop", "White", 5, 0);
-        pieceLocations[6][0] = new ChessBoard("Knight", "White", 6, 0);
-        pieceLocations[7][0] = new ChessBoard("Rook", "White", 7, 0);
+        String[] pieceRowPosition = {"Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook"};
 
-        pieceLocations[0][7] = new ChessBoard("Rook", "Black", 0, 7);
-        pieceLocations[1][7] = new ChessBoard("Knight", "Black", 1, 7);
-        pieceLocations[2][7] = new ChessBoard("Bishop", "Black", 2, 7);
-        pieceLocations[3][7] = new ChessBoard("Queen", "Black", 3, 7);
-        pieceLocations[4][7] = new ChessBoard("King", "Black", 4, 7);
-        pieceLocations[5][7] = new ChessBoard("Bishop", "Black", 5, 7);
-        pieceLocations[6][7] = new ChessBoard("Knight", "Black", 6, 7);
-        pieceLocations[7][7] = new ChessBoard("Rook", "Black", 7, 7);
+        for (int i = 0; i < 8; i++) {
+            pieceLocations[i][0] = new ChessBoard(pieceRowPosition[i], "White", i, 0);
+        }
+
+        for (int i = 0; i < 8; i++) {
+            pieceLocations[i][7] = new ChessBoard(pieceRowPosition[i], "Black", i, 7);
+        }
     }
 }

@@ -27,12 +27,24 @@ public class HelloApplication extends Application {
         System.out.println(ChessBoard.printBoard()  + "\n");
 
         // ChessBoard.moveChessPiece(ChessBoard.pieceLocations[3][1], 3, 3);
-        Vector<Pair<Integer, Integer>> possibleMoves = ChessBoard.pieceLocations[7][1].getPossibleMoves();
+        Vector<Pair<Integer, Integer>> possibleMoves = ChessBoard.pieceLocations[3][1].getPossibleMoves();
         for (Pair<Integer, Integer> p : possibleMoves) {
             ChessBoard.pieceLocations[p.getKey()][p.getValue()] = new ChessBoard("X", "White", p.getKey(), p.getValue());
         }
 
-        System.out.println(ChessBoard.printBoard());
+        System.out.println(ChessBoard.printBoard() + "\n");
+
+        for (Pair<Integer, Integer> p : possibleMoves) {
+            ChessBoard.pieceLocations[p.getKey()][p.getValue()] = null;
+        }
+
+        ChessBoard.moveChessPiece(ChessBoard.pieceLocations[3][1], possibleMoves.get(1).getKey(), possibleMoves.get(1).getValue());
+        possibleMoves = ChessBoard.pieceLocations[possibleMoves.get(1).getKey()][possibleMoves.get(1).getValue()].getPossibleMoves();
+        for (Pair<Integer, Integer> p : possibleMoves) {
+            ChessBoard.pieceLocations[p.getKey()][p.getValue()] = new ChessBoard("X", "White", p.getKey(), p.getValue());
+        }
+
+        System.out.println(ChessBoard.printBoard() + "\n");
     }
 
     public static void main(String[] args) {launch();}
