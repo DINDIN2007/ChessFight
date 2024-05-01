@@ -1,17 +1,18 @@
 package org.cockyadolescents.truechessthegame;
 
 import javafx.util.Pair;
-
 import java.util.Vector;
 
 public class ChessBoard {
-    String pieceType, pieceColor;
-    int pieceX, pieceY, pieceValue;
-    int[][] possibleMoves;
-    Boolean hasMoved = false;
+    String pieceType, pieceColor;       // The type of piece (knight, pawn, ...) and the side it belongs to
+    int pieceX, pieceY, pieceValue;     // The piece position and its value upon being captured
+    int[][] possibleMoves;              // 2d array storing all the possible coordinates to move to
+    Boolean hasMoved = false;           // Exclusively for pawns so that they don't move 2 up on the next move
 
+    // 2d array storing all the pieces on the chessboard
     public static ChessBoard[][] pieceLocations = new ChessBoard[8][8];
 
+    // This is the class object initialization where a piece is created
     public ChessBoard(String pieceType, String pieceColor, int pieceX, int pieceY) {
         this.pieceType = pieceType; this.pieceColor = pieceColor;
         this.pieceX = pieceX; this.pieceY = pieceY;
@@ -19,12 +20,17 @@ public class ChessBoard {
         int[][] hDirection = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
         int[][] dDirection = {{1, -1}, {-1, -1}, {1, 1}, {-1, 1}};
 
+        // An array of possible moves are assigned to each respective chess piece
         switch (this.pieceType) {
             case "Pawn":
                 this.possibleMoves = new int[][]{{-1, 1}, {0, 1}, {1, 1}, {0, 2}};
                 this.pieceValue = 1; break;
             case "Knight":
-                this.possibleMoves = new int[][]{{-2, 1}, {-1, 2}, {1, 2}, {2,1}, {-2, -1}, {-1, -2}, {2, -1}, {1, -2}};
+                this.possibleMoves = new int[8][2];
+                for (int i = 0; i < 4; i++) {
+                    this.possibleMoves[i] = new int[]{2 * dDirection[i][0], dDirection[i][1]};
+                    this.possibleMoves[i + 4] = new int[]{dDirection[i][0], 2 * dDirection[i][1]};
+                }
                 this.pieceValue = 3; break;
             case "Rook":
                 possibleMoves = new int[28][2];
@@ -61,9 +67,11 @@ public class ChessBoard {
                 this.pieceValue = -1;
         }
 
+        // Sets the piece on the board
         pieceLocations[this.pieceX][this.pieceY] = this;
     }
 
+    // This method checks if the given coordinate is out of the chessboard's bound
     public static boolean isOutOfBound(int x, int y) {
         return x < 0 || x >= 8 || y < 0 || y >= 8;
     }
@@ -77,11 +85,14 @@ public class ChessBoard {
                 for (int i = 0; i < 4; i++) {
                     Pair<Integer, Integer> newCoords = new Pair<>(this.possibleMoves[i][0] + this.pieceX, this.possibleMoves[i][1] + this.pieceY);
 
+                    // Checks if this new location would be inbound
                     if (!ChessBoard.isOutOfBound(newCoords.getKey(), newCoords.getValue())) {
                         ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
+                        // Case : Pawn takes enemy piece on its two diagonals
                         if (pieceOnThatPosition == null) {
                             if (i % 2 == 1) moves.add(newCoords);
                         }
+                        // Case : Pawn moves forward
                         else if (pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
                     }
                 }
@@ -91,9 +102,13 @@ public class ChessBoard {
             case "Knight": case "King":
                 for (int[] coord : this.possibleMoves) {
                     Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
+
+                    // Checks if this new location would be inbound
                     if (ChessBoard.isOutOfBound(newCoords.getKey(), newCoords.getValue())) continue;
 
                     ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
+
+                    // Checks so that the piece doesn't land on a spot with a piece on the same side
                     if (pieceOnThatPosition == null || !pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
                 }
                 break;
@@ -101,11 +116,16 @@ public class ChessBoard {
                 for (int i = 0; i < this.possibleMoves.length; i++) {
                     int[] coord = this.possibleMoves[i];
                     Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
+
+                    // Checks if this new location would be inbound
                     if (ChessBoard.isOutOfBound(newCoords.getKey(), newCoords.getValue())) continue;
 
                     ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
+                    // Checks so that the piece doesn't land on a spot with a piece on the same side
                     if (pieceOnThatPosition == null || !pieceOnThatPosition.pieceColor.equals(this.pieceColor)) {
                         moves.add(newCoords);
+
+                        // Skips the moves behind an enemy piece
                         if (ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()] != null) {
                             i += 7 - Math.max(Math.abs(coord[0]), Math.abs(coord[1]));
                         }
@@ -117,12 +137,14 @@ public class ChessBoard {
         return moves;
     }
 
+    // Swaps the position of the piece to a new position
     public static void moveChessPiece(ChessBoard piece, int newX, int newY) {
         pieceLocations[newX][newY] = piece;
         pieceLocations[piece.pieceX][piece.pieceY] = null;
         piece.pieceX = newX; piece.pieceY = newY;
     }
 
+    // Prints out a test board for log console use
     public static String printBoard() {
         StringBuilder builder = new StringBuilder();
         for (int y = 7; y >= 0; y--) {
@@ -135,7 +157,8 @@ public class ChessBoard {
         return builder.toString();
     }
 
-    public static void newGameSample() {
+    // Creates a basic chess start board
+    public static void newGame() {
         for (int i = 0; i < 8; i++) {
             pieceLocations[i][1] = new ChessBoard("Pawn", "White", i, 1);
             pieceLocations[i][6] = new ChessBoard("Pawn", "Black", i, 6);
