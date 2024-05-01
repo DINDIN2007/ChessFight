@@ -22,7 +22,7 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.show();
 
-        // THIS AREA IS TO TEST THE CHESSBOARD CLASS JAVA
+        // THIS AREA IS TO TEST THE CHESSBOARD CLASS JAVA THROUGH CONSOLE
         ChessBoard.newGame();
         System.out.println(ChessBoard.printBoard()  + "\n");
 
