@@ -17,7 +17,7 @@ public class HelloApplication extends Application {
 
     public void newGame(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        Scene scene = new Scene(fxmlLoader.load(), 800, 640);
         stage.setTitle("True Chess the Game");
         stage.setScene(scene);
         stage.show();
