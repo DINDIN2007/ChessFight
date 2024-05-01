@@ -9,6 +9,9 @@ public class ChessBoard {
     int[][] possibleMoves;              // 2d array storing all the possible coordinates to move to
     Boolean hasMoved = false;           // Exclusively for pawns so that they don't move 2 up on the next move
 
+    // To check if the white king (i = 0) or black king (i = 1) is checked
+    public static Boolean[] isChecked = {false, false};
+
     // 2d array storing all the pieces on the chessboard
     public static ChessBoard[][] pieceLocations = new ChessBoard[8][8];
 
@@ -134,7 +137,18 @@ public class ChessBoard {
                 break;
         }
 
+
+
         return moves;
+    }
+
+    // Method to see if either king are in check
+    public static void checkChecking(ChessBoard firstPiece, ChessBoard secondPiece) {
+        if (firstPiece == null || secondPiece == null) return;
+        switch (firstPiece.pieceColor) {
+            case "White" : if (secondPiece.pieceColor.equals("Black")) isChecked[1] = true;
+            case "Black" : if (secondPiece.pieceColor.equals("White")) isChecked[0] = true;
+        }
     }
 
     // Swaps the position of the piece to a new position
@@ -142,6 +156,11 @@ public class ChessBoard {
         pieceLocations[newX][newY] = piece;
         pieceLocations[piece.pieceX][piece.pieceY] = null;
         piece.pieceX = newX; piece.pieceY = newY;
+
+        isChecked = new Boolean[]{false, false};
+        for (Pair<Integer, Integer> moves : piece.getPossibleMoves()) {
+            checkChecking(piece, pieceLocations[moves.getKey()][moves.getValue()]);
+        }
     }
 
     // Prints out a test board for log console use
