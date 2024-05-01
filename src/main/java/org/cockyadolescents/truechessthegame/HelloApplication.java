@@ -34,36 +34,23 @@ public class HelloApplication extends Application {
 
         System.out.println(ChessBoard.printBoard() + "\n");
 
-        for (Pair<Integer, Integer> p : possibleMoves) {
-            ChessBoard.pieceLocations[p.getKey()][p.getValue()] = null;
-        }
-
+        for (Pair<Integer, Integer> p : possibleMoves) ChessBoard.pieceLocations[p.getKey()][p.getValue()] = null;
         ChessBoard.moveChessPiece(ChessBoard.pieceLocations[1][0], possibleMoves.get(0).getKey(), possibleMoves.get(0).getValue());
-
         System.out.println(ChessBoard.printBoard() + "\n");
 
         possibleMoves = ChessBoard.pieceLocations[possibleMoves.get(0).getKey()][possibleMoves.get(0).getValue()].getPossibleMoves();
         for (Pair<Integer, Integer> p : possibleMoves) {
             ChessBoard.pieceLocations[p.getKey()][p.getValue()] = new ChessBoard("X", "White", p.getKey(), p.getValue());
         }
-
         System.out.println(ChessBoard.printBoard() + "\n");
 
-        for (Pair<Integer, Integer> p : possibleMoves) {
-            ChessBoard.pieceLocations[p.getKey()][p.getValue()] = null;
-        }
-
+        for (Pair<Integer, Integer> p : possibleMoves) ChessBoard.pieceLocations[p.getKey()][p.getValue()] = null;
         ChessBoard.moveChessPiece(ChessBoard.pieceLocations[2][2], possibleMoves.get(0).getKey(), possibleMoves.get(0).getValue());
         possibleMoves = ChessBoard.pieceLocations[possibleMoves.get(0).getKey()][possibleMoves.get(0).getValue()].getPossibleMoves();
         for (Pair<Integer, Integer> p : possibleMoves) {
             ChessBoard.pieceLocations[p.getKey()][p.getValue()] = new ChessBoard("X", "White", p.getKey(), p.getValue());
         }
-
         System.out.println(ChessBoard.printBoard() + "\n");
-
-        for (Pair<Integer, Integer> p : possibleMoves) {
-            ChessBoard.pieceLocations[p.getKey()][p.getValue()] = null;
-        }
     }
 
     public static void main(String[] args) {launch();}
