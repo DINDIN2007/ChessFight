@@ -22,6 +22,13 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.show();
 
+        // For debugging purposes
+        printNewGameInConsole();
+    }
+
+    public static void main(String[] args) {launch();}
+
+    public static void printNewGameInConsole() {
         // THIS AREA IS TO TEST THE CHESSBOARD CLASS JAVA THROUGH CONSOLE
         ChessBoard.newGame();
         System.out.println(ChessBoard.printBoard()  + "\n");
@@ -52,6 +59,4 @@ public class HelloApplication extends Application {
         }
         System.out.println(ChessBoard.printBoard() + "\n");
     }
-
-    public static void main(String[] args) {launch();}
 }
