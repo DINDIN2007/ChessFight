@@ -7,10 +7,10 @@ public class ChessBoard {
     String pieceType, pieceColor;       // The type of piece (knight, pawn, ...) and the side it belongs to
     int pieceX, pieceY, pieceValue;     // The piece position and its value upon being captured
     int[][] possibleMoves;              // 2d array storing all the possible coordinates to move to
-    Boolean hasMoved = false;           // Exclusively for pawns so that they don't move 2 up on the next move
+    boolean hasMoved = false;           // Exclusively for pawns so that they don't move 2 up on the next move
 
     // To check if the white king (i = 0) or black king (i = 1) is checked
-    public static Boolean[] isChecked = {false, false};
+    public static boolean[] isChecked = {false, false};
 
     // 2d array storing all the pieces on the chessboard
     public static ChessBoard[][] pieceLocations = new ChessBoard[8][8];
@@ -157,7 +157,7 @@ public class ChessBoard {
         pieceLocations[piece.pieceX][piece.pieceY] = null;
         piece.pieceX = newX; piece.pieceY = newY;
 
-        isChecked = new Boolean[]{false, false};
+        isChecked = new boolean[]{false, false};
         for (Pair<Integer, Integer> moves : piece.getPossibleMoves()) {
             checkChecking(piece, pieceLocations[moves.getKey()][moves.getValue()]);
         }
