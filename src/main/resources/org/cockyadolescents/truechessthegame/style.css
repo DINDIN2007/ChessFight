@@ -1,20 +1,25 @@
 .tile {
-    -fx-width: 80px;
-    -fx-height: 80px;
+    -fx-min-width: 60px;
+    -fx-min-height: 60px;
+    -fx-background-radius: 0px;
 }
 
 .oddTiles {
     -fx-background-color: #502e11;
-    -fx-border-radius: 0px;
 }
 
 .evenTiles {
     -fx-background-color: #a5784d;
-    -fx-border-radius: 0px;
 }
 
-.oddTiles:hover {
-    -fx-background-color: #301c08;
+.boardTiles {
+    -fx-min-width: 60px;
+    -fx-min-height: 60px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.boardTiles:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.18);
 }
 
 .evenTiles:hover {

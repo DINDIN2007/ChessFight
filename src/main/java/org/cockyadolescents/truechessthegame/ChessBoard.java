@@ -178,18 +178,13 @@ public class ChessBoard {
 
     // Creates a basic chess start board
     public static void newGame() {
-        for (int i = 0; i < 8; i++) {
-            pieceLocations[i][1] = new ChessBoard("Pawn", "White", i, 1);
-            pieceLocations[i][6] = new ChessBoard("Pawn", "Black", i, 6);
-        }
-
         String[] pieceRowPosition = {"Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook"};
 
         for (int i = 0; i < 8; i++) {
-            pieceLocations[i][0] = new ChessBoard(pieceRowPosition[i], "White", i, 0);
-        }
+            pieceLocations[i][1] = new ChessBoard("Pawn", "White", i, 1);
+            pieceLocations[i][6] = new ChessBoard("Pawn", "Black", i, 6);
 
-        for (int i = 0; i < 8; i++) {
+            pieceLocations[i][0] = new ChessBoard(pieceRowPosition[i], "White", i, 0);
             pieceLocations[i][7] = new ChessBoard(pieceRowPosition[i], "Black", i, 7);
         }
     }

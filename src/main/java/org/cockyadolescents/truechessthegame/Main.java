@@ -22,14 +22,15 @@ public class Main extends Application {
         stage.show();
 
         // For debugging purposes
-        printNewGameInConsole();
+        ChessBoard.newGame();
+
+        // printNewGameInConsole();
     }
 
     public static void main(String[] args) {launch();}
 
     public static void printNewGameInConsole() {
         // THIS AREA IS TO TEST THE CHESSBOARD CLASS JAVA THROUGH CONSOLE
-        ChessBoard.newGame();
         System.out.println(ChessBoard.printBoard()  + "\n");
 
         // ChessBoard.moveChessPiece(ChessBoard.pieceLocations[3][1], 3, 3);
