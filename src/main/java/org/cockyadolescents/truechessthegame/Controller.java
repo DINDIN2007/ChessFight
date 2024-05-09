@@ -18,8 +18,11 @@ public class Controller {
         Parent root = FXMLLoader.load(getClass().getResource("maingame.fxml"));
 
         Stage window = (Stage) welcomeText.getScene().getWindow();
-        window.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        window.setScene(scene);
         window.show();
+
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
     }
 
     public void tilePressed(ActionEvent event) throws IOException {

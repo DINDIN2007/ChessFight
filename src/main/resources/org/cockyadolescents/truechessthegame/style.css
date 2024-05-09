@@ -1,0 +1,17 @@
+.oddTiles {
+    -fx-background-color: #502e11;
+    -fx-border-radius: 0px;
+}
+
+.evenTiles {
+    -fx-background-color: #a5784d;
+    -fx-border-radius: 0px;
+}
+
+.oddTiles:hover {
+    -fx-background-color: #301c08;
+}
+
+.evenTiles:hover {
+    -fx-background-color: #7e5d3c;
+}
