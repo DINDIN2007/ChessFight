@@ -1,3 +1,8 @@
+.tile {
+    -fx-width: 80px;
+    -fx-height: 80px;
+}
+
 .oddTiles {
     -fx-background-color: #502e11;
     -fx-border-radius: 0px;
