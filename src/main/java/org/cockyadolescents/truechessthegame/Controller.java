@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
@@ -26,6 +27,9 @@ public class Controller {
     }
 
     public void tilePressed(ActionEvent event) throws IOException {
-
+        Button tile = (Button) event.getSource();
+        int x = tile.getId().charAt(0) - '0';
+        int y = tile.getId().charAt(2) - '0';
+        System.out.println(x + " " + y);
     }
 }
