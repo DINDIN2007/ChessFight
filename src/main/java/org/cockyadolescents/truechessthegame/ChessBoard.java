@@ -125,8 +125,9 @@ public class ChessBoard {
 
                     ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
                     // Checks so that the piece doesn't land on a spot with a piece on the same side
-                    if (pieceOnThatPosition == null || !pieceOnThatPosition.pieceColor.equals(this.pieceColor)) {
-                        moves.add(newCoords);
+                    if (pieceOnThatPosition == null) moves.add(newCoords);
+                    else {
+                        if (!pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
 
                         // Skips the moves behind an enemy piece
                         if (ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()] != null) {

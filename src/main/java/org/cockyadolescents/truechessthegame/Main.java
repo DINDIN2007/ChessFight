@@ -22,7 +22,14 @@ public class Main extends Application {
         stage.show();
 
         // For debugging purposes
-        ChessBoard.newGame();
+        // ChessBoard.newGame();
+        ChessBoard.pieceLocations[0][0] = new ChessBoard("Rook", "White", 0, 0);
+        ChessBoard.pieceLocations[1][0] = new ChessBoard("Knight", "White", 1, 0);
+        ChessBoard.pieceLocations[2][0] = new ChessBoard("Bishop", "White", 2, 0);
+
+        ChessBoard.pieceLocations[0][7] = new ChessBoard("Rook", "Black", 0, 7);
+        ChessBoard.pieceLocations[1][7] = new ChessBoard("Knight", "Black", 1, 7);
+        ChessBoard.pieceLocations[2][7] = new ChessBoard("Bishop", "Black", 2, 7);
 
         // printNewGameInConsole();
     }
