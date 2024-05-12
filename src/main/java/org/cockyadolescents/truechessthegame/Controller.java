@@ -40,6 +40,7 @@ public class Controller {
     private VBox leftNumbers;
     private HBox topNumbers;
 
+    // Main game setup
     public void startGame() throws IOException {
         // Load new scene to start the game
         Parent root = FXMLLoader.load(getClass().getResource("maingame.fxml"));
@@ -70,6 +71,7 @@ public class Controller {
         createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers);
     }
 
+    // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
     public void createBoard(GridPane buttonBoard, GridPane labelBoard, VBox leftNumbers, HBox topNumbers) {
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -109,6 +111,8 @@ public class Controller {
             topNumbers.getChildren().add(letter);
         }
 
+        turnBoard(leftNumbers, topNumbers);
+
         // Drawing the chess pieces on the canvas
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -116,6 +120,7 @@ public class Controller {
         }}
     }
 
+    // Either selects a piece or moves a piece to designated position through button clicks
     public void tilePressed(ActionEvent event, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers) {
         // Finds the coordinate of the button pressed based on who's playing
         Button tile = (Button) event.getSource();
@@ -135,6 +140,9 @@ public class Controller {
 
         // Go to marked place
         else if (lockIntoPiece && !(tilePiece != null && tilePiece.pieceColor.equals(playingSide))) {
+
+            // NOAH SET UP DAVIDS FILE HERE PLS PLS PLS PLS PLS PLS PLS PLS PLS PLS PLS
+
             ChessBoard.pieceLocations[selectX][selectY].hasMoved = true;
 
             ChessBoard.moveChessPiece(ChessBoard.pieceLocations[selectX][selectY], x, y);
@@ -145,17 +153,24 @@ public class Controller {
 
             selectX = -1; selectY = -1;
             lockIntoPiece = false;
+
+            turnBoard(leftNumbers, topNumbers);
+            buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
         }
 
         // Marks the places that the piece can move to
         else if (tilePiece != null){
+            // Resets previously marked moves
+            drawBoard(tileArray, buttonBoard, leftNumbers, topNumbers);
+
             // Get all possible moves for this chess piece
             possibleMoves = tilePiece.getPossibleMoves();
 
             // Loop through board to mark possible moves
             for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (i == x && i == y) continue;
+                ChessBoard piece = ChessBoard.pieceLocations[i][j];
+                if (piece != null && piece.pieceColor.equals(playingSide)) continue;
 
                 if (possibleMoves.contains(new Pair<>(i, j))) {
                     tileArray[i][j].getStyleClass().add("boardTilesPossibleMoves");
@@ -172,6 +187,7 @@ public class Controller {
         }
     }
 
+    // Draws the pieces and un-disables the tiles on the board
     public static void drawBoard(Button[][] tileArray, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers) {
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -179,7 +195,10 @@ public class Controller {
             tileArray[i][j].getStyleClass().remove("boardTilesPossibleMoves");
             if (ChessBoard.pieceLocations[i][j] != null) drawPiece(ChessBoard.pieceLocations[i][j]);
         }}
+    }
 
+    // Changes the Number/Sides depending on the Side of the Board
+    public static void turnBoard(VBox leftNumbers, HBox topNumbers) {
         for (int i = 0; i < 8; i++) {
             Label left = (Label)(leftNumbers.getChildren().get(i));
             int pos = Math.abs(8 - (left.getText().charAt(0) - '1'));
@@ -188,10 +207,9 @@ public class Controller {
             Label top = (Label)(topNumbers.getChildren().get(i + 1));
             top.setText(String.valueOf((char)(pos + 'A' - 1)));
         }
-
-        buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
     }
 
+    // Draws a single piece using information from the ChessBoard object
     public static void drawPiece(ChessBoard piece) {
         int pieceSource = 0, pieceColor = 0;
 
@@ -223,6 +241,7 @@ public class Controller {
         }
     }
 
+    // Clears canvas to later redraw on it
     public static void clearCanvas() {
         graphicsContext.clearRect(0, -(canvas.getHeight() - 60), canvas.getWidth(), canvas.getHeight());
     }

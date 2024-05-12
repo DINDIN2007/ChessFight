@@ -118,27 +118,31 @@ public class ChessBoard {
                     // Checks so that the piece doesn't land on a spot with a piece on the same side
                     if (pieceOnThatPosition == null || !pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
                 }
+
+                // Castling logic
                 if (this.pieceType.equals("King") && !this.hasMoved) {
+                    // Castle on the left
                     ChessBoard[] leftCastle = {
                             ChessBoard.pieceLocations[0][this.pieceY],
                             ChessBoard.pieceLocations[1][this.pieceY],
                             ChessBoard.pieceLocations[2][this.pieceY],
                             ChessBoard.pieceLocations[3][this.pieceY],
                     };
-                    if (leftCastle[0].pieceType.equals("Rook") && leftCastle[0].pieceColor.equals(this.pieceColor)) {
+                    if (leftCastle[0] != null && leftCastle[0].pieceType.equals("Rook") && leftCastle[0].pieceColor.equals(this.pieceColor)) {
                         if (leftCastle[1] == null && leftCastle[2] == null && leftCastle[3] == null) {
                             moves.add(new Pair<>(2, this.pieceY));
                         }
                     }
 
+                    // Castle on the right
                     ChessBoard[] rightCastle = {
                             ChessBoard.pieceLocations[5][this.pieceY],
                             ChessBoard.pieceLocations[6][this.pieceY],
                             ChessBoard.pieceLocations[7][this.pieceY],
                     };
 
-                    if (rightCastle[2].pieceType.equals("Rook") && rightCastle[2].pieceColor.equals(this.pieceColor)) {
-                        if (leftCastle[0] == null && leftCastle[1] == null) {
+                    if (rightCastle[2] != null && rightCastle[2].pieceType.equals("Rook") && rightCastle[2].pieceColor.equals(this.pieceColor)) {
+                        if (rightCastle[0] == null && rightCastle[1] == null) {
                             moves.add(new Pair<>(6, this.pieceY));
                         }
                     }
@@ -191,19 +195,6 @@ public class ChessBoard {
         }
     }
 
-    // Prints out a test board for log console use
-    public static String printBoard() {
-        StringBuilder builder = new StringBuilder();
-        for (int y = 7; y >= 0; y--) {
-            for (int x = 0; x < 8; x++) {
-                ChessBoard piece = pieceLocations[x][y];
-                builder.append((piece != null) ? piece.pieceType.charAt(0) + " " : ". ");
-            }
-            builder.append("\n");
-        }
-        return builder.toString();
-    }
-
     // Creates a basic chess start board
     public static void newGame() {
         String[] pieceRowPosition = {"Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook"};
@@ -215,5 +206,18 @@ public class ChessBoard {
             pieceLocations[i][0] = new ChessBoard(pieceRowPosition[i], "White", i, 0);
             pieceLocations[i][7] = new ChessBoard(pieceRowPosition[i], "Black", i, 7);
         }
+    }
+
+    // Prints out a test board for debug use
+    public static String printBoard() {
+        StringBuilder builder = new StringBuilder();
+        for (int y = 7; y >= 0; y--) {
+            for (int x = 0; x < 8; x++) {
+                ChessBoard piece = pieceLocations[x][y];
+                builder.append((piece != null) ? piece.pieceType.charAt(0) + " " : ". ");
+            }
+            builder.append("\n");
+        }
+        return builder.toString();
     }
 }
