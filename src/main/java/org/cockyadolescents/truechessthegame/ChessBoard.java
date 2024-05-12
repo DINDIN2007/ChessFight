@@ -26,7 +26,12 @@ public class ChessBoard {
         // An array of possible moves are assigned to each respective chess piece
         switch (this.pieceType) {
             case "Pawn":
-                this.possibleMoves = new int[][]{{-1, 1}, {0, 1}, {1, 1}, {0, 2}};
+                if (this.pieceColor.equals("White")) {
+                    this.possibleMoves = new int[][]{{-1, 1}, {0, 1}, {1, 1}, {0, 2}};
+                }
+                else {
+                    this.possibleMoves = new int[][]{{-1, -1}, {0, -1}, {1, -1}, {0, -2}};
+                }
                 this.pieceValue = 1; break;
             case "Knight":
                 this.possibleMoves = new int[8][2];
@@ -91,16 +96,15 @@ public class ChessBoard {
                     // Checks if this new location would be inbound
                     if (!ChessBoard.isOutOfBound(newCoords.getKey(), newCoords.getValue())) {
                         ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
-                        // Case : Pawn takes enemy piece on its two diagonals
+                        // Case : Pawn moves forward
                         if (pieceOnThatPosition == null) {
                             if (i % 2 == 1) moves.add(newCoords);
                         }
-                        // Case : Pawn moves forward
-                        else if (pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
+                        // Case : Pawn takes enemy piece on its two diagonals
+                        else if (!pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
                     }
                 }
                 if (this.hasMoved) moves.removeLast();
-                this.hasMoved = true;
                 break;
             case "Knight": case "King":
                 for (int[] coord : this.possibleMoves) {
@@ -113,6 +117,31 @@ public class ChessBoard {
 
                     // Checks so that the piece doesn't land on a spot with a piece on the same side
                     if (pieceOnThatPosition == null || !pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
+                }
+                if (this.pieceType.equals("King") && !this.hasMoved) {
+                    ChessBoard[] leftCastle = {
+                            ChessBoard.pieceLocations[0][this.pieceY],
+                            ChessBoard.pieceLocations[1][this.pieceY],
+                            ChessBoard.pieceLocations[2][this.pieceY],
+                            ChessBoard.pieceLocations[3][this.pieceY],
+                    };
+                    if (leftCastle[0].pieceType.equals("Rook") && leftCastle[0].pieceColor.equals(this.pieceColor)) {
+                        if (leftCastle[1] == null && leftCastle[2] == null && leftCastle[3] == null) {
+                            moves.add(new Pair<>(2, this.pieceY));
+                        }
+                    }
+
+                    ChessBoard[] rightCastle = {
+                            ChessBoard.pieceLocations[5][this.pieceY],
+                            ChessBoard.pieceLocations[6][this.pieceY],
+                            ChessBoard.pieceLocations[7][this.pieceY],
+                    };
+
+                    if (rightCastle[2].pieceType.equals("Rook") && rightCastle[2].pieceColor.equals(this.pieceColor)) {
+                        if (leftCastle[0] == null && leftCastle[1] == null) {
+                            moves.add(new Pair<>(6, this.pieceY));
+                        }
+                    }
                 }
                 break;
             case "Bishop": case "Rook": case "Queen":
@@ -137,8 +166,6 @@ public class ChessBoard {
                 }
                 break;
         }
-
-
 
         return moves;
     }

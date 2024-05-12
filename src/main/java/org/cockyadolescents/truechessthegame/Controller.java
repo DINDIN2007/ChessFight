@@ -41,6 +41,7 @@ public class Controller {
     private HBox topNumbers;
 
     public void startGame() throws IOException {
+        // Load new scene to start the game
         Parent root = FXMLLoader.load(getClass().getResource("maingame.fxml"));
         Stage window = (Stage) welcomeText.getScene().getWindow();
         Scene scene = new Scene(root);
@@ -48,112 +49,126 @@ public class Controller {
         window.setScene(scene);
         window.show();
 
+        // Create new chess game in ChessBoard class
+        ChessBoard.newGame();
+
+        // The two Grid pane around the canvas that make up the board
         buttonBoard = (GridPane) root.lookup("#buttonBoard");
         labelBoard = (GridPane) root.lookup("#labelBoard");
 
-        leftNumbers = (VBox) root.lookup("#leftNumbers");
-        topNumbers = (HBox) root.lookup("#topNumbers");
-
-        createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers);
-
+        // The canvas used to draw the Chess Pieces
         canvas = (Canvas) root.lookup("#canvas");
         graphicsContext = canvas.getGraphicsContext2D();
         graphicsContext.translate(0, canvas.getHeight() - 60);
-
         source = new Image(getClass().getResourceAsStream("ChessPieces.png"));
 
-        drawPiece(ChessBoard.pieceLocations[0][0]);
-        drawPiece(ChessBoard.pieceLocations[1][0]);
-        drawPiece(ChessBoard.pieceLocations[2][0]);
+        // The containers storing the numbers/letters on the side of the board
+        leftNumbers = (VBox) root.lookup("#leftNumbers");
+        topNumbers = (HBox) root.lookup("#topNumbers");
 
-        drawPiece(ChessBoard.pieceLocations[0][7]);
-        drawPiece(ChessBoard.pieceLocations[1][7]);
-        drawPiece(ChessBoard.pieceLocations[2][7]);
+        // Create all elements in the previously mentioned containers
+        createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers);
     }
 
     public void createBoard(GridPane buttonBoard, GridPane labelBoard, VBox leftNumbers, HBox topNumbers) {
         for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                Label tileBackground = new Label("");
-                tileBackground.getStyleClass().add("tile");
+        for (int j = 0; j < 8; j++) {
+            // Creates new label to add to labelBoard
+            Label tileBackground = new Label("");
+            tileBackground.getStyleClass().add("tile");
 
-                Button tile = new Button("");
-                tile.setId(i + " " + (j));
-                tile.getStyleClass().add("boardTiles");
-                tile.setOnAction(event -> tilePressed(event, buttonBoard, leftNumbers, topNumbers));
-                tileArray[i][j] = tile;
+            // Figures out which color to give each tile
+            if (i % 2 == 0) tileBackground.getStyleClass().add((j % 2 == 0) ? "oddTiles" : "evenTiles");
+            else tileBackground.getStyleClass().add((j % 2 == 1) ? "oddTiles" : "evenTiles");
+            labelBoard.add(tileBackground, i, 7 - j);
 
-                if (i % 2 == 0) {
-                    if (j % 2 == 0) tileBackground.getStyleClass().add("oddTiles");
-                    else tileBackground.getStyleClass().add("evenTiles");
-                }
-                else {
-                    if (j % 2 == 1) tileBackground.getStyleClass().add("oddTiles");
-                    else tileBackground.getStyleClass().add("evenTiles");
-                }
+            // Creates new button to add to buttonBoard
+            Button tile = new Button("");
+            tile.setId(i + " " + (j));
+            tile.getStyleClass().add("boardTiles");
+            tile.setOnAction(event -> tilePressed(event, buttonBoard, leftNumbers, topNumbers));
+            // tile.setText(i + " " + j); // Uncomment this to see the coordinates of the tiles
+            tileArray[i][j] = tile;
 
-                labelBoard.add(tileBackground, i, 7 - j);
-                buttonBoard.add(tileArray[i][j], i, 7 - j);
-            }
-        }
+            buttonBoard.add(tileArray[i][j], i, 7 - j);
+        }}
 
+        // Extra padding for the top left corner of the board
         Label padding = new Label(String.valueOf(""));
         padding.getStyleClass().add("tile");
         topNumbers.getChildren().add(padding);
 
+        // Initializing the labels on the side of the board
         for (int i = 0; i < 8; i++) {
             Label number = new Label(String.valueOf(8 - i));
-            Label letter = new Label(String.valueOf((char) ('A' + i)));
             number.getStyleClass().add("tile");
-            letter.getStyleClass().add("tile");
-
             leftNumbers.getChildren().add(number);
+
+            Label letter = new Label(String.valueOf((char) ('A' + i)));
+            letter.getStyleClass().add("tile");
             topNumbers.getChildren().add(letter);
         }
+
+        // Drawing the chess pieces on the canvas
+        for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if (ChessBoard.pieceLocations[i][j] != null) drawPiece(ChessBoard.pieceLocations[i][j]);
+        }}
     }
 
     public void tilePressed(ActionEvent event, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers) {
+        // Finds the coordinate of the button pressed based on who's playing
         Button tile = (Button) event.getSource();
         int x = tile.getId().charAt(0) - '0';
         int y = tile.getId().charAt(2) - '0';
 
+        // Finds the matching piece saved in ChessBoard class
         ChessBoard tilePiece = ChessBoard.pieceLocations[x][y];
 
-        if (tilePiece != null && tilePiece.pieceColor.equals(playingSide)) {
+        System.out.println(x + " " + y);
 
-            possibleMoves = tilePiece.getPossibleMoves();
-            for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (i == x && y == j) continue;
-
-                ChessBoard piece = ChessBoard.pieceLocations[i][j];
-                Pair<Integer, Integer> move = new Pair<>(i, j);
-
-                if (!possibleMoves.contains(move)) {
-                    if (piece != null && piece.pieceColor.equals(playingSide)) continue;
-                    tileArray[i][j].getStyleClass().remove("boardTilesPossibleMoves");
-                    tileArray[i][j].setDisable(true);
-                }
-                else {
-                    tileArray[i][j].getStyleClass().add("boardTilesPossibleMoves");
-                    tileArray[i][j].setDisable(false);
-                }
-            }}
-
-            selectX = x; selectY = y;
-            lockIntoPiece = true;
+        if (selectX == x && selectY == y) {
+            drawBoard(tileArray, buttonBoard, leftNumbers, topNumbers);
+            selectX = -1; selectY = -1;
+            lockIntoPiece = false;
         }
-        else if (lockIntoPiece) {
-            if (!(selectX == x && selectY == y)) {
-                ChessBoard.moveChessPiece(ChessBoard.pieceLocations[selectX][selectY], x, y);
-                clearCanvas();
-                playingSide = (playingSide.equals("White")) ? "Black" : "White";
-            }
 
+        // Go to marked place
+        else if (lockIntoPiece && !(tilePiece != null && tilePiece.pieceColor.equals(playingSide))) {
+            ChessBoard.pieceLocations[selectX][selectY].hasMoved = true;
+
+            ChessBoard.moveChessPiece(ChessBoard.pieceLocations[selectX][selectY], x, y);
+            clearCanvas();
+
+            playingSide = (playingSide.equals("White")) ? "Black" : "White";
             drawBoard(tileArray, buttonBoard, leftNumbers, topNumbers);
 
             selectX = -1; selectY = -1;
             lockIntoPiece = false;
+        }
+
+        // Marks the places that the piece can move to
+        else if (tilePiece != null){
+            // Get all possible moves for this chess piece
+            possibleMoves = tilePiece.getPossibleMoves();
+
+            // Loop through board to mark possible moves
+            for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (i == x && i == y) continue;
+
+                if (possibleMoves.contains(new Pair<>(i, j))) {
+                    tileArray[i][j].getStyleClass().add("boardTilesPossibleMoves");
+                    tileArray[i][j].setDisable(false);
+                }
+                else {
+                    tileArray[i][j].getStyleClass().remove("boardTilesPossibleMoves");
+                    tileArray[i][j].setDisable(true);
+                }
+            }}
+
+            lockIntoPiece = true;
+            selectX = x; selectY = y;
         }
     }
 
@@ -167,7 +182,6 @@ public class Controller {
 
         for (int i = 0; i < 8; i++) {
             Label left = (Label)(leftNumbers.getChildren().get(i));
-            System.out.println(left.getText().charAt(0) - '0');
             int pos = Math.abs(8 - (left.getText().charAt(0) - '1'));
             left.setText("" + pos);
 
@@ -187,12 +201,13 @@ public class Controller {
         }
 
         switch(piece.pieceType) {
-            case "Rook" : pieceSource = 0; break;
-            case "Knight" : pieceSource = 1; break;
-            case "Bishop" : pieceSource = 2; break;
+            case "Pawn" : pieceSource = 0; break;
+            case "Rook" : pieceSource = 1; break;
+            case "Knight" : pieceSource = 2; break;
+            case "Bishop" : pieceSource = 3; break;
+            case "Queen" : pieceSource = 4; break;
+            case "King" : pieceSource = 5; break;
         }
-
-        System.out.println(piece.pieceX + " " + piece.pieceY);
 
         if (playingSide.equals("White")) {
             graphicsContext.drawImage(source,
