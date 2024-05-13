@@ -61,7 +61,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                org.cockyadolescents.truechessthegame/org.cockyadolescents.truechessthegame.Main
+                                org.cockyadolescents.truechessthegame/org.cockyadolescents.truechessthegame.HomePage
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

@@ -12,17 +12,14 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Vector;
 
-public class Controller {
+public class MainGame {
     @FXML
     private Label welcomeText;
     private static Image source;
@@ -61,6 +58,7 @@ public class Controller {
         canvas = (Canvas) root.lookup("#canvas");
         graphicsContext = canvas.getGraphicsContext2D();
         graphicsContext.translate(0, canvas.getHeight() - 60);
+        // Gets chess piece sprites
         source = new Image(getClass().getResourceAsStream("ChessPieces.png"));
 
         // The containers storing the numbers/letters on the side of the board
@@ -95,8 +93,9 @@ public class Controller {
             buttonBoard.add(tileArray[i][j], i, 7 - j);
         }}
 
+        // Letter row and number column
         // Extra padding for the top left corner of the board
-        Label padding = new Label(String.valueOf(""));
+        Label padding = new Label("");
         padding.getStyleClass().add("tile");
         topNumbers.getChildren().add(padding);
 
@@ -130,8 +129,6 @@ public class Controller {
         // Finds the matching piece saved in ChessBoard class
         ChessBoard tilePiece = ChessBoard.pieceLocations[x][y];
 
-        System.out.println(x + " " + y);
-
         if (selectX == x && selectY == y) {
             drawBoard(tileArray, buttonBoard, leftNumbers, topNumbers);
             selectX = -1; selectY = -1;
@@ -141,7 +138,8 @@ public class Controller {
         // Go to marked place
         else if (lockIntoPiece && !(tilePiece != null && tilePiece.pieceColor.equals(playingSide))) {
             if (tilePiece != null) {
-                // NOAH SET UP DAVIDS FILE HERE PLS PLS PLS PLS PLS PLS PLS PLS PLS PLS PLS
+                Boxing.doStuff();
+
             }
 
             ChessBoard selectedPiece = ChessBoard.pieceLocations[selectX][selectY];
