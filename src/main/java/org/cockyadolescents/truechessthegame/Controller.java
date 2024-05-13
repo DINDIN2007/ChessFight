@@ -102,7 +102,7 @@ public class Controller {
 
         // Initializing the labels on the side of the board
         for (int i = 0; i < 8; i++) {
-            Label number = new Label(String.valueOf(i + 1));
+            Label number = new Label(String.valueOf(8 - i));
             number.getStyleClass().add("tile");
             leftNumbers.getChildren().add(number);
 
@@ -111,7 +111,7 @@ public class Controller {
             topNumbers.getChildren().add(letter);
         }
 
-        turnBoard(leftNumbers, topNumbers);
+        // turnBoard(leftNumbers, topNumbers);
 
         // Drawing the chess pieces on the canvas
         for (int i = 0; i < 8; i++) {
@@ -140,8 +140,9 @@ public class Controller {
 
         // Go to marked place
         else if (lockIntoPiece && !(tilePiece != null && tilePiece.pieceColor.equals(playingSide))) {
-
-            // NOAH SET UP DAVIDS FILE HERE PLS PLS PLS PLS PLS PLS PLS PLS PLS PLS PLS
+            if (tilePiece != null) {
+                // NOAH SET UP DAVIDS FILE HERE PLS PLS PLS PLS PLS PLS PLS PLS PLS PLS PLS
+            }
 
             ChessBoard selectedPiece = ChessBoard.pieceLocations[selectX][selectY];
 
@@ -219,7 +220,7 @@ public class Controller {
             left.setText("" + pos);
 
             Label top = (Label)(topNumbers.getChildren().get(i + 1));
-            top.setText(String.valueOf((char)(pos + 'A' - 1)));
+            top.setText(String.valueOf((char)(8 - pos + 'A')));
         }
     }
 

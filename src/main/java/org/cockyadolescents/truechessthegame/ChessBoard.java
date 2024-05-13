@@ -101,7 +101,9 @@ public class ChessBoard {
                             if (i % 2 == 1) moves.add(newCoords);
                         }
                         // Case : Pawn takes enemy piece on its two diagonals
-                        else if (!pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
+                        else if (!pieceOnThatPosition.pieceColor.equals(this.pieceColor)) {
+                            if (i % 2 == 0) moves.add(newCoords);
+                        }
                     }
                 }
                 if (this.hasMoved) moves.removeLast();
