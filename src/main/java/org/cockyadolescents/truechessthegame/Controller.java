@@ -102,7 +102,7 @@ public class Controller {
 
         // Initializing the labels on the side of the board
         for (int i = 0; i < 8; i++) {
-            Label number = new Label(String.valueOf(8 - i));
+            Label number = new Label(String.valueOf(i + 1));
             number.getStyleClass().add("tile");
             leftNumbers.getChildren().add(number);
 
@@ -143,9 +143,23 @@ public class Controller {
 
             // NOAH SET UP DAVIDS FILE HERE PLS PLS PLS PLS PLS PLS PLS PLS PLS PLS PLS
 
-            ChessBoard.pieceLocations[selectX][selectY].hasMoved = true;
+            ChessBoard selectedPiece = ChessBoard.pieceLocations[selectX][selectY];
 
-            ChessBoard.moveChessPiece(ChessBoard.pieceLocations[selectX][selectY], x, y);
+            // Moving the rook when castling
+            if (selectedPiece.pieceType.equals("King") && y == selectY) {
+                // Left Castle
+                if (selectedPiece.pieceX - x == 2) {
+                    ChessBoard.moveChessPiece(ChessBoard.pieceLocations[0][y], 3, y);
+                }
+                // Right Castle
+                if (x - selectedPiece.pieceX == 2) {
+                    ChessBoard.moveChessPiece(ChessBoard.pieceLocations[7][y], 5, y);
+                }
+            }
+
+            selectedPiece.hasMoved = true;
+
+            ChessBoard.moveChessPiece(selectedPiece, x, y);
             clearCanvas();
 
             playingSide = (playingSide.equals("White")) ? "Black" : "White";
