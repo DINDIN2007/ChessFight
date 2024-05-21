@@ -3,6 +3,7 @@ package org.cockyadolescents.truechessthegame;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.print.Printer;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -16,7 +17,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Vector;
 
 public class MainGame {
@@ -36,6 +41,9 @@ public class MainGame {
     private GridPane buttonBoard, labelBoard;
     private VBox leftNumbers;
     private HBox topNumbers;
+
+    // Online game features
+    private boolean onlineGame = false;
 
     // Main game setup
     public void startGame() throws IOException {
@@ -67,6 +75,13 @@ public class MainGame {
 
         // Create all elements in the previously mentioned containers
         createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers);
+    }
+
+    // Online game version
+    public void startOnlineGame() throws IOException {
+        onlineGame = true;
+
+        startGame();
     }
 
     // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
@@ -139,7 +154,6 @@ public class MainGame {
         else if (lockIntoPiece && !(tilePiece != null && tilePiece.pieceColor.equals(playingSide))) {
             if (tilePiece != null) {
                 Boxing.doStuff();
-
             }
 
             ChessBoard selectedPiece = ChessBoard.pieceLocations[selectX][selectY];

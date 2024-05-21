@@ -90,6 +90,7 @@ public class ChessBoard {
 
         switch (this.pieceType) {
             case "Pawn":
+                boolean noTwoFoward = this.hasMoved;
                 for (int i = 0; i < 4; i++) {
                     Pair<Integer, Integer> newCoords = new Pair<>(this.possibleMoves[i][0] + this.pieceX, this.possibleMoves[i][1] + this.pieceY);
 
@@ -97,16 +98,18 @@ public class ChessBoard {
                     if (!ChessBoard.isOutOfBound(newCoords.getKey(), newCoords.getValue())) {
                         ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
                         // Case : Pawn moves forward
-                        if (pieceOnThatPosition == null) {
-                            if (i % 2 == 1) moves.add(newCoords);
+                        if (i % 2 == 1) {
+                            if (pieceOnThatPosition == null) moves.add(newCoords);
+                            else if (i == 1) noTwoFoward = true;
                         }
                         // Case : Pawn takes enemy piece on its two diagonals
-                        else if (!pieceOnThatPosition.pieceColor.equals(this.pieceColor)) {
-                            if (i % 2 == 0) moves.add(newCoords);
+                        else  {
+                            if (pieceOnThatPosition == null) continue;
+                            if (!pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
                         }
                     }
                 }
-                if (this.hasMoved) moves.removeLast();
+                if (noTwoFoward) moves.removeLast();
                 break;
             case "Knight": case "King":
                 for (int[] coord : this.possibleMoves) {

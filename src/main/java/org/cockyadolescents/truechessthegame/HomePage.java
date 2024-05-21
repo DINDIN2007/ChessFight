@@ -12,6 +12,10 @@ import java.util.Vector;
 
 // title window
 public class HomePage extends Application {
+
+    String address;
+    int port;
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("homepage.fxml"));
@@ -20,6 +24,9 @@ public class HomePage extends Application {
         stage.setTitle("True Chess the Game");
         stage.setScene(scene);
         stage.show();
+
+        //address = super.getParameters().getRaw().get(0);
+        //port = Integer.parseInt(super.getParameters().getRaw().get(1));
 
         // printNewGameInConsole();
     }
