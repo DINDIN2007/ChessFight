@@ -22,7 +22,6 @@ import java.util.Vector;
 public class MainGame {
     private static Image source;
     private static GraphicsContext graphicsContext;
-    private static Canvas canvas;
 
     private Button[][] tileArray= new Button[8][8];
     private static boolean lockIntoPiece = false;
@@ -30,10 +29,10 @@ public class MainGame {
     private static Vector<Pair<Integer, Integer>> possibleMoves;
     private static String playingSide = "White";
 
-    @FXML
-    private GridPane buttonBoard, labelBoard;
-    private VBox leftNumbers;
-    private HBox topNumbers;
+    @FXML private static Canvas canvas;
+    @FXML private GridPane buttonBoard, labelBoard;
+    @FXML private VBox leftNumbers;
+    @FXML private HBox topNumbers;
 
     // Main game setup
     public void startGame(Stage window) throws IOException {
@@ -223,19 +222,21 @@ public class MainGame {
     public static void drawPiece(ChessPiece piece) {
         int pieceSource = 0, pieceColor = 0;
 
-        switch(piece.pieceColor) {
-            case "White": pieceColor = 1; break;
-            case "Black": pieceColor = 0; break;
-        }
+        pieceColor = switch (piece.pieceColor) {
+            case "White" -> 1;
+            case "Black" -> 0;
+            default -> pieceColor;
+        };
 
-        switch(piece.pieceType) {
-            case "Pawn" : pieceSource = 0; break;
-            case "Rook" : pieceSource = 1; break;
-            case "Knight" : pieceSource = 2; break;
-            case "Bishop" : pieceSource = 3; break;
-            case "Queen" : pieceSource = 4; break;
-            case "King" : pieceSource = 5; break;
-        }
+        pieceSource = switch (piece.pieceType) {
+            case "Pawn" -> 0;
+            case "Rook" -> 1;
+            case "Knight" -> 2;
+            case "Bishop" -> 3;
+            case "Queen" -> 4;
+            case "King" -> 5;
+            default -> pieceSource;
+        };
 
         if (playingSide.equals("White")) {
             graphicsContext.drawImage(source,
