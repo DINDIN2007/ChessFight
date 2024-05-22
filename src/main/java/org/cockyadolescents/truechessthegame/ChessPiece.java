@@ -3,7 +3,7 @@ package org.cockyadolescents.truechessthegame;
 import javafx.util.Pair;
 import java.util.Vector;
 
-public class ChessBoard {
+public class ChessPiece {
     String pieceType, pieceColor;       // The type of piece (knight, pawn, ...) and the side it belongs to
     int pieceX, pieceY, pieceValue;     // The piece position and its value upon being captured
     int[][] possibleMoves;              // 2d array storing all the possible coordinates to move to
@@ -13,10 +13,10 @@ public class ChessBoard {
     public static boolean[] isChecked = {false, false};
 
     // 2d array storing all the pieces on the chessboard
-    public static ChessBoard[][] pieceLocations = new ChessBoard[8][8];
+    public static ChessPiece[][] ChessBoard = new ChessPiece[8][8];
 
     // This is the class object initialization where a piece is created
-    public ChessBoard(String pieceType, String pieceColor, int pieceX, int pieceY) {
+    public ChessPiece(String pieceType, String pieceColor, int pieceX, int pieceY) {
         this.pieceType = pieceType; this.pieceColor = pieceColor;
         this.pieceX = pieceX; this.pieceY = pieceY;
 
@@ -76,7 +76,7 @@ public class ChessBoard {
         }
 
         // Sets the piece on the board
-        pieceLocations[this.pieceX][this.pieceY] = this;
+        ChessBoard[this.pieceX][this.pieceY] = this;
     }
 
     // This method checks if the given coordinate is out of the chessboard's bound
@@ -94,8 +94,8 @@ public class ChessBoard {
                     Pair<Integer, Integer> newCoords = new Pair<>(this.possibleMoves[i][0] + this.pieceX, this.possibleMoves[i][1] + this.pieceY);
 
                     // Checks if this new location would be inbound
-                    if (!ChessBoard.isOutOfBound(newCoords.getKey(), newCoords.getValue())) {
-                        ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
+                    if (!ChessPiece.isOutOfBound(newCoords.getKey(), newCoords.getValue())) {
+                        ChessPiece pieceOnThatPosition = ChessPiece.ChessBoard[newCoords.getKey()][newCoords.getValue()];
                         // Case : Pawn moves forward
                         if (pieceOnThatPosition == null) {
                             if (i % 2 == 1) moves.add(newCoords);
@@ -113,9 +113,9 @@ public class ChessBoard {
                     Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
 
                     // Checks if this new location would be inbound
-                    if (ChessBoard.isOutOfBound(newCoords.getKey(), newCoords.getValue())) continue;
+                    if (ChessPiece.isOutOfBound(newCoords.getKey(), newCoords.getValue())) continue;
 
-                    ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
+                    ChessPiece pieceOnThatPosition = ChessPiece.ChessBoard[newCoords.getKey()][newCoords.getValue()];
 
                     // Checks so that the piece doesn't land on a spot with a piece on the same side
                     if (pieceOnThatPosition == null || !pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
@@ -124,11 +124,11 @@ public class ChessBoard {
                 // Castling logic
                 if (this.pieceType.equals("King") && !this.hasMoved) {
                     // Castle on the left
-                    ChessBoard[] leftCastle = {
-                            ChessBoard.pieceLocations[0][this.pieceY],
-                            ChessBoard.pieceLocations[1][this.pieceY],
-                            ChessBoard.pieceLocations[2][this.pieceY],
-                            ChessBoard.pieceLocations[3][this.pieceY],
+                    ChessPiece[] leftCastle = {
+                            ChessPiece.ChessBoard[0][this.pieceY],
+                            ChessPiece.ChessBoard[1][this.pieceY],
+                            ChessPiece.ChessBoard[2][this.pieceY],
+                            ChessPiece.ChessBoard[3][this.pieceY],
                     };
                     if (leftCastle[0] != null && leftCastle[0].pieceType.equals("Rook") && leftCastle[0].pieceColor.equals(this.pieceColor)) {
                         if (leftCastle[1] == null && leftCastle[2] == null && leftCastle[3] == null) {
@@ -137,10 +137,10 @@ public class ChessBoard {
                     }
 
                     // Castle on the right
-                    ChessBoard[] rightCastle = {
-                            ChessBoard.pieceLocations[5][this.pieceY],
-                            ChessBoard.pieceLocations[6][this.pieceY],
-                            ChessBoard.pieceLocations[7][this.pieceY],
+                    ChessPiece[] rightCastle = {
+                            ChessPiece.ChessBoard[5][this.pieceY],
+                            ChessPiece.ChessBoard[6][this.pieceY],
+                            ChessPiece.ChessBoard[7][this.pieceY],
                     };
 
                     if (rightCastle[2] != null && rightCastle[2].pieceType.equals("Rook") && rightCastle[2].pieceColor.equals(this.pieceColor)) {
@@ -156,16 +156,16 @@ public class ChessBoard {
                     Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
 
                     // Checks if this new location would be inbound
-                    if (ChessBoard.isOutOfBound(newCoords.getKey(), newCoords.getValue())) continue;
+                    if (ChessPiece.isOutOfBound(newCoords.getKey(), newCoords.getValue())) continue;
 
-                    ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
+                    ChessPiece pieceOnThatPosition = ChessPiece.ChessBoard[newCoords.getKey()][newCoords.getValue()];
                     // Checks so that the piece doesn't land on a spot with a piece on the same side
                     if (pieceOnThatPosition == null) moves.add(newCoords);
                     else {
                         if (!pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
 
                         // Skips the moves behind an enemy piece
-                        if (ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()] != null) {
+                        if (ChessPiece.ChessBoard[newCoords.getKey()][newCoords.getValue()] != null) {
                             i += 7 - Math.max(Math.abs(coord[0]), Math.abs(coord[1]));
                         }
                     }
@@ -177,7 +177,7 @@ public class ChessBoard {
     }
 
     // Method to see if either king are in check
-    public static void checkChecking(ChessBoard firstPiece, ChessBoard secondPiece) {
+    public static void checkChecking(ChessPiece firstPiece, ChessPiece secondPiece) {
         if (firstPiece == null || secondPiece == null) return;
         switch (firstPiece.pieceColor) {
             case "White" : if (secondPiece.pieceColor.equals("Black")) isChecked[1] = true;
@@ -186,14 +186,14 @@ public class ChessBoard {
     }
 
     // Swaps the position of the piece to a new position
-    public static void moveChessPiece(ChessBoard piece, int newX, int newY) {
-        pieceLocations[newX][newY] = piece;
-        pieceLocations[piece.pieceX][piece.pieceY] = null;
+    public static void moveChessPiece(ChessPiece piece, int newX, int newY) {
+        ChessBoard[newX][newY] = piece;
+        ChessBoard[piece.pieceX][piece.pieceY] = null;
         piece.pieceX = newX; piece.pieceY = newY;
 
         isChecked = new boolean[]{false, false};
         for (Pair<Integer, Integer> moves : piece.getPossibleMoves()) {
-            checkChecking(piece, pieceLocations[moves.getKey()][moves.getValue()]);
+            checkChecking(piece, ChessBoard[moves.getKey()][moves.getValue()]);
         }
     }
 
@@ -202,11 +202,11 @@ public class ChessBoard {
         String[] pieceRowPosition = {"Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook"};
 
         for (int i = 0; i < 8; i++) {
-            pieceLocations[i][1] = new ChessBoard("Pawn", "White", i, 1);
-            pieceLocations[i][6] = new ChessBoard("Pawn", "Black", i, 6);
+            ChessBoard[i][1] = new ChessPiece("Pawn", "White", i, 1);
+            ChessBoard[i][6] = new ChessPiece("Pawn", "Black", i, 6);
 
-            pieceLocations[i][0] = new ChessBoard(pieceRowPosition[i], "White", i, 0);
-            pieceLocations[i][7] = new ChessBoard(pieceRowPosition[i], "Black", i, 7);
+            ChessBoard[i][0] = new ChessPiece(pieceRowPosition[i], "White", i, 0);
+            ChessBoard[i][7] = new ChessPiece(pieceRowPosition[i], "Black", i, 7);
         }
     }
 
@@ -215,7 +215,7 @@ public class ChessBoard {
         StringBuilder builder = new StringBuilder();
         for (int y = 7; y >= 0; y--) {
             for (int x = 0; x < 8; x++) {
-                ChessBoard piece = pieceLocations[x][y];
+                ChessPiece piece = ChessBoard[x][y];
                 builder.append((piece != null) ? piece.pieceType.charAt(0) + " " : ". ");
             }
             builder.append("\n");

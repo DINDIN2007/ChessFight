@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.util.Vector;
 
 public class MainGame {
-    @FXML
-    private Label welcomeText;
     private static Image source;
     private static GraphicsContext graphicsContext;
     private static Canvas canvas;
@@ -38,17 +36,16 @@ public class MainGame {
     private HBox topNumbers;
 
     // Main game setup
-    public void startGame() throws IOException {
+    public void startGame(Stage window) throws IOException {
         // Load new scene to start the game
         Parent root = FXMLLoader.load(getClass().getResource("maingame.fxml"));
-        Stage window = (Stage) welcomeText.getScene().getWindow();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         window.setScene(scene);
         window.show();
 
         // Create new chess game in ChessBoard class
-        ChessBoard.newGame();
+        ChessPiece.newGame();
 
         // The two Grid pane around the canvas that make up the board
         buttonBoard = (GridPane) root.lookup("#buttonBoard");
@@ -115,7 +112,7 @@ public class MainGame {
         // Drawing the chess pieces on the canvas
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            if (ChessBoard.pieceLocations[i][j] != null) drawPiece(ChessBoard.pieceLocations[i][j]);
+            if (ChessPiece.ChessBoard[i][j] != null) drawPiece(ChessPiece.ChessBoard[i][j]);
         }}
     }
 
@@ -127,7 +124,7 @@ public class MainGame {
         int y = tile.getId().charAt(2) - '0';
 
         // Finds the matching piece saved in ChessBoard class
-        ChessBoard tilePiece = ChessBoard.pieceLocations[x][y];
+        ChessPiece tilePiece = ChessPiece.ChessBoard[x][y];
 
         if (selectX == x && selectY == y) {
             drawBoard(tileArray, buttonBoard, leftNumbers, topNumbers);
@@ -142,23 +139,23 @@ public class MainGame {
 
             }
 
-            ChessBoard selectedPiece = ChessBoard.pieceLocations[selectX][selectY];
+            ChessPiece selectedPiece = ChessPiece.ChessBoard[selectX][selectY];
 
             // Moving the rook when castling
             if (selectedPiece.pieceType.equals("King") && y == selectY) {
                 // Left Castle
                 if (selectedPiece.pieceX - x == 2) {
-                    ChessBoard.moveChessPiece(ChessBoard.pieceLocations[0][y], 3, y);
+                    ChessPiece.moveChessPiece(ChessPiece.ChessBoard[0][y], 3, y);
                 }
                 // Right Castle
                 if (x - selectedPiece.pieceX == 2) {
-                    ChessBoard.moveChessPiece(ChessBoard.pieceLocations[7][y], 5, y);
+                    ChessPiece.moveChessPiece(ChessPiece.ChessBoard[7][y], 5, y);
                 }
             }
 
             selectedPiece.hasMoved = true;
 
-            ChessBoard.moveChessPiece(selectedPiece, x, y);
+            ChessPiece.moveChessPiece(selectedPiece, x, y);
             clearCanvas();
 
             playingSide = (playingSide.equals("White")) ? "Black" : "White";
@@ -182,7 +179,7 @@ public class MainGame {
             // Loop through board to mark possible moves
             for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                ChessBoard piece = ChessBoard.pieceLocations[i][j];
+                ChessPiece piece = ChessPiece.ChessBoard[i][j];
                 if (piece != null && piece.pieceColor.equals(playingSide)) continue;
 
                 if (possibleMoves.contains(new Pair<>(i, j))) {
@@ -206,7 +203,7 @@ public class MainGame {
         for (int j = 0; j < 8; j++) {
             tileArray[i][j].setDisable(false);
             tileArray[i][j].getStyleClass().remove("boardTilesPossibleMoves");
-            if (ChessBoard.pieceLocations[i][j] != null) drawPiece(ChessBoard.pieceLocations[i][j]);
+            if (ChessPiece.ChessBoard[i][j] != null) drawPiece(ChessPiece.ChessBoard[i][j]);
         }}
     }
 
@@ -223,7 +220,7 @@ public class MainGame {
     }
 
     // Draws a single piece using information from the ChessBoard object
-    public static void drawPiece(ChessBoard piece) {
+    public static void drawPiece(ChessPiece piece) {
         int pieceSource = 0, pieceColor = 0;
 
         switch(piece.pieceColor) {
