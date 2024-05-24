@@ -20,28 +20,21 @@ import java.io.IOException;
 import java.util.Vector;
 
 public class MainGame {
-    private static Image source;
-    private static GraphicsContext graphicsContext;
-
     private Button[][] tileArray= new Button[8][8];
-    private static boolean lockIntoPiece = false;
+    private static boolean lockIntoPiece = false, boardCanFlip = false;
     private static int selectX = -1, selectY = -1;
-    private static Vector<Pair<Integer, Integer>> possibleMoves;
     private static String playingSide = "White";
+    private static Vector<Pair<Integer, Integer>> possibleMoves;
+    public static boolean onlineGame = false;
 
     @FXML private static Canvas canvas;
     @FXML private GridPane buttonBoard, labelBoard;
     @FXML private VBox leftNumbers;
     @FXML private HBox topNumbers;
 
-    private static boolean boardCanFlip = false;
-
-    // Game loop for animation
-    private static int delay = 2; // in seconds
-    private static GameLoop animationLoop = new GameLoop(new MainGame(), delay);
-
-    // Online game features
-    public static boolean onlineGame = false;
+    private static Image source;
+    private static GraphicsContext graphicsContext;
+    private static GameLoop animationLoop = new GameLoop(new MainGame(), 1);
 
     // Main game setup
     public void startGame(Stage window) throws IOException {
@@ -115,8 +108,6 @@ public class MainGame {
             topNumbers.getChildren().add(letter);
         }
 
-        // turnBoard(leftNumbers, topNumbers);
-
         // Drawing the chess pieces on the canvas
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -142,12 +133,11 @@ public class MainGame {
 
         // Go to marked place
         else if (lockIntoPiece && !(tilePiece != null && tilePiece.pieceColor.equals(playingSide))) {
-            if (tilePiece != null) {
-                Boxing.doStuff();
-
-            }
-
             ChessPiece selectedPiece = ChessPiece.ChessBoard[selectX][selectY];
+
+            if (tilePiece != null) {
+                Boxing.startMatch(selectedPiece, tilePiece);
+            }
 
             // Moving the rook when castling
             if (selectedPiece.pieceType.equals("King") && y == selectY) {
@@ -172,8 +162,10 @@ public class MainGame {
             selectX = -1; selectY = -1;
             lockIntoPiece = false;
 
-            turnBoard(leftNumbers, topNumbers);
-            buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
+            if (boardCanFlip) {
+                turnBoard(leftNumbers, topNumbers);
+                buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
+            }
         }
 
         // Marks the places that the piece can move to
@@ -247,7 +239,7 @@ public class MainGame {
             default -> pieceSource;
         };
 
-        if (playingSide.equals("White")) {
+        if (!boardCanFlip || playingSide.equals("White")) {
             graphicsContext.drawImage(source,
                     pieceSource * 48, pieceColor * 48, 48, 48,
                     piece.pieceX * 60, piece.pieceY * (-60), 60, 60
