@@ -34,6 +34,15 @@ public class MainGame {
     @FXML private VBox leftNumbers;
     @FXML private HBox topNumbers;
 
+    private static boolean boardCanFlip = false;
+
+    // Game loop for animation
+    private static int delay = 2; // in seconds
+    private static GameLoop animationLoop = new GameLoop(new MainGame(), delay);
+
+    // Online game features
+    public static boolean onlineGame = false;
+
     // Main game setup
     public void startGame(Stage window) throws IOException {
         // Load new scene to start the game
@@ -255,5 +264,10 @@ public class MainGame {
     // Clears canvas to later redraw on it
     public static void clearCanvas() {
         graphicsContext.clearRect(0, -(canvas.getHeight() - 60), canvas.getWidth(), canvas.getHeight());
+    }
+
+    // Animation for chess game
+    public static void animate() {
+        // Noah do animation here (it repeats every delay you give it in startGame()
     }
 }
