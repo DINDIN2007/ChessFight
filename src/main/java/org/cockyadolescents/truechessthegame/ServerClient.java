@@ -32,10 +32,4 @@ public class ServerClient {
 
         }
     }
-
-    public static void run() {
-        timer = new Timer();
-        task = new WaitingRoom();
-        timer.schedule(task, 2000, 1000);
-    }
 }

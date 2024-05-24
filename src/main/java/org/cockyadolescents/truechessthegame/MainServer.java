@@ -13,7 +13,6 @@ public class MainServer {
 
     public static void main(String[] args) throws IOException {
         startServer();
-        ServerClient.run();
     }
 
     public static void startServer() throws IOException {

@@ -99,7 +99,10 @@ public class ChessBoard {
                         ChessBoard pieceOnThatPosition = ChessBoard.pieceLocations[newCoords.getKey()][newCoords.getValue()];
                         // Case : Pawn moves forward
                         if (i % 2 == 1) {
-                            if (pieceOnThatPosition == null) moves.add(newCoords);
+                            if (pieceOnThatPosition == null) {
+                                if (i == 3 && noTwoFoward) continue;
+                                moves.add(newCoords);
+                            }
                             else if (i == 1) noTwoFoward = true;
                         }
                         // Case : Pawn takes enemy piece on its two diagonals
@@ -109,7 +112,6 @@ public class ChessBoard {
                         }
                     }
                 }
-                if (noTwoFoward) moves.removeLast();
                 break;
             case "Knight": case "King":
                 for (int[] coord : this.possibleMoves) {

@@ -37,10 +37,17 @@ public class MainGame {
     private static Vector<Pair<Integer, Integer>> possibleMoves;
     private static String playingSide = "White";
 
+    private static boolean boardCanFlip = false;
+
     @FXML
     private GridPane buttonBoard, labelBoard;
     private VBox leftNumbers;
     private HBox topNumbers;
+    private static Stage window;
+
+    // Game loop for animation
+    private static int delay = 2; // in seconds
+    private static GameLoop animationLoop = new GameLoop(new MainGame(), delay);
 
     // Online game features
     private boolean onlineGame = false;
@@ -49,9 +56,9 @@ public class MainGame {
     public void startGame() throws IOException {
         // Load new scene to start the game
         Parent root = FXMLLoader.load(getClass().getResource("maingame.fxml"));
-        Stage window = (Stage) welcomeText.getScene().getWindow();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        if (!onlineGame) window = (Stage) welcomeText.getScene().getWindow();
         window.setScene(scene);
         window.show();
 
@@ -75,38 +82,49 @@ public class MainGame {
 
         // Create all elements in the previously mentioned containers
         createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers);
+
+        // Start game loop
+        animationLoop.start();
     }
 
     // Online game version
     public void startOnlineGame() throws IOException {
-        onlineGame = true;
+        // Load new scene to start the game
+        Parent root = FXMLLoader.load(getClass().getResource("joinGame.fxml"));
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
-        startGame();
+        window = (Stage) welcomeText.getScene().getWindow();
+        window.setScene(scene);
+        window.show();
+
+        // Changes some features in the normal game
+        onlineGame = true;
     }
 
     // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
     public void createBoard(GridPane buttonBoard, GridPane labelBoard, VBox leftNumbers, HBox topNumbers) {
         for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            // Creates new label to add to labelBoard
-            Label tileBackground = new Label("");
-            tileBackground.getStyleClass().add("tile");
+            for (int j = 0; j < 8; j++) {
+                // Creates new label to add to labelBoard
+                Label tileBackground = new Label("");
+                tileBackground.getStyleClass().add("tile");
 
-            // Figures out which color to give each tile
-            if (i % 2 == 0) tileBackground.getStyleClass().add((j % 2 == 0) ? "oddTiles" : "evenTiles");
-            else tileBackground.getStyleClass().add((j % 2 == 1) ? "oddTiles" : "evenTiles");
-            labelBoard.add(tileBackground, i, 7 - j);
+                // Figures out which color to give each tile
+                if (i % 2 == 0) tileBackground.getStyleClass().add((j % 2 == 0) ? "oddTiles" : "evenTiles");
+                else tileBackground.getStyleClass().add((j % 2 == 1) ? "oddTiles" : "evenTiles");
+                labelBoard.add(tileBackground, i, 7 - j);
 
-            // Creates new button to add to buttonBoard
-            Button tile = new Button("");
-            tile.setId(i + " " + (j));
-            tile.getStyleClass().add("boardTiles");
-            tile.setOnAction(event -> tilePressed(event, buttonBoard, leftNumbers, topNumbers));
-            // tile.setText(i + " " + j); // Uncomment this to see the coordinates of the tiles
-            tileArray[i][j] = tile;
+                // Creates new button to add to buttonBoard
+                Button tile = new Button("");
+                tile.setId(i + " " + (j));
+                tile.getStyleClass().add("boardTiles");
+                tile.setOnAction(event -> tilePressed(event, buttonBoard, leftNumbers, topNumbers));
+                // tile.setText(i + " " + j); // Uncomment this to see the coordinates of the tiles
+                tileArray[i][j] = tile;
 
-            buttonBoard.add(tileArray[i][j], i, 7 - j);
-        }}
+                buttonBoard.add(tileArray[i][j], i, 7 - j);
+            }}
 
         // Letter row and number column
         // Extra padding for the top left corner of the board
@@ -124,8 +142,6 @@ public class MainGame {
             letter.getStyleClass().add("tile");
             topNumbers.getChildren().add(letter);
         }
-
-        // turnBoard(leftNumbers, topNumbers);
 
         // Drawing the chess pieces on the canvas
         for (int i = 0; i < 8; i++) {
@@ -181,8 +197,10 @@ public class MainGame {
             selectX = -1; selectY = -1;
             lockIntoPiece = false;
 
-            turnBoard(leftNumbers, topNumbers);
-            buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
+            if (boardCanFlip) {
+                turnBoard(leftNumbers, topNumbers);
+                buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
+            }
         }
 
         // Marks the places that the piece can move to
@@ -195,19 +213,19 @@ public class MainGame {
 
             // Loop through board to mark possible moves
             for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                ChessBoard piece = ChessBoard.pieceLocations[i][j];
-                if (piece != null && piece.pieceColor.equals(playingSide)) continue;
+                for (int j = 0; j < 8; j++) {
+                    ChessBoard piece = ChessBoard.pieceLocations[i][j];
+                    if (piece != null && piece.pieceColor.equals(playingSide)) continue;
 
-                if (possibleMoves.contains(new Pair<>(i, j))) {
-                    tileArray[i][j].getStyleClass().add("boardTilesPossibleMoves");
-                    tileArray[i][j].setDisable(false);
-                }
-                else {
-                    tileArray[i][j].getStyleClass().remove("boardTilesPossibleMoves");
-                    tileArray[i][j].setDisable(true);
-                }
-            }}
+                    if (possibleMoves.contains(new Pair<>(i, j))) {
+                        tileArray[i][j].getStyleClass().add("boardTilesPossibleMoves");
+                        tileArray[i][j].setDisable(false);
+                    }
+                    else {
+                        tileArray[i][j].getStyleClass().remove("boardTilesPossibleMoves");
+                        tileArray[i][j].setDisable(true);
+                    }
+                }}
 
             lockIntoPiece = true;
             selectX = x; selectY = y;
@@ -217,11 +235,11 @@ public class MainGame {
     // Draws the pieces and un-disables the tiles on the board
     public static void drawBoard(Button[][] tileArray, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers) {
         for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            tileArray[i][j].setDisable(false);
-            tileArray[i][j].getStyleClass().remove("boardTilesPossibleMoves");
-            if (ChessBoard.pieceLocations[i][j] != null) drawPiece(ChessBoard.pieceLocations[i][j]);
-        }}
+            for (int j = 0; j < 8; j++) {
+                tileArray[i][j].setDisable(false);
+                tileArray[i][j].getStyleClass().remove("boardTilesPossibleMoves");
+                if (ChessBoard.pieceLocations[i][j] != null) drawPiece(ChessBoard.pieceLocations[i][j]);
+            }}
     }
 
     // Changes the Number/Sides depending on the Side of the Board
@@ -254,7 +272,7 @@ public class MainGame {
             case "King" : pieceSource = 5; break;
         }
 
-        if (playingSide.equals("White")) {
+        if (!boardCanFlip || playingSide.equals("White")) {
             graphicsContext.drawImage(source,
                     pieceSource * 48, pieceColor * 48, 48, 48,
                     piece.pieceX * 60, piece.pieceY * (-60), 60, 60
@@ -271,5 +289,10 @@ public class MainGame {
     // Clears canvas to later redraw on it
     public static void clearCanvas() {
         graphicsContext.clearRect(0, -(canvas.getHeight() - 60), canvas.getWidth(), canvas.getHeight());
+    }
+
+    // Animation for chess game
+    public static void animate() {
+        // Noah do animation here (it repeats every delay you give it in startGame()
     }
 }
