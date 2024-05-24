@@ -260,6 +260,7 @@ public class MainGame {
 
     // Animation for chess game
     public static void animate() {
-        // Noah do animation here (it repeats every delay you give it in startGame()
+        // Noah do animation here (it repeats every delay you give it in startGame() )
+
     }
 }
