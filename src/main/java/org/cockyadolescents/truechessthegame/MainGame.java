@@ -34,6 +34,15 @@ public class MainGame {
     @FXML private VBox leftNumbers;
     @FXML private HBox topNumbers;
 
+    private static boolean boardCanFlip = false;
+
+    // Game loop for animation
+    private static int delay = 2; // in seconds
+    private static GameLoop animationLoop = new GameLoop(new MainGame(), delay);
+
+    // Online game features
+    private boolean onlineGame = false;
+
     // Main game setup
     public void startGame(Stage window) throws IOException {
         // Load new scene to start the game
@@ -63,6 +72,21 @@ public class MainGame {
 
         // Create all elements in the previously mentioned containers
         createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers);
+    }
+
+    // Online game version
+    public void startOnlineGame() throws IOException {
+        // Load new scene to start the game
+        Parent root = FXMLLoader.load(getClass().getResource("joinGame.fxml"));
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+        window = (Stage) .getScene().getWindow();
+        window.setScene(scene);
+        window.show();
+
+        // Changes some features in the normal game
+        onlineGame = true;
     }
 
     // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
@@ -255,5 +279,10 @@ public class MainGame {
     // Clears canvas to later redraw on it
     public static void clearCanvas() {
         graphicsContext.clearRect(0, -(canvas.getHeight() - 60), canvas.getWidth(), canvas.getHeight());
+    }
+
+    // Animation for chess game
+    public static void animate() {
+        // Noah do animation here (it repeats every delay you give it in startGame()
     }
 }
