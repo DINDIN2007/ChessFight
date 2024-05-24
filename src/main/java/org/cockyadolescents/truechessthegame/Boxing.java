@@ -1,7 +1,7 @@
 package org.cockyadolescents.truechessthegame;
 
 public class Boxing {
-    public static void doStuff () {
+    public static void startMatch (ChessPiece attackingPiece, ChessPiece defendingPiece) {
         //Popup
         //Free movement
         //Punch 1 tile forward always
