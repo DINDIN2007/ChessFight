@@ -9,7 +9,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.cockyadolescents.truechessthegame.MainGame">
+<AnchorPane prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.cockyadolescents.truechessthegame.OnlineWaitingRoom">
    <children>
       <VBox alignment="CENTER" prefHeight="640.0" prefWidth="800.0">
          <children>
@@ -50,11 +51,11 @@
                   <Font size="24.0" />
                </font>
             </Label>
-            <Button onAction="#startGame" mnemonicParsing="false" text="Play only on this Device">
+            <!--<Button onAction="#startGame" mnemonicParsing="false" text="Play only on this Device">
                <VBox.margin>
                   <Insets top="20.0" />
                </VBox.margin>
-            </Button>
+            </Button>-->
          </children>
       </VBox>
    </children>

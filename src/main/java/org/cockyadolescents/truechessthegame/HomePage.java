@@ -15,6 +15,7 @@ import java.util.Vector;
 public class HomePage extends Application {
     @FXML Label welcomeText;
     MainGame maingame = new MainGame();
+    OnlineWaitingRoom waitingRoom = new OnlineWaitingRoom();
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -29,6 +30,11 @@ public class HomePage extends Application {
     @FXML
     public void startGame() throws IOException {
         maingame.startGame((Stage) welcomeText.getScene().getWindow());
+    }
+
+    @FXML
+    public void queueOnline() throws IOException {
+        waitingRoom.queue((Stage) welcomeText.getScene().getWindow());
     }
 
     public static void main(String[] args) {launch();}

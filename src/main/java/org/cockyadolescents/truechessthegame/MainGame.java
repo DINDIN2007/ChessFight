@@ -41,7 +41,7 @@ public class MainGame {
     private static GameLoop animationLoop = new GameLoop(new MainGame(), delay);
 
     // Online game features
-    private boolean onlineGame = false;
+    public static boolean onlineGame = false;
 
     // Main game setup
     public void startGame(Stage window) throws IOException {
@@ -72,21 +72,6 @@ public class MainGame {
 
         // Create all elements in the previously mentioned containers
         createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers);
-    }
-
-    // Online game version
-    public void startOnlineGame() throws IOException {
-        // Load new scene to start the game
-        Parent root = FXMLLoader.load(getClass().getResource("joinGame.fxml"));
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-
-        window = (Stage) .getScene().getWindow();
-        window.setScene(scene);
-        window.show();
-
-        // Changes some features in the normal game
-        onlineGame = true;
     }
 
     // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
