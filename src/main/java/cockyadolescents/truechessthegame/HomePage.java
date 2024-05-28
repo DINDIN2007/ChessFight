@@ -1,6 +1,5 @@
-package org.cockyadolescents.truechessthegame;
+package cockyadolescents.truechessthegame;
 
-import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,20 +10,16 @@ import javafx.util.Pair;
 
 import java.io.IOException;
 import java.util.Vector;
+import static cockyadolescents.truechessthegame.Main.*;
 
-public class HomePage extends Application {
+public class HomePage {
     @FXML Label welcomeText;
-    MainGame maingame = new MainGame();
-    OnlineWaitingRoom waitingRoom = new OnlineWaitingRoom();
+    Parent root; Scene scene;
 
-    @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("homepage.fxml"));
-        Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root, 800, 640);
-        stage.setTitle("True Chess the Game");
-        stage.setScene(scene);
-        stage.show();
+    public void display() throws IOException {
+        root = FXMLLoader.load(getClass().getResource("homepage.fxml"));
+        scene = new Scene(root, 800, 640);
+        window.setScene(scene);
     }
 
     @FXML
@@ -34,10 +29,8 @@ public class HomePage extends Application {
 
     @FXML
     public void queueOnline() throws IOException {
-        waitingRoom.queue((Stage) welcomeText.getScene().getWindow());
+        waitingroom.queue();
     }
-
-    public static void main(String[] args) {launch();}
 
     // debug
     public static void printNewGameInConsole() {

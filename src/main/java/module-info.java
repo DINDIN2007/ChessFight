@@ -4,6 +4,6 @@ module org.cockyadolescents.truechessthegame {
     requires java.desktop;
 
 
-    opens org.cockyadolescents.truechessthegame to javafx.fxml;
-    exports org.cockyadolescents.truechessthegame;
+    opens cockyadolescents.truechessthegame to javafx.fxml;
+    exports cockyadolescents.truechessthegame;
 }

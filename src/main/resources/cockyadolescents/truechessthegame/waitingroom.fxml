@@ -10,7 +10,7 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.cockyadolescents.truechessthegame.OnlineWaitingRoom">
+            fx:controller="cockyadolescents.truechessthegame.WaitingRoom">
    <children>
       <VBox alignment="CENTER" prefHeight="640.0" prefWidth="800.0">
          <children>

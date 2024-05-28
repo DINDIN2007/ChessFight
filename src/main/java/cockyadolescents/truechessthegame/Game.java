@@ -1,4 +1,4 @@
-package org.cockyadolescents.truechessthegame;
+package cockyadolescents.truechessthegame;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,8 +18,9 @@ import javafx.util.Pair;
 
 import java.io.IOException;
 import java.util.Vector;
+import static cockyadolescents.truechessthegame.Main.*;
 
-public class MainGame {
+public class Game {
     private Button[][] tileArray= new Button[8][8];
     private static boolean lockIntoPiece = false, boardCanFlip = false;
     private static int selectX = -1, selectY = -1;
@@ -31,16 +32,25 @@ public class MainGame {
     @FXML private GridPane buttonBoard, labelBoard;
     @FXML private VBox leftNumbers;
     @FXML private HBox topNumbers;
+    @FXML private Button home;
+
+    @FXML
+    public void home() throws IOException {
+        homepage.display();
+    }
 
     private static Image source;
     private static GraphicsContext graphicsContext;
-    private static GameLoop animationLoop = new GameLoop(new MainGame(), 1);
+    private static GameLoop animationLoop = new GameLoop(new Game(), 1);
+
+    @FXML private Parent root;
+    private Scene scene;
 
     // Main game setup
     public void startGame(Stage window) throws IOException {
         // Load new scene to start the game
-        Parent root = FXMLLoader.load(getClass().getResource("maingame.fxml"));
-        Scene scene = new Scene(root);
+        root = FXMLLoader.load(getClass().getResource("game.fxml"));
+        scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         window.setScene(scene);
         window.show();

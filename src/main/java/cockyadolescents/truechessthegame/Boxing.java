@@ -1,4 +1,4 @@
-package org.cockyadolescents.truechessthegame;
+package cockyadolescents.truechessthegame;
 
 public class Boxing {
     public static void startMatch (ChessPiece attackingPiece, ChessPiece defendingPiece) {

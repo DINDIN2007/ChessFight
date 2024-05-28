@@ -1,4 +1,4 @@
-package org.cockyadolescents.truechessthegame;
+package cockyadolescents.truechessthegame;
 
 import javafx.util.Pair;
 import java.util.Vector;
