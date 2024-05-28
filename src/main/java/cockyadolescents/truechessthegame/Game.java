@@ -44,7 +44,6 @@ public class Game {
     private static Image source;
     private static GraphicsContext graphicsContext;
     private static GameLoop animationLoop = new GameLoop(new Game(), 1);
-    private static GameLoop checkPromotions = new GameLoop(new Game(), 1);
 
     @FXML private Parent root;
     private Scene scene;
@@ -84,7 +83,7 @@ public class Game {
         // Assigns the pawn promotion buttons their function
         String[] possiblePromotions = {"Queen", "Rook", "Bishop", "Knight"};
         for (String promotion : possiblePromotions) {
-            ((Button) root.lookup("#" + promotion)).setOnAction(event -> promotePawn(promotion, tileArray, buttonBoard, leftNumbers, topNumbers));
+            ((Button) root.lookup("#" + promotion)).setOnAction(event -> promotePawn(promotion, tileArray, buttonBoard, leftNumbers, topNumbers, promotionBar));
         }
 
         // Create all elements in the previously mentioned containers
@@ -310,20 +309,25 @@ public class Game {
     }
 
     // Lets the user choose what to promote the pawn to
-    public void promotePawn(String piece, Button[][] tileArray, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers) {
+    public void promotePawn(String piece, Button[][] tileArray, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar) {
         int pieceY = (playingSide.equals("White")) ? 7 : 0;
 
-        ChessPiece.ChessBoard[selectX][pieceY].pieceType = switch (piece) {
-            case "♛" -> "Queen";
-            case "♜" -> "Rook";
-            case "♝" -> "Bishop";
-            case "♞" -> "Knight";
-            default -> "King"; // If the user can break the game
-        };
+        // Changes the type of piece on the board
+        ChessPiece.ChessBoard[selectX][pieceY].pieceType = piece;
+        ChessPiece.ChessBoard[selectX][pieceY].canPromote = false;
+        promotionBar.setVisible(false);
 
+        // Changes who is playing now
+        playingSide = (playingSide.equals("White")) ? "Black" : "White";
         clearCanvas();
         drawBoard(tileArray);
-        isPromoting = false;
+
+        // Detecting checking feature
+        String checkedCheck = ChessPiece.checkChecking();
+        if (!checkedCheck.equals("None")) isCheckedLabel.setText(checkedCheck + " King is in DANGER !");
+        else isCheckedLabel.setText("");
+
+        System.out.println(ChessPiece.ChessBoard[4][7].pieceType);
 
         // Resets which piece is selected
         selectX = -1; selectY = -1;
@@ -334,6 +338,8 @@ public class Game {
             turnBoard(leftNumbers, topNumbers);
             buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
         }
+
+        isPromoting = false;
     }
 
     // Animation for chess game
