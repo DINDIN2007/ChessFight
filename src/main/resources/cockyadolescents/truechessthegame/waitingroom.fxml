@@ -11,52 +11,49 @@
 
 <AnchorPane prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="cockyadolescents.truechessthegame.WaitingRoom">
-   <children>
-      <VBox alignment="CENTER" prefHeight="640.0" prefWidth="800.0">
-         <children>
-            <Label fx:id="welcomeText" text="Play Online" textAlignment="CENTER">
-               <font>
-                  <Font name="Bell MT" size="36.0" />
-               </font>
-               <VBox.margin>
-                  <Insets bottom="20.0" />
-               </VBox.margin>
-            </Label>
-            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0">
-               <children>
-                  <Label text="Start New Online Game : ">
-                     <HBox.margin>
-                        <Insets right="20.0" />
-                     </HBox.margin>
-                  </Label>
-                  <Button mnemonicParsing="false" text="Generate Room Code" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="25.0" prefWidth="200.0">
-               <children>
-                  <Label text="Join Online Game :">
-                     <HBox.margin>
-                        <Insets right="20.0" />
-                     </HBox.margin>
-                  </Label>
-                  <TextField promptText="Enter Room Code" />
-                  <Button mnemonicParsing="false" text="Join" />
-               </children>
-            </HBox>
-            <Label text="Room Code">
-               <VBox.margin>
-                  <Insets top="20.0" />
-               </VBox.margin>
-               <font>
-                  <Font size="24.0" />
-               </font>
-            </Label>
-            <!--<Button onAction="#startGame" mnemonicParsing="false" text="Play only on this Device">
-               <VBox.margin>
-                  <Insets top="20.0" />
-               </VBox.margin>
-            </Button>-->
-         </children>
-      </VBox>
-   </children>
+   <VBox alignment="CENTER" prefHeight="640.0" prefWidth="800.0">
+      <Button fx:id="home" text="Home" onAction="#home"/>
+
+      <Label fx:id="welcomeText" text="Play Online" textAlignment="CENTER">
+         <font>
+            <Font name="Bell MT" size="36.0" />
+         </font>
+         <VBox.margin>
+            <Insets bottom="20.0" />
+         </VBox.margin>
+      </Label>
+
+      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0">
+         <Label text="Start New Online Game : ">
+            <HBox.margin>
+               <Insets right="20.0" />
+            </HBox.margin>
+         </Label>
+         <Button mnemonicParsing="false" text="Generate Room Code" />
+      </HBox>
+
+      <HBox alignment="CENTER" prefHeight="25.0" prefWidth="200.0">
+         <Label text="Join Online Game :">
+            <HBox.margin>
+               <Insets right="20.0" />
+            </HBox.margin>
+         </Label>
+         <TextField promptText="Enter Room Code" />
+         <Button mnemonicParsing="false" text="Join" />
+      </HBox>
+
+      <Label text="Room Code">
+         <VBox.margin>
+            <Insets top="20.0" />
+         </VBox.margin>
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <!--<Button onAction="#startGame" mnemonicParsing="false" text="Play only on this Device">
+         <VBox.margin>
+            <Insets top="20.0" />
+         </VBox.margin>
+      </Button>-->
+   </VBox>
 </AnchorPane>
