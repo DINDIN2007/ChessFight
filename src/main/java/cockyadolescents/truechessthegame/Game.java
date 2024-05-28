@@ -45,7 +45,8 @@ public class Game {
 
     private static Image source;
     private static GraphicsContext graphicsContext;
-    private static GameLoop animationLoop = new GameLoop(new Game(), 1);
+    private static GameLoop animationLoop;
+    private static Audio music = new Audio();
 
     @FXML private Parent root;
     private Scene scene;
@@ -81,6 +82,7 @@ public class Game {
 
         // Hide the pawn promotion selector
         promotionBar.setVisible(false);
+        animationLoop = new GameLoop(new Game(), 0.25);
 
         // Assigns the pawn promotion buttons their function
         String[] possiblePromotions = {"Queen", "Rook", "Bishop", "Knight"};
@@ -90,6 +92,9 @@ public class Game {
 
         // Create all elements in the previously mentioned containers
         createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers, promotionBar);
+
+        // Start music
+        music.playMusic();
     }
 
     // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
@@ -218,6 +223,9 @@ public class Game {
                 turnBoard(leftNumbers, topNumbers);
                 buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
             }
+
+            // Plays piece place sound
+            music.movePiece();
         }
 
         // Marks the places that the piece can move to
@@ -350,13 +358,11 @@ public class Game {
     // Turn on the flipping feature
     public void turnBoardOn(ActionEvent event) {
         if (onlineGame || hasStarted) return;
-        boardCanFlip = true;
-        ((ToggleButton) event.getSource()).setDisable(true);
+        boardCanFlip = true; ((ToggleButton) event.getSource()).setDisable(true);
     }
 
     // Animation for chess game
     public static void animate() {
         // Noah do animation here (it repeats every delay you give it in startGame() )
-
     }
 }

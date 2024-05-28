@@ -3,25 +3,25 @@ package cockyadolescents.truechessthegame;
 import javafx.animation.AnimationTimer;
 
 public class GameLoop extends AnimationTimer {
-    private long lastUpdateTime, delay;
-    private double lastSavedIteration = 0; // Delay between updates
+    private long lastUpdateTime;
+    private double lastSavedIteration = 0, delay; // Delay between updates
     private int iteration = 1;
 
     private Boxing boxingGameElement;
     private Game chessGameElement;
     private int typeOfGameLoop = 0;
 
-    public GameLoop(long delay) {
+    public GameLoop(double delay) {
         this.delay = delay;
     }
 
-    public GameLoop(Boxing boxingGameElement, long delay) {
+    public GameLoop(Boxing boxingGameElement, double delay) {
         this.boxingGameElement = boxingGameElement;
         this.delay = delay;
         this.typeOfGameLoop = 1;
     }
 
-    public GameLoop(Game chessGameElement, long delay) {
+    public GameLoop(Game chessGameElement, double delay) {
         this.chessGameElement = chessGameElement;
         this.delay = delay;
         this.typeOfGameLoop = 2;
