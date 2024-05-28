@@ -9,6 +9,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -26,7 +27,7 @@ public class Game {
     private static int selectX = -1, selectY = -1;
     private static String playingSide = "White";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
-    public static boolean onlineGame = false;
+    public static boolean onlineGame = false, hasStarted = false;
 
     @FXML private static Canvas canvas;
     @FXML private GridPane buttonBoard, labelBoard;
@@ -35,6 +36,7 @@ public class Game {
     @FXML private static Label isCheckedLabel;
     @FXML private Button home;
     @FXML private VBox promotionBar;
+    @FXML private ToggleButton promotionToggle;
 
     @FXML
     public void home() throws IOException {
@@ -223,6 +225,9 @@ public class Game {
             // Resets previously marked moves
             drawBoard(tileArray);
 
+            // Turn off the ability to choose if the board can be flipped
+            hasStarted = true;
+
             // Get all possible moves for this chess piece
             possibleMoves = tilePiece.getPossibleMoves();
 
@@ -340,6 +345,12 @@ public class Game {
         }
 
         isPromoting = false;
+    }
+
+    // Turn on the flipping feature
+    public void turnBoardOn() {
+        if (onlineGame || hasStarted) return;
+        boardCanFlip = true;
     }
 
     // Animation for chess game

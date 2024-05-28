@@ -10,9 +10,6 @@ public class ChessPiece {
     boolean hasMoved = false;           // Exclusively for pawns so that they don't move 2 up on the next move
     boolean canPromote = false;         // Exclusively for pawns so that they can promote
 
-    // To check if the white king (i = 0) or black king (i = 1) is checked
-    public static boolean[] isChecked = {false, false};
-
     // 2d array storing all the pieces on the chessboard
     public static ChessPiece[][] ChessBoard = new ChessPiece[8][8];
 
