@@ -67,7 +67,7 @@ public class Game {
         graphicsContext = canvas.getGraphicsContext2D();
         graphicsContext.translate(0, canvas.getHeight() - 60);
         // Gets chess piece sprites
-        source = new Image(getClass().getResourceAsStream("ChessPieces.png"));
+        source = new Image(getClass().getResourceAsStream("ChessPieces-2.png"));
 
         // The containers storing the numbers/letters on the side of the board
         leftNumbers = (VBox) root.lookup("#leftNumbers");
