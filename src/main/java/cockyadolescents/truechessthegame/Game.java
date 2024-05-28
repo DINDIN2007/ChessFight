@@ -183,7 +183,9 @@ public class Game {
             // If capturing a piece, start the Boxing Match !!!
             if (tilePiece != null) {
                 Boxing.startMatch(selectedPiece, tilePiece);
+                music.capturePiece();
             }
+            else music.movePiece();
 
             // Disable special moves for pawn (2 step forward) or king (castle)
             selectedPiece.hasMoved = true;
@@ -223,9 +225,6 @@ public class Game {
                 turnBoard(leftNumbers, topNumbers);
                 buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
             }
-
-            // Plays piece place sound
-            music.movePiece();
         }
 
         // Marks the places that the piece can move to
