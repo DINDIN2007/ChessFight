@@ -348,9 +348,10 @@ public class Game {
     }
 
     // Turn on the flipping feature
-    public void turnBoardOn() {
+    public void turnBoardOn(ActionEvent event) {
         if (onlineGame || hasStarted) return;
         boardCanFlip = true;
+        ((ToggleButton) event.getSource()).setDisable(true);
     }
 
     // Animation for chess game

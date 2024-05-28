@@ -1,5 +1,11 @@
 package cockyadolescents.truechessthegame;
 
-public class Audio {
+import javafx.scene.media.Media;
 
+public class Audio {
+    Media[] playlist = new Media[5];
+
+    public Audio() {
+
+    }
 }
