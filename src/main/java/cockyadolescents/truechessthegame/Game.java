@@ -22,7 +22,7 @@ import static cockyadolescents.truechessthegame.Main.*;
 
 public class Game {
     private Button[][] tileArray= new Button[8][8];
-    private static boolean lockIntoPiece = false, boardCanFlip = false;
+    private static boolean lockIntoPiece = false, boardCanFlip = false, isPromoting = false;
     private static int selectX = -1, selectY = -1;
     private static String playingSide = "White";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
@@ -32,7 +32,9 @@ public class Game {
     @FXML private GridPane buttonBoard, labelBoard;
     @FXML private VBox leftNumbers;
     @FXML private HBox topNumbers;
+    @FXML private static Label isCheckedLabel;
     @FXML private Button home;
+    @FXML private VBox promotionBar;
 
     @FXML
     public void home() throws IOException {
@@ -42,6 +44,7 @@ public class Game {
     private static Image source;
     private static GraphicsContext graphicsContext;
     private static GameLoop animationLoop = new GameLoop(new Game(), 1);
+    private static GameLoop checkPromotions = new GameLoop(new Game(), 1);
 
     @FXML private Parent root;
     private Scene scene;
@@ -72,13 +75,24 @@ public class Game {
         // The containers storing the numbers/letters on the side of the board
         leftNumbers = (VBox) root.lookup("#leftNumbers");
         topNumbers = (HBox) root.lookup("#topNumbers");
+        promotionBar = (VBox) root.lookup("#promotionBar");
+        isCheckedLabel = (Label) root.lookup("#isCheckedLabel");
+
+        // Hide the pawn promotion selector
+        promotionBar.setVisible(false);
+
+        // Assigns the pawn promotion buttons their function
+        String[] possiblePromotions = {"Queen", "Rook", "Bishop", "Knight"};
+        for (String promotion : possiblePromotions) {
+            ((Button) root.lookup("#" + promotion)).setOnAction(event -> promotePawn(promotion, tileArray, buttonBoard, leftNumbers, topNumbers));
+        }
 
         // Create all elements in the previously mentioned containers
-        createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers);
+        createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers, promotionBar);
     }
 
     // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
-    public void createBoard(GridPane buttonBoard, GridPane labelBoard, VBox leftNumbers, HBox topNumbers) {
+    public void createBoard(GridPane buttonBoard, GridPane labelBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar) {
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             // Creates new label to add to labelBoard
@@ -94,7 +108,7 @@ public class Game {
             Button tile = new Button("");
             tile.setId(i + " " + (j));
             tile.getStyleClass().add("boardTiles");
-            tile.setOnAction(event -> tilePressed(event, buttonBoard, leftNumbers, topNumbers));
+            tile.setOnAction(event -> tilePressed(event, buttonBoard, leftNumbers, topNumbers, promotionBar));
             // tile.setText(i + " " + j); // Uncomment this to see the coordinates of the tiles
             tileArray[i][j] = tile;
 
@@ -126,7 +140,10 @@ public class Game {
     }
 
     // Either selects a piece or moves a piece to designated position through button clicks
-    public void tilePressed(ActionEvent event, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers) {
+    public void tilePressed(ActionEvent event, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar) {
+        // Doesn't run this function while player is choosing what to promote his piece to
+        if (isPromoting) return;
+
         // Finds the coordinate of the button pressed based on who's playing
         Button tile = (Button) event.getSource();
         int x = tile.getId().charAt(0) - '0';
@@ -136,7 +153,7 @@ public class Game {
         ChessPiece tilePiece = ChessPiece.ChessBoard[x][y];
 
         if (selectX == x && selectY == y) {
-            drawBoard(tileArray, buttonBoard, leftNumbers, topNumbers);
+            drawBoard(tileArray);
             selectX = -1; selectY = -1;
             lockIntoPiece = false;
         }
@@ -144,10 +161,6 @@ public class Game {
         // Go to marked place
         else if (lockIntoPiece && !(tilePiece != null && tilePiece.pieceColor.equals(playingSide))) {
             ChessPiece selectedPiece = ChessPiece.ChessBoard[selectX][selectY];
-
-            if (tilePiece != null) {
-                Boxing.startMatch(selectedPiece, tilePiece);
-            }
 
             // Moving the rook when castling
             if (selectedPiece.pieceType.equals("King") && y == selectY) {
@@ -161,17 +174,45 @@ public class Game {
                 }
             }
 
+            // If capturing a piece, start the Boxing Match !!!
+            if (tilePiece != null) {
+                Boxing.startMatch(selectedPiece, tilePiece);
+            }
+
+            // Disable special moves for pawn (2 step forward) or king (castle)
             selectedPiece.hasMoved = true;
 
+            // Move the piece in ChessPiece 2D board array
             ChessPiece.moveChessPiece(selectedPiece, x, y);
-            clearCanvas();
 
+            // Pawn promotion if it reaches the other end of the board
+            if (ChessPiece.ChessBoard[x][y].canPromote) {
+                promotionBar.setVisible(true);
+                isPromoting = true;
+                return;
+            }
+            else {
+                promotionBar.setVisible(false);
+                isPromoting = false;
+            }
+
+            // Changes who is playing now
             playingSide = (playingSide.equals("White")) ? "Black" : "White";
-            drawBoard(tileArray, buttonBoard, leftNumbers, topNumbers);
+            clearCanvas();
+            drawBoard(tileArray);
 
+            // Detecting checking feature
+            String checkedCheck = ChessPiece.checkChecking();
+            if (!checkedCheck.equals("None")) {
+                isCheckedLabel.setText(checkedCheck + " King is in DANGER !");
+            }
+            else isCheckedLabel.setText("");
+
+            // Resets which piece is selected
             selectX = -1; selectY = -1;
             lockIntoPiece = false;
 
+            // Rotates the board if feature is activated
             if (boardCanFlip) {
                 turnBoard(leftNumbers, topNumbers);
                 buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
@@ -181,7 +222,7 @@ public class Game {
         // Marks the places that the piece can move to
         else if (tilePiece != null && tilePiece.pieceColor.equals(playingSide)){
             // Resets previously marked moves
-            drawBoard(tileArray, buttonBoard, leftNumbers, topNumbers);
+            drawBoard(tileArray);
 
             // Get all possible moves for this chess piece
             possibleMoves = tilePiece.getPossibleMoves();
@@ -208,7 +249,7 @@ public class Game {
     }
 
     // Draws the pieces and un-disables the tiles on the board
-    public static void drawBoard(Button[][] tileArray, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers) {
+    public static void drawBoard(Button[][] tileArray) {
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             tileArray[i][j].setDisable(false);
@@ -266,6 +307,33 @@ public class Game {
     // Clears canvas to later redraw on it
     public static void clearCanvas() {
         graphicsContext.clearRect(0, -(canvas.getHeight() - 60), canvas.getWidth(), canvas.getHeight());
+    }
+
+    // Lets the user choose what to promote the pawn to
+    public void promotePawn(String piece, Button[][] tileArray, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers) {
+        int pieceY = (playingSide.equals("White")) ? 7 : 0;
+
+        ChessPiece.ChessBoard[selectX][pieceY].pieceType = switch (piece) {
+            case "♛" -> "Queen";
+            case "♜" -> "Rook";
+            case "♝" -> "Bishop";
+            case "♞" -> "Knight";
+            default -> "King"; // If the user can break the game
+        };
+
+        clearCanvas();
+        drawBoard(tileArray);
+        isPromoting = false;
+
+        // Resets which piece is selected
+        selectX = -1; selectY = -1;
+        lockIntoPiece = false;
+
+        // Rotates the board if feature is activated
+        if (boardCanFlip) {
+            turnBoard(leftNumbers, topNumbers);
+            buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
+        }
     }
 
     // Animation for chess game

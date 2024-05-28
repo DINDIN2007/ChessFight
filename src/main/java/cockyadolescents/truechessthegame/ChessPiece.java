@@ -8,6 +8,7 @@ public class ChessPiece {
     int pieceX, pieceY, pieceValue;     // The piece position and its value upon being captured
     int[][] possibleMoves;              // 2d array storing all the possible coordinates to move to
     boolean hasMoved = false;           // Exclusively for pawns so that they don't move 2 up on the next move
+    boolean canPromote = false;         // Exclusively for pawns so that they can promote
 
     // To check if the white king (i = 0) or black king (i = 1) is checked
     public static boolean[] isChecked = {false, false};
@@ -181,13 +182,23 @@ public class ChessPiece {
         return moves;
     }
 
-    // Method to see if either king are in check
-    public static void checkChecking(ChessPiece firstPiece, ChessPiece secondPiece) {
-        if (firstPiece == null || secondPiece == null) return;
-        switch (firstPiece.pieceColor) {
-            case "White" : if (secondPiece.pieceColor.equals("Black")) isChecked[1] = true;
-            case "Black" : if (secondPiece.pieceColor.equals("White")) isChecked[0] = true;
-        }
+    // Method to see if either king are in check, and return which side is checked
+    public static String checkChecking() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece piece = ChessPiece.ChessBoard[i][j];
+                if (piece == null) continue;
+                for (Pair<Integer, Integer> coord : piece.getPossibleMoves()) {
+                    // If it passes all these restrictions, then a castle must have happened
+                    ChessPiece targetPiece = ChessPiece.ChessBoard[coord.getKey()][coord.getValue()];
+                    if (targetPiece == null)                             continue; // Is not target a piece on the board
+                    if (targetPiece.pieceColor.equals(piece.pieceColor)) continue; // Is targeting a piece on the same team
+                    if (!targetPiece.pieceType.equals("King"))           continue; // Is targeting a piece that is not a king
+                    // Returns which side is checked
+                    return targetPiece.pieceColor;
+                }
+            }}
+        return "None";
     }
 
     // Swaps the position of the piece to a new position
@@ -196,9 +207,10 @@ public class ChessPiece {
         ChessBoard[piece.pieceX][piece.pieceY] = null;
         piece.pieceX = newX; piece.pieceY = newY;
 
-        isChecked = new boolean[]{false, false};
-        for (Pair<Integer, Integer> moves : piece.getPossibleMoves()) {
-            checkChecking(piece, ChessBoard[moves.getKey()][moves.getValue()]);
+        // Pawn promotion
+        if (piece.pieceType.equals("Pawn")) {
+            if (piece.pieceColor.equals("White") && piece.pieceY == 7) piece.canPromote = true;
+            if (piece.pieceColor.equals("Black") && piece.pieceY == 0) piece.canPromote = true;
         }
     }
 

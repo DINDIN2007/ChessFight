@@ -46,7 +46,6 @@
     -fx-border-radius: 5px;
 }
 
-/*.buttonStyle:hover {*/
-/*    -fx-padding: 15px;*/
-/*}*/
-/*this shi is horrendous*/
+.buttonStyle:hover {
+    -fx-padding: 15px;
+}
