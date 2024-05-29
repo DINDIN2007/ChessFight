@@ -44,7 +44,7 @@ public class GameLoop extends AnimationTimer {
 
     private void update(double elapsedTime) {
         switch(typeOfGameLoop) {
-            case 1: boxingGameElement.updateElement(); break;
+            //case 1: boxingGameElement.updateElement(); break;
             case 2: MainGame.animate(); break;
             default : System.out.println("Animation Timer Test : " + (iteration++));
         }
