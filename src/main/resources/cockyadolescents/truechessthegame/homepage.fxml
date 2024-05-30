@@ -6,16 +6,19 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="640.0" prefWidth="800.0" spacing="5.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.HomePage">
+<VBox alignment="CENTER" prefHeight="640.0" prefWidth="800.0" spacing="5.0" styleClass="mainGameBackground" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.HomePage">
 
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
 
-    <Label fx:id="welcomeText" text="♟Chess Fight 👊">
+    <Label fx:id="welcomeText" text="♟Chess Fight 👊" textAlignment="CENTER" textFill="WHITE">
         <font>
-            <Font name="Calisto MT" size="61.0" />
+            <Font name="Calisto MT Bold" size="61.0" />
         </font>
+      <VBox.margin>
+         <Insets top="30.0" />
+      </VBox.margin>
     </Label>
    <VBox alignment="TOP_CENTER" prefHeight="120.0" prefWidth="100.0">
       <Button minWidth="191.2" onAction="#startGame" styleClass="buttonStyle" stylesheets="@style.css" text="Play on 1 Device" textAlignment="CENTER">
@@ -23,7 +26,7 @@
               <Font name="Cooper Black" size="19.0" />
           </font>
           <VBox.margin>
-              <Insets bottom="5.0" top="20.0" />
+              <Insets bottom="5.0" top="60.0" />
           </VBox.margin>
       </Button>
 
@@ -32,5 +35,8 @@
               <Font name="Cooper Black" size="19.0" />
           </font>
       </Button>
+      <VBox.margin>
+         <Insets top="20.0" />
+      </VBox.margin>
    </VBox>
 </VBox>

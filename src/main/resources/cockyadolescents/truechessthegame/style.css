@@ -55,3 +55,7 @@
     -fx-border-color: black;
     -fx-border-width: 5px;
 }
+
+.mainGameBackground {
+    -fx-background-image: url("Homescreen.png");
+}
