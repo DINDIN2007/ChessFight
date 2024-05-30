@@ -49,3 +49,9 @@
 .buttonStyle:hover {
     -fx-padding: 15px;
 }
+
+.boxingBackground {
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-border-width: 5px;
+}

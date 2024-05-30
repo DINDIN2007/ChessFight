@@ -1,8 +1,15 @@
 package cockyadolescents.truechessthegame;
 
 import javafx.application.Application;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
@@ -15,20 +22,30 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-public class Boxing extends Application {
+import java.io.IOException;
 
+public class Boxing {
     private Timeline timer;
     private int remainingTime = 90;
 
-    public static void main(String[] args) {
-        doStuff();
+    public static ChessPiece attack, defense;
+    public static Stage stage;
+
+    @FXML private Parent root;
+    @FXML private static Canvas canvas;
+    @FXML private static GraphicsContext graphicsContext;
+    private static Image source;
+
+    public static void main(String[] args) throws IOException {
+        Boxing newGame = new Boxing();
+        newGame.showBoxingPopup(stage);
     }
 
-    public static void doStuff() {
+    /*public static void startMatch(Stage primaryStage) {
         Application.launch(Boxing.class);
     }
 
-    @Override
+    /*@Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Box!");
 
@@ -38,14 +55,19 @@ public class Boxing extends Application {
         VBox layout = new VBox(10);
         layout.getChildren().addAll(startButton);
 
-        Scene scene = new Scene(layout, 300, 200);
+        Scene scene = new Scene(layout, 700, 450);
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
+    }*/
 
-    private void showBoxingPopup(Stage ownerStage) {
+    public void showBoxingPopup(Stage ownerStage) throws IOException {
+        root = FXMLLoader.load(getClass().getResource("Boxing.fxml"));
+
+        // Setting up the popUp and linking it to Boxing.fxml
         Popup popup = new Popup();
+        popup.getContent().add(root);
 
+        /*
         Pane pane = new Pane();
         pane.setPrefSize(700, 450);
 
@@ -64,10 +86,18 @@ public class Boxing extends Application {
         punchButtonPlayer2.setOnAction(e -> handlePunchAction(2));
 
         pane.getChildren().addAll(timerText, punchButtonPlayer1, punchButtonPlayer2);
-        popup.getContent().add(pane);
+        // popup.getContent().add(pane);
+         */
 
+        // Timer text
+        Text timerText = (Text)root.lookup("#timer_text");
+        timerText.setText("Time remaining: 1:30");
+
+        // Show the PopUp
         popup.setAutoHide(false);
         popup.show(ownerStage);
+
+        // newStage.show();
 
         startTimer(timerText, popup);
     }
@@ -84,6 +114,7 @@ public class Boxing extends Application {
                 if (remainingTime <= 0) {
                     timer.stop();
                     popup.hide();
+                    System.out.println("RAN");
                 }
             }
         }));

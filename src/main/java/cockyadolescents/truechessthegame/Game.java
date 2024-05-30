@@ -50,6 +50,7 @@ public class Game {
 
     @FXML private Parent root;
     private Scene scene;
+    private static Boxing boxGame = new Boxing();
 
     // Main game setup
     public void startGame(Stage window) throws IOException {
@@ -91,14 +92,14 @@ public class Game {
         }
 
         // Create all elements in the previously mentioned containers
-        createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers, promotionBar);
+        createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers, promotionBar, window);
 
         // Start music
         music.playMusic();
     }
 
     // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
-    public void createBoard(GridPane buttonBoard, GridPane labelBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar) {
+    public void createBoard(GridPane buttonBoard, GridPane labelBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar, Stage window) {
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             // Creates new label to add to labelBoard
@@ -114,7 +115,13 @@ public class Game {
             Button tile = new Button("");
             tile.setId(i + " " + (j));
             tile.getStyleClass().add("boardTiles");
-            tile.setOnAction(event -> tilePressed(event, buttonBoard, leftNumbers, topNumbers, promotionBar));
+            tile.setOnAction(event -> {
+                try {
+                    tilePressed(event, buttonBoard, leftNumbers, topNumbers, promotionBar, window);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
             // tile.setText(i + " " + j); // Uncomment this to see the coordinates of the tiles
             tileArray[i][j] = tile;
 
@@ -146,7 +153,7 @@ public class Game {
     }
 
     // Either selects a piece or moves a piece to designated position through button clicks
-    public void tilePressed(ActionEvent event, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar) {
+    public void tilePressed(ActionEvent event, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar, Stage window) throws IOException {
         // Doesn't run this function while player is choosing what to promote his piece to
         if (isPromoting) return;
 
@@ -182,7 +189,9 @@ public class Game {
 
             // If capturing a piece, start the Boxing Match !!!
             if (tilePiece != null) {
-                // Boxing.startMatch(selectedPiece, tilePiece);
+                boxGame.showBoxingPopup(window);
+                Boxing.attack = selectedPiece;
+                Boxing.defense = tilePiece;
                 music.capturePiece();
             }
             else music.movePiece();
