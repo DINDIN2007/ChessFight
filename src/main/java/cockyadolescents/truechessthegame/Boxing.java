@@ -95,6 +95,10 @@ public class Boxing extends Application {
         System.out.println("Punch action executed!");
         // Implement punch action logic
     }
+
+    public void updateElement() {
+        // What to run after an iteration of loop
+    }
 }
 
  /*   public static void doStuff () {

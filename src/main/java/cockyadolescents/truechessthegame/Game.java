@@ -82,7 +82,7 @@ public class Game {
 
         // Hide the pawn promotion selector
         promotionBar.setVisible(false);
-        animationLoop = new GameLoop(new Game(), 0.25);
+        // animationLoop = new GameLoop(new Game(), 0.25);
 
         // Assigns the pawn promotion buttons their function
         String[] possiblePromotions = {"Queen", "Rook", "Bishop", "Knight"};
@@ -182,7 +182,7 @@ public class Game {
 
             // If capturing a piece, start the Boxing Match !!!
             if (tilePiece != null) {
-                Boxing.startMatch(selectedPiece, tilePiece);
+                // Boxing.startMatch(selectedPiece, tilePiece);
                 music.capturePiece();
             }
             else music.movePiece();
