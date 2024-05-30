@@ -14,11 +14,11 @@
 }
 
 .oddTiles {
-    -fx-background-color: #502e11;
+    -fx-background-color: #3e3d3d;
 }
 
 .evenTiles {
-    -fx-background-color: #a5784d;
+    -fx-background-color: #716b6b;
 }
 
 .boardTiles {
@@ -32,7 +32,7 @@
 }
 
 .boardTilesPossibleMoves {
-    -fx-background-color: rgba(197, 45, 45, 0.18);
+    -fx-background-color: rgba(220, 11, 11, 0.18);
 }
 
 /*█████╗██╗  ██╗███╗   ███╗██╗         ███████╗██╗██╗     ███████╗ ██████╗
