@@ -84,7 +84,7 @@ public class Game {
         graphicsContext.translate(0, canvas.getHeight() - 60);
         clearCanvas();
         // Gets chess piece sprites
-        source = new Image(getClass().getResourceAsStream("ChessPieces-2.png"));
+        source = new Image(getClass().getResourceAsStream("cockyadolescents/truechessthegame/ChessPieces-2.png"));
 
         // The containers storing the numbers/letters on the side of the board
         leftNumbers = (VBox) root.lookup("#leftNumbers");
@@ -94,6 +94,10 @@ public class Game {
 
         // Hide the pawn promotion selector
         promotionBar.setVisible(false);
+        // Resets booleans
+        hasStarted = false;
+        boardCanFlip = false;
+        playingSide = "White";
         // animationLoop = new GameLoop(new Game(), 0.25);
 
         // Assigns the pawn promotion buttons their function
