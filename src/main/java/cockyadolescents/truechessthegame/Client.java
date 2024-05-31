@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ServerClient {
+public class Client {
     private Socket clientSocket;
     private BufferedReader in;
     private PrintWriter out;
@@ -18,7 +18,7 @@ public class ServerClient {
     private static Timer timer;
     private static TimerTask task;
 
-    public ServerClient(Socket clientSocket) throws IOException {
+    public Client(Socket clientSocket) throws IOException {
         try {
             this.clientSocket = clientSocket;
             this.in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
@@ -28,8 +28,8 @@ public class ServerClient {
             e.printStackTrace();
         }
 
-        while (true) {
+        /*while (true) {
 
-        }
+        }*/
     }
 }

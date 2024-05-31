@@ -23,7 +23,7 @@ public class HomePage {
     }
 
     @FXML
-    public void startGame() throws IOException {
+    public void startGame() {
         maingame.display();
     }
 
