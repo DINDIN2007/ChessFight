@@ -24,7 +24,7 @@ public class HomePage {
 
     @FXML
     public void startGame() throws IOException {
-        maingame.startGame((Stage) welcomeText.getScene().getWindow());
+        maingame.display();
     }
 
     @FXML

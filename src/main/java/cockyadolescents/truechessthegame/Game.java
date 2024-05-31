@@ -34,14 +34,9 @@ public class Game {
     @FXML private VBox leftNumbers;
     @FXML private HBox topNumbers;
     @FXML private static Label isCheckedLabel;
-    @FXML private Button home;
+    @FXML private Button home, newgame;
     @FXML private VBox promotionBar;
     @FXML private ToggleButton promotionToggle;
-
-    @FXML
-    public void home() throws IOException {
-        homepage.display();
-    }
 
     private static Image source;
     private static GraphicsContext graphicsContext;
@@ -52,14 +47,29 @@ public class Game {
     private Scene scene;
     private static Boxing boxGame = new Boxing();
 
+    @FXML
+    public void home() throws IOException {
+        homepage.display();
+    }
+
+    @FXML
+    public void newGame() throws IOException {
+        maingame = null;
+        maingame = new Game();
+        maingame.startGame();
+        maingame.display();
+    }
+
+    public void display() {
+        window.setScene(scene);
+    }
+
     // Main game setup
-    public void startGame(Stage window) throws IOException {
+    public void startGame() throws IOException {
         // Load new scene to start the game
         root = FXMLLoader.load(getClass().getResource("game.fxml"));
         scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-        window.setScene(scene);
-        window.show();
 
         // Create new chess game in ChessBoard class
         ChessPiece.newGame();
@@ -72,6 +82,7 @@ public class Game {
         canvas = (Canvas) root.lookup("#canvas");
         graphicsContext = canvas.getGraphicsContext2D();
         graphicsContext.translate(0, canvas.getHeight() - 60);
+        clearCanvas();
         // Gets chess piece sprites
         source = new Image(getClass().getResourceAsStream("ChessPieces-2.png"));
 

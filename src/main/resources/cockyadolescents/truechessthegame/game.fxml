@@ -12,10 +12,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="root" alignment="CENTER" prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.Game">
+<VBox fx:id="root" alignment="CENTER" prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="cockyadolescents.truechessthegame.Game">
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
+
+   <HBox alignment="CENTER">
+      <Button fx:id="home" text="Home" onAction="#home"/>
+      <Button fx:id="newgame" text="Start New Game" onAction="#newGame"/>
+   </HBox>
 
    <BorderPane maxHeight="600.0" maxWidth="610.0" minHeight="600.0" minWidth="609.0" prefHeight="600.0" prefWidth="610.0">
       <center>

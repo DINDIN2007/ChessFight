@@ -17,6 +17,7 @@ public class Main extends Application {
         window.setTitle("True Chess the Game");
         homepage.display();
         window.show();
+        maingame.startGame();
     }
 
     public static void main(String[] args) {launch();}

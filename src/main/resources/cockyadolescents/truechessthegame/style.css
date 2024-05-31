@@ -46,9 +46,9 @@
     -fx-border-radius: 5px;
 }
 
-.buttonStyle:hover {
+/*.buttonStyle:hover {
     -fx-padding: 15px;
-}
+}*/
 
 .boxingBackground {
     -fx-background-color: white;

@@ -214,6 +214,7 @@ public class ChessPiece {
     // Creates a basic chess start board
     public static void newGame() {
         String[] pieceRowPosition = {"Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook"};
+        ChessBoard = new ChessPiece[8][8];
 
         for (int i = 0; i < 8; i++) {
             ChessBoard[i][1] = new ChessPiece("Pawn", "White", i, 1);
