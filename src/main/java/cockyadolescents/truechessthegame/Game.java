@@ -97,9 +97,12 @@ public class Game {
         // The containers storing the numbers/letters on the side of the board
         leftNumbers = (VBox) root.lookup("#leftNumbers");
         topNumbers = (HBox) root.lookup("#topNumbers");
+
+        // Other FXML elements
         promotionBar = (VBox) root.lookup("#promotionBar");
         isCheckedLabel = (Label) root.lookup("#isCheckedLabel"); isCheckedLabel.setVisible(false);
         progressBar = (ProgressBar) root.lookup("#progressBar");
+        promotionToggle = (ToggleButton) root.lookup("#turnBoardOn");
 
         // Hide the pawn promotion selector
         promotionBar.setVisible(false);
@@ -268,6 +271,9 @@ public class Game {
 
             // Change the progress bar
             progressBar.setProgress((double)score[0] / (score[0] + score[1]));
+
+            // Disable the toggle button
+            promotionToggle.setSelected(true);
         }
 
         // Marks the places that the piece can move to
@@ -398,7 +404,6 @@ public class Game {
 
     // Turn on the flipping feature
     public void turnBoardOn(ActionEvent event) {
-        if (onlineGame || hasStarted) return;
         boardCanFlip = true; ((ToggleButton) event.getSource()).setDisable(true);
     }
 

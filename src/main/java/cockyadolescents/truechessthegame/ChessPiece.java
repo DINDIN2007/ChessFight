@@ -236,16 +236,18 @@ public class ChessPiece {
         // We want the king to always be able to move in this version of chess
         if (piece.pieceType.equals("King")) return false;
 
+        // Save the piece that is on coord newX and newY
+        ChessPiece tempPiece = CheckBoard[newX][newY];
+
         // Moves the piece
         CheckBoard[newX][newY] = new ChessPiece(piece);
         CheckBoard[piece.pieceX][piece.pieceY] = null;
 
         // Check if the king on the same side is checked
         boolean isChecked = checkChecking(CheckBoard).equals(piece.pieceColor);
-        if (isChecked) System.out.println("Is checked : " + newX + " " + newY);
 
         // Moves the piece back
-        CheckBoard[newX][newY] = null;
+        CheckBoard[newX][newY] = tempPiece;
         CheckBoard[piece.pieceX][piece.pieceX] = new ChessPiece(piece);
 
         return isChecked;
@@ -292,6 +294,9 @@ public class ChessPiece {
             ChessBoard[i][0] = new ChessPiece(pieceRowPosition[i], "White", i, 0);
             ChessBoard[i][7] = new ChessPiece(pieceRowPosition[i], "Black", i, 7);
         }
+
+        // Reset score
+        score = new int[]{1, 1};
     }
 
     // Prints out a test board for debug use

@@ -46,37 +46,51 @@
          <VBox fx:id="leftNumbers" maxHeight="480.0" maxWidth="60.0" minHeight="480.0" minWidth="60.0" prefHeight="480.0" prefWidth="60.0" BorderPane.alignment="CENTER" />
       </left>
       <right>
-         <VBox fx:id="promotionBar" alignment="CENTER" prefHeight="200.0" prefWidth="60.0" BorderPane.alignment="CENTER">
+         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="60.0" BorderPane.alignment="CENTER">
             <children>
-               <Button fx:id="Queen" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" stylesheets="@style.css" text="♛" textFill="#e8b81b">
+               <Label text="Label">
                   <VBox.margin>
-                     <Insets bottom="10.0" />
+                     <Insets bottom="20.0" />
                   </VBox.margin>
-                  <font>
-                     <Font size="24.0" />
-                  </font>
-               </Button>
-               <Button fx:id="Rook" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" stylesheets="@style.css" text="♜" textFill="#e8b81b">
+               </Label>
+               <VBox fx:id="promotionBar" prefHeight="270.0" prefWidth="100.0">
+                  <children>
+                     <Button fx:id="Queen" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" stylesheets="@style.css" text="♛" textFill="#e8b81b">
+                        <VBox.margin>
+                           <Insets bottom="10.0" />
+                        </VBox.margin>
+                        <font>
+                           <Font size="24.0" />
+                        </font>
+                     </Button>
+                     <Button fx:id="Rook" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" stylesheets="@style.css" text="♜" textFill="#e8b81b">
+                        <VBox.margin>
+                           <Insets bottom="10.0" />
+                        </VBox.margin>
+                        <font>
+                           <Font size="24.0" />
+                        </font>
+                     </Button>
+                     <Button fx:id="Bishop" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" stylesheets="@style.css" text="♝" textFill="#e8b81b">
+                        <VBox.margin>
+                           <Insets bottom="10.0" />
+                        </VBox.margin>
+                        <font>
+                           <Font size="24.0" />
+                        </font>
+                     </Button>
+                     <Button fx:id="Knight" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" stylesheets="@style.css" text="♞" textFill="#e8b81b">
+                        <font>
+                           <Font size="24.0" />
+                        </font>
+                     </Button>
+                  </children>
+               </VBox>
+               <Label text="Label">
                   <VBox.margin>
-                     <Insets bottom="10.0" />
+                     <Insets top="20.0" />
                   </VBox.margin>
-                  <font>
-                     <Font size="24.0" />
-                  </font>
-               </Button>
-               <Button fx:id="Bishop" layoutX="10.0" layoutY="80.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" stylesheets="@style.css" text="♝" textFill="#e8b81b">
-                  <VBox.margin>
-                     <Insets bottom="10.0" />
-                  </VBox.margin>
-                  <font>
-                     <Font size="24.0" />
-                  </font>
-               </Button>
-               <Button fx:id="Knight" layoutX="10.0" layoutY="150.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" stylesheets="@style.css" text="♞" textFill="#e8b81b">
-                  <font>
-                     <Font size="24.0" />
-                  </font>
-               </Button>
+               </Label>
             </children>
             <BorderPane.margin>
                <Insets left="10.0" />

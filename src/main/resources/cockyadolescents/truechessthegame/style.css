@@ -60,7 +60,8 @@
 
 .isChecked {
     -fx-text-alignment: center;
-    -fx-text-fill: #cc912a;
+    -fx-text-fill: #b1b1b1;
+    -fx-background-color: rgba(28, 81, 135, 0.75);
 }
 
 .chessBackground {
