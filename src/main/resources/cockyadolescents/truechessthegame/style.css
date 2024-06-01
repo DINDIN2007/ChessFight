@@ -93,4 +93,5 @@
 
 .mainGameBackground {
     -fx-background-image: url("images/Homescreen.png");
+    -fx-background-size: cover;
 }

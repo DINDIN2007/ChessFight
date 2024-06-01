@@ -48,9 +48,9 @@
       <right>
          <VBox alignment="CENTER" prefHeight="200.0" prefWidth="60.0" BorderPane.alignment="CENTER">
             <children>
-               <Label text="Label">
+               <Label text="10:00">
                   <VBox.margin>
-                     <Insets bottom="20.0" />
+                     <Insets bottom="80.0" />
                   </VBox.margin>
                </Label>
                <VBox fx:id="promotionBar" prefHeight="270.0" prefWidth="100.0">
@@ -86,9 +86,9 @@
                      </Button>
                   </children>
                </VBox>
-               <Label text="Label">
+               <Label text="10:00">
                   <VBox.margin>
-                     <Insets top="20.0" />
+                     <Insets top="80.0" />
                   </VBox.margin>
                </Label>
             </children>
