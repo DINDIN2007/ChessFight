@@ -10,7 +10,10 @@ import javafx.util.Pair;
 
 import java.io.IOException;
 import java.util.Vector;
+
+import static cockyadolescents.truechessthegame.ChessPiece.CheckBoard;
 import static cockyadolescents.truechessthegame.Main.*;
+import static cockyadolescents.truechessthegame.ChessPiece.ChessBoard;
 
 public class HomePage {
     @FXML Label welcomeText;
@@ -38,7 +41,7 @@ public class HomePage {
         System.out.println(ChessPiece.printBoard()  + "\n");
 
         // ChessBoard.moveChessPiece(ChessBoard.pieceLocations[3][1], 3, 3);
-        Vector<Pair<Integer, Integer>> possibleMoves = ChessPiece.ChessBoard[1][0].getPossibleMoves();
+        Vector<Pair<Integer, Integer>> possibleMoves = ChessPiece.ChessBoard[1][0].getPossibleMoves(ChessBoard);
         for (Pair<Integer, Integer> p : possibleMoves) {
             ChessPiece.ChessBoard[p.getKey()][p.getValue()] = new ChessPiece("X", "White", p.getKey(), p.getValue());
         }
@@ -49,7 +52,7 @@ public class HomePage {
         ChessPiece.moveChessPiece(ChessPiece.ChessBoard[1][0], possibleMoves.get(0).getKey(), possibleMoves.get(0).getValue());
         System.out.println(ChessPiece.printBoard() + "\n");
 
-        possibleMoves = ChessPiece.ChessBoard[possibleMoves.get(0).getKey()][possibleMoves.get(0).getValue()].getPossibleMoves();
+        possibleMoves = ChessPiece.ChessBoard[possibleMoves.get(0).getKey()][possibleMoves.get(0).getValue()].getPossibleMoves(CheckBoard);
         for (Pair<Integer, Integer> p : possibleMoves) {
             ChessPiece.ChessBoard[p.getKey()][p.getValue()] = new ChessPiece("X", "White", p.getKey(), p.getValue());
         }
@@ -57,7 +60,7 @@ public class HomePage {
 
         for (Pair<Integer, Integer> p : possibleMoves) ChessPiece.ChessBoard[p.getKey()][p.getValue()] = null;
         ChessPiece.moveChessPiece(ChessPiece.ChessBoard[2][2], possibleMoves.get(0).getKey(), possibleMoves.get(0).getValue());
-        possibleMoves = ChessPiece.ChessBoard[possibleMoves.get(0).getKey()][possibleMoves.get(0).getValue()].getPossibleMoves();
+        possibleMoves = ChessPiece.ChessBoard[possibleMoves.get(0).getKey()][possibleMoves.get(0).getValue()].getPossibleMoves(ChessBoard);
         for (Pair<Integer, Integer> p : possibleMoves) {
             ChessPiece.ChessBoard[p.getKey()][p.getValue()] = new ChessPiece("X", "White", p.getKey(), p.getValue());
         }

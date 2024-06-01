@@ -22,9 +22,9 @@ import javafx.util.Pair;
 
 import java.io.IOException;
 import java.util.Vector;
+
+import static cockyadolescents.truechessthegame.ChessPiece.*;
 import static cockyadolescents.truechessthegame.Main.*;
-import static cockyadolescents.truechessthegame.ChessPiece.ChessBoard;
-import static cockyadolescents.truechessthegame.ChessPiece.score;
 
 public class Game {
     private Button[][] tileArray= new Button[8][8];
@@ -189,6 +189,7 @@ public class Game {
         // Finds the matching piece saved in ChessBoard class
         ChessPiece tilePiece = ChessBoard[moveX][moveY];
 
+        // Unselect piece
         if (selectX == moveX && selectY == moveY) {
             drawBoard(tileArray);
             selectX = -1; selectY = -1;
@@ -243,7 +244,7 @@ public class Game {
             drawBoard(tileArray);
 
             // Detecting checking feature
-            String checkedCheck = ChessPiece.checkChecking();
+            String checkedCheck = ChessPiece.checkChecking(ChessBoard);
             if (!checkedCheck.equals("None")) {
                 isCheckedLabel.setVisible(true);
                 isCheckedLabel.setText(checkedCheck + " King CHECK !");
@@ -267,8 +268,6 @@ public class Game {
 
             // Change the progress bar
             progressBar.setProgress((double)score[0] / (score[0] + score[1]));
-
-            System.out.println(score[0] + " " + score[1]);
         }
 
         // Marks the places that the piece can move to
@@ -280,7 +279,10 @@ public class Game {
             hasStarted = true;
 
             // Get all possible moves for this chess piece
-            possibleMoves = tilePiece.getPossibleMoves();
+            possibleMoves = tilePiece.getPossibleMoves(ChessBoard);
+
+            // Reset the CheckBoard array
+            ChessPiece.copyChessBoardToCheckBoard();
 
             // Loop through board to mark possible moves
             for (int i = 0; i < 8; i++) {
@@ -288,7 +290,8 @@ public class Game {
                 ChessPiece piece = ChessBoard[i][j];
                 if (piece != null && piece.pieceColor.equals(playingSide)) continue;
 
-                if (possibleMoves.contains(new Pair<>(i, j))) {
+                // Checks if the tile should be highlighted
+                if (possibleMoves.contains(new Pair<>(i, j)) && !ChessPiece.checkCheckingOnNextMove(tilePiece, i, j)) {
                     tileArray[i][j].getStyleClass().add("boardTilesPossibleMoves");
                     tileArray[i][j].setDisable(false);
                 }
@@ -366,7 +369,6 @@ public class Game {
 
     // Lets the user choose what to promote the pawn to
     public void promotePawn(String promotedPieceType, Button[][] tileArray, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar) {
-
         // Changes the type of piece on the board by creating a new piece to replace pawn
         ChessBoard[moveX][moveY] = new ChessPiece(promotedPieceType, playingSide, moveX, moveY);
         promotionBar.setVisible(false);
@@ -377,7 +379,7 @@ public class Game {
         drawBoard(tileArray);
 
         // Detecting checking feature
-        String checkedCheck = ChessPiece.checkChecking();
+        String checkedCheck = ChessPiece.checkChecking(ChessBoard);
         if (!checkedCheck.equals("None")) isCheckedLabel.setText(checkedCheck + " King is in DANGER !");
         else isCheckedLabel.setText("");
 

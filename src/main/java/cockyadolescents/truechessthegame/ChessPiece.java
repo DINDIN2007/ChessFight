@@ -13,71 +13,98 @@ public class ChessPiece {
     // 2d array storing all the pieces on the chessboard
     public static ChessPiece[][] ChessBoard = new ChessPiece[8][8];
 
+    // Extra chessboard to check if a move would result in a check
+    public static ChessPiece[][] CheckBoard = new ChessPiece[8][8];
+
     // Scoring system during the game
     public static int[] score = {1, 1};
 
     // This is the class object initialization where a piece is created
     public ChessPiece(String pieceType, String pieceColor, int pieceX, int pieceY) {
+        // Set the basic values for this Chess Piece
         this.pieceType = pieceType; this.pieceColor = pieceColor;
         this.pieceX = pieceX; this.pieceY = pieceY;
 
+        // Gives it all its possible moves according to its pieceType
+        this.possibleMoves = getInitialPossibleMoves(this);
+
+        // Finds its pieceValue
+        this.pieceValue = switch(this.pieceType) {
+            case "Pawn" -> 1;
+            case "Knight", "Bishop" -> 3;
+            case "Rook" -> 5;
+            case "Queen" -> 9;
+            case "King" -> 1000000;
+            default -> -1;
+        };
+
+        // Sets the piece on the board
+        ChessBoard[this.pieceX][this.pieceY] = this;
+    }
+
+    // This is the constructor for the CheckPiece 2d array instead
+    public ChessPiece(ChessPiece piece) {
+        // Set the basic values for this Chess Piece
+        this.pieceType = piece.pieceType; this.pieceColor = piece.pieceColor;
+        this.pieceX = piece.pieceX; this.pieceY = piece.pieceY;
+
+        // Gives it all its possible moves according to its pieceType
+        this.possibleMoves = getInitialPossibleMoves(this);
+    }
+
+    // Find the possible moves according to its pieceType
+    public static int[][] getInitialPossibleMoves(ChessPiece piece) {
+        // Return nothing if the pieceTile is empty
+        if (piece == null) return null;
+
+        // Simplifying the straight and diagonal directions
         int[][] hDirection = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
         int[][] dDirection = {{1, -1}, {-1, -1}, {1, 1}, {-1, 1}};
 
         // An array of possible moves are assigned to each respective chess piece
-        switch (this.pieceType) {
-            case "Pawn":
-                if (this.pieceColor.equals("White")) {
-                    this.possibleMoves = new int[][]{{-1, 1}, {0, 1}, {1, 1}, {0, 2}};
-                }
-                else {
-                    this.possibleMoves = new int[][]{{-1, -1}, {0, -1}, {1, -1}, {0, -2}};
-                }
-                this.pieceValue = 1; break;
-            case "Knight":
-                this.possibleMoves = new int[8][2];
+        int[][] possibleMoves;
+
+        return switch (piece.pieceType) {
+            case "Pawn" -> (piece.pieceColor.equals("White")) ? new int[][]{{-1, 1}, {0, 1}, {1, 1}, {0, 2}} : new int[][]{{-1, -1}, {0, -1}, {1, -1}, {0, -2}};
+            case "Knight" -> {
+                possibleMoves = new int[8][2];
                 for (int i = 0; i < 4; i++) {
-                    this.possibleMoves[i] = new int[]{2 * dDirection[i][0], dDirection[i][1]};
-                    this.possibleMoves[i + 4] = new int[]{dDirection[i][0], 2 * dDirection[i][1]};
+                    possibleMoves[i] = new int[]{2 * dDirection[i][0], dDirection[i][1]};
+                    possibleMoves[i + 4] = new int[]{dDirection[i][0], 2 * dDirection[i][1]};
                 }
-                this.pieceValue = 3; break;
-            case "Rook":
+                yield possibleMoves;
+            }
+            case "Rook" -> {
                 possibleMoves = new int[28][2];
                 for (int i = 0; i < 4; i++) {
                 for (int j = 1; j < 8; j++) {
                     possibleMoves[7 * i + j - 1] = new int[]{hDirection[i][0] * j, hDirection[i][1] * j};
                 }}
-                this.pieceValue = 3;
-                break;
-            case "Bishop":
+                yield possibleMoves;
+            }
+            case "Bishop" -> {
                 possibleMoves = new int[28][2];
                 for (int i = 0; i < 4; i++) {
                 for (int j = 1; j < 8; j++) {
                     possibleMoves[7 * i + j - 1] = new int[]{dDirection[i][0] * j, dDirection[i][1] * j};
                 }}
-                this.pieceValue = 3;
-                break;
-            case "Queen":
+                yield possibleMoves;
+            }
+            case "Queen" -> {
                 possibleMoves = new int[56][2];
                 for (int i = 0; i < 4; i++) {
                 for (int j = 1; j < 8; j++) {
                     possibleMoves[7 * i + j - 1] = new int[]{hDirection[i][0] * j, hDirection[i][1] * j};
                     possibleMoves[28 + (7 * i + j - 1)] = new int[]{dDirection[i][0] * j, dDirection[i][1] * j};
                 }}
-                this.pieceValue = 9;
-                break;
-            case "King":
-                possibleMoves = new int[][] {
-                        hDirection[0], hDirection[1], hDirection[2], hDirection[3],
-                        dDirection[0], dDirection[1], dDirection[2], dDirection[3],
-                };
-                this.pieceValue = 1000000;
-            case "X":
-                this.pieceValue = -1;
-        }
-
-        // Sets the piece on the board
-        ChessBoard[this.pieceX][this.pieceY] = this;
+                yield possibleMoves;
+            }
+            case "King" -> new int[][] {
+                hDirection[0], hDirection[1], hDirection[2], hDirection[3],
+                dDirection[0], dDirection[1], dDirection[2], dDirection[3],
+            };
+            default -> null;
+        };
     }
 
     // This method checks if the given coordinate is out of the chessboard's bound
@@ -86,18 +113,18 @@ public class ChessPiece {
     }
 
     // This method returns a vector of pairs that indicate every plausible move the selected piece
-    public Vector<Pair<Integer, Integer>> getPossibleMoves() {
+    public Vector<Pair<Integer, Integer>> getPossibleMoves(ChessPiece[][] board) {
         Vector<Pair<Integer, Integer>> moves = new Vector<>();
 
-        switch (this.pieceType) {
-            case "Pawn":
+        return switch (this.pieceType) {
+            case "Pawn" -> {
                 boolean noTwoFoward = this.hasMoved;
                 for (int i = 0; i < 4; i++) {
                     Pair<Integer, Integer> newCoords = new Pair<>(this.possibleMoves[i][0] + this.pieceX, this.possibleMoves[i][1] + this.pieceY);
 
                     // Checks if this new location would be inbound
                     if (!ChessPiece.isOutOfBound(newCoords.getKey(), newCoords.getValue())) {
-                        ChessPiece pieceOnThatPosition = ChessPiece.ChessBoard[newCoords.getKey()][newCoords.getValue()];
+                        ChessPiece pieceOnThatPosition = board[newCoords.getKey()][newCoords.getValue()];
                         // Case : Pawn moves forward
                         if (i % 2 == 1) {
                             if (pieceOnThatPosition == null) {
@@ -113,28 +140,30 @@ public class ChessPiece {
                         }
                     }
                 }
-                break;
-            case "Knight": case "King":
+                yield moves;
+            }
+            case "Knight", "King" -> {
                 for (int[] coord : this.possibleMoves) {
                     Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
 
                     // Checks if this new location would be inbound
                     if (ChessPiece.isOutOfBound(newCoords.getKey(), newCoords.getValue())) continue;
 
-                    ChessPiece pieceOnThatPosition = ChessPiece.ChessBoard[newCoords.getKey()][newCoords.getValue()];
+                    ChessPiece pieceOnThatPosition = board[newCoords.getKey()][newCoords.getValue()];
 
                     // Checks so that the piece doesn't land on a spot with a piece on the same side
-                    if (pieceOnThatPosition == null || !pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
+                    if (pieceOnThatPosition == null || !pieceOnThatPosition.pieceColor.equals(this.pieceColor))
+                        moves.add(newCoords);
                 }
 
                 // Castling logic
                 if (this.pieceType.equals("King") && !this.hasMoved) {
                     // Castle on the left
                     ChessPiece[] leftCastle = {
-                            ChessPiece.ChessBoard[0][this.pieceY],
-                            ChessPiece.ChessBoard[1][this.pieceY],
-                            ChessPiece.ChessBoard[2][this.pieceY],
-                            ChessPiece.ChessBoard[3][this.pieceY],
+                            board[0][this.pieceY],
+                            board[1][this.pieceY],
+                            board[2][this.pieceY],
+                            board[3][this.pieceY],
                     };
                     if (leftCastle[0] != null && leftCastle[0].pieceType.equals("Rook") && leftCastle[0].pieceColor.equals(this.pieceColor)) {
                         if (leftCastle[1] == null && leftCastle[2] == null && leftCastle[3] == null) {
@@ -144,9 +173,9 @@ public class ChessPiece {
 
                     // Castle on the right
                     ChessPiece[] rightCastle = {
-                            ChessPiece.ChessBoard[5][this.pieceY],
-                            ChessPiece.ChessBoard[6][this.pieceY],
-                            ChessPiece.ChessBoard[7][this.pieceY],
+                            board[5][this.pieceY],
+                            board[6][this.pieceY],
+                            board[7][this.pieceY],
                     };
 
                     if (rightCastle[2] != null && rightCastle[2].pieceType.equals("Rook") && rightCastle[2].pieceColor.equals(this.pieceColor)) {
@@ -155,8 +184,9 @@ public class ChessPiece {
                         }
                     }
                 }
-                break;
-            case "Bishop": case "Rook": case "Queen":
+                yield moves;
+            }
+            case "Bishop", "Rook", "Queen" -> {
                 for (int i = 0; i < this.possibleMoves.length; i++) {
                     int[] coord = this.possibleMoves[i];
                     Pair<Integer, Integer> newCoords = new Pair<>(coord[0] + this.pieceX, coord[1] + this.pieceY);
@@ -164,33 +194,33 @@ public class ChessPiece {
                     // Checks if this new location would be inbound
                     if (ChessPiece.isOutOfBound(newCoords.getKey(), newCoords.getValue())) continue;
 
-                    ChessPiece pieceOnThatPosition = ChessPiece.ChessBoard[newCoords.getKey()][newCoords.getValue()];
+                    ChessPiece pieceOnThatPosition = board[newCoords.getKey()][newCoords.getValue()];
                     // Checks so that the piece doesn't land on a spot with a piece on the same side
                     if (pieceOnThatPosition == null) moves.add(newCoords);
                     else {
                         if (!pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
 
                         // Skips the moves behind an enemy piece
-                        if (ChessPiece.ChessBoard[newCoords.getKey()][newCoords.getValue()] != null) {
+                        if (board[newCoords.getKey()][newCoords.getValue()] != null) {
                             i += 7 - Math.max(Math.abs(coord[0]), Math.abs(coord[1]));
                         }
                     }
                 }
-                break;
-        }
-
-        return moves;
+                yield moves;
+            }
+            default -> moves;
+        };
     }
 
     // Method to see if either king are in check, and return which side is checked
-    public static String checkChecking() {
+    public static String checkChecking(ChessPiece[][] board) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                ChessPiece piece = ChessPiece.ChessBoard[i][j];
+                ChessPiece piece = board[i][j];
                 if (piece == null) continue;
-                for (Pair<Integer, Integer> coord : piece.getPossibleMoves()) {
+                for (Pair<Integer, Integer> coord : piece.getPossibleMoves(board)) {
                     // If it passes all these restrictions, then a castle must have happened
-                    ChessPiece targetPiece = ChessPiece.ChessBoard[coord.getKey()][coord.getValue()];
+                    ChessPiece targetPiece = board[coord.getKey()][coord.getValue()];
                     if (targetPiece == null)                             continue; // Is not target a piece on the board
                     if (targetPiece.pieceColor.equals(piece.pieceColor)) continue; // Is targeting a piece on the same team
                     if (!targetPiece.pieceType.equals("King"))           continue; // Is targeting a piece that is not a king
@@ -199,6 +229,34 @@ public class ChessPiece {
                 }
             }}
         return "None";
+    }
+
+    // Recreate board with one move ahead to check if it would result in a check
+    public static boolean checkCheckingOnNextMove(ChessPiece piece, int newX, int newY) {
+        // We want the king to always be able to move in this version of chess
+        if (piece.pieceType.equals("King")) return false;
+
+        // Moves the piece
+        CheckBoard[newX][newY] = new ChessPiece(piece);
+        CheckBoard[piece.pieceX][piece.pieceY] = null;
+
+        // Check if the king on the same side is checked
+        boolean isChecked = checkChecking(CheckBoard).equals(piece.pieceColor);
+
+        // Moves the piece back
+        CheckBoard[piece.pieceX][piece.pieceX] = new ChessPiece(piece);
+        CheckBoard[newX][newY] = null;
+
+        return isChecked;
+    }
+
+    public static void copyChessBoardToCheckBoard() {
+        // Recreates the board
+        for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if (ChessBoard[i][j] == null) CheckBoard[i][j] = null;
+            else CheckBoard[i][j] = new ChessPiece(ChessBoard[i][j]);
+        }}
     }
 
     // Swaps the position of the piece to a new position
