@@ -13,6 +13,9 @@ public class ChessPiece {
     // 2d array storing all the pieces on the chessboard
     public static ChessPiece[][] ChessBoard = new ChessPiece[8][8];
 
+    // Scoring system during the game
+    public static int[] score = {1, 1};
+
     // This is the class object initialization where a piece is created
     public ChessPiece(String pieceType, String pieceColor, int pieceX, int pieceY) {
         this.pieceType = pieceType; this.pieceColor = pieceColor;
@@ -200,6 +203,13 @@ public class ChessPiece {
 
     // Swaps the position of the piece to a new position
     public static void moveChessPiece(ChessPiece piece, int newX, int newY) {
+        // Add to score
+        ChessPiece targetTile = ChessBoard[newX][newY];
+        if (targetTile != null) {
+            score[((piece.pieceColor.equals("White")) ? 0 : 1)] += targetTile.pieceValue;
+        }
+
+        // Move piece
         ChessBoard[newX][newY] = piece;
         ChessBoard[piece.pieceX][piece.pieceY] = null;
         piece.pieceX = newX; piece.pieceY = newY;

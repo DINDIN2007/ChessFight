@@ -8,7 +8,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="450" minWidth="700" prefHeight="450.0" prefWidth="700.0" styleClass="boxingBackground" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.Boxing">
    <center>
-      <Canvas height="200.0" width="200.0" BorderPane.alignment="CENTER" />
+      <Canvas fx:id="gameScreen" height="350.0" width="600.0" BorderPane.alignment="CENTER" />
    </center>
    <top>
       <Text fx:id="timer_text" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" BorderPane.alignment="CENTER">

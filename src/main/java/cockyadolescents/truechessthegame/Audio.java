@@ -6,6 +6,7 @@ import javafx.scene.media.MediaPlayer;
 public class Audio {
     private Media[] playlist;
     private Media pieceMoved, pieceCaptured, newGame;
+    private MediaPlayer songPlayer;
 
     public Audio() {
         this.playlist = new Media[] {
@@ -18,14 +19,22 @@ public class Audio {
         // Sound Effects
         this.pieceMoved = new Media(getClass().getResource("audio/move-self.mp3").toExternalForm());
         this.pieceCaptured =  new Media(getClass().getResource("audio/capture.mp3").toExternalForm());
+        this.newGame = new Media(getClass().getResource("audio/board-start.mp3").toExternalForm());
+
+        // Set songPlayer to anything
+        songPlayer = new MediaPlayer(this.newGame);
     }
 
     public void playMusic() {
-        Media currentSong = this.playlist[(int)(Math.random() * this.playlist.length)];
-        MediaPlayer mediaPlayer = new MediaPlayer(currentSong);
-        mediaPlayer.play();
+        // Stops previous music
+        songPlayer.stop();
 
-        mediaPlayer.setOnEndOfMedia(new Runnable() {
+        // Chooses random new song
+        Media currentSong = this.playlist[(int)(Math.random() * this.playlist.length)];
+        songPlayer = new MediaPlayer(currentSong);
+        songPlayer.play();
+
+        songPlayer.setOnEndOfMedia(new Runnable() {
             public void run() {
                 playMusic();
             }
@@ -39,6 +48,11 @@ public class Audio {
 
     public void capturePiece() {
         MediaPlayer sound = new MediaPlayer(this.pieceCaptured);
+        sound.play();
+    }
+
+    public void startGame() {
+        MediaPlayer sound = new MediaPlayer(this.newGame);
         sound.play();
     }
 }

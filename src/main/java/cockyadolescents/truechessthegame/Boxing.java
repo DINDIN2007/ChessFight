@@ -61,6 +61,7 @@ public class Boxing {
     }*/
 
     public void showBoxingPopup(Stage ownerStage) throws IOException {
+        // Loads FXML file
         root = FXMLLoader.load(getClass().getResource("Boxing.fxml"));
 
         // Setting up the popUp and linking it to Boxing.fxml
@@ -99,23 +100,27 @@ public class Boxing {
 
         // newStage.show();
 
+        // Gets the canvas from the FXML file
+        canvas = (Canvas)root.lookup("#gameScreen");
+        graphicsContext = canvas.getGraphicsContext2D();
+        source = new Image(getClass().getResourceAsStream("images/ChessPieces-2.png"));
+
+        // Start timer countdown
         startTimer(timerText, popup);
     }
 
     private void startTimer(Text timerText, Popup popup) {
-        timer = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                remainingTime--;
-                int minutes = remainingTime / 60;
-                int seconds = remainingTime % 60;
-                timerText.setText(String.format("Time remaining: %d:%02d", minutes, seconds));
+        remainingTime = 90;
+        timer = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+            remainingTime--;
+            int minutes = remainingTime / 60;
+            int seconds = remainingTime % 60;
+            timerText.setText(String.format("Time remaining: %d:%02d", minutes, seconds));
 
-                if (remainingTime <= 0) {
-                    timer.stop();
-                    popup.hide();
-                    System.out.println("RAN");
-                }
+            if (remainingTime <= 0) {
+                timer.stop();
+                popup.hide();
+                System.out.println("RAN");
             }
         }));
         timer.setCycleCount(Timeline.INDEFINITE);
