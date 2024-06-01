@@ -49,7 +49,7 @@ public class ChessPiece {
         this.pieceX = piece.pieceX; this.pieceY = piece.pieceY;
 
         // Gives it all its possible moves according to its pieceType
-        this.possibleMoves = getInitialPossibleMoves(this);
+        this.possibleMoves = piece.possibleMoves;
     }
 
     // Find the possible moves according to its pieceType
@@ -242,10 +242,11 @@ public class ChessPiece {
 
         // Check if the king on the same side is checked
         boolean isChecked = checkChecking(CheckBoard).equals(piece.pieceColor);
+        if (isChecked) System.out.println("Is checked : " + newX + " " + newY);
 
         // Moves the piece back
-        CheckBoard[piece.pieceX][piece.pieceX] = new ChessPiece(piece);
         CheckBoard[newX][newY] = null;
+        CheckBoard[piece.pieceX][piece.pieceX] = new ChessPiece(piece);
 
         return isChecked;
     }
