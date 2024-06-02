@@ -29,7 +29,7 @@ import static cockyadolescents.truechessthegame.Main.*;
 public class Game {
     private Button[][] tileArray= new Button[8][8];
     private static boolean lockIntoPiece = false, boardCanFlip = false, isPromoting = false;
-    private static int selectX = -1, selectY = -1, moveX, moveY, timeLeftWhite = 6000, timeLeftBlack = 6000;
+    private static int selectX = -1, selectY = -1, moveX, moveY, timeLeftWhite = 60000, timeLeftBlack = 60000;
     private static String playingSide = "White";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
     public static boolean onlineGame = false, hasStarted = false;
@@ -425,15 +425,15 @@ public class Game {
 
         if (playingSide.equals("White")) {
             timeLeftWhite--;
-            String sec = "" + (timeLeftWhite % 6000 % 100); sec = ((sec.length() == 1) ? "0" : "1") + sec;
-            String min = "" + (int)(timeLeftWhite % 6000 / 100); min = ((min.length() == 1) ? "0" : "1") + min;
-            whiteTimer.setText((timeLeftWhite / 6000) + ":" + min + ":" + sec);
+            String mil = "" + (timeLeftWhite % 6000 % 100); mil = ((mil.length() == 1) ? "0" : "") + mil;
+            String sec = "" + (int)(timeLeftWhite % 6000 / 100); sec = ((sec.length() == 1) ? "0" : "") + sec;
+            whiteTimer.setText((timeLeftWhite / 6000) + ":" + sec + ":" + mil);
         }
         else {
             timeLeftBlack--;
-            String sec = "" + (timeLeftBlack % 6000 % 100); sec = ((sec.length() == 1) ? "0" : "1") + sec;
-            String min = "" + (int)(timeLeftBlack % 6000 / 100); min = ((min.length() == 1) ? "0" : "1") + min;
-            blackTimer.setText((timeLeftBlack / 6000) + ":" + (int)(timeLeftBlack % 6000 / 100) + ":" + (timeLeftBlack % 6000 % 100));
+            String mil = "" + (timeLeftBlack % 6000 % 100); mil = ((mil.length() == 1) ? "0" : "") + mil;
+            String sec = "" + (int)(timeLeftBlack % 6000 / 100); sec = ((sec.length() == 1) ? "0" : "") + sec;
+            blackTimer.setText((timeLeftBlack / 6000) + ":" + sec + ":" + mil);
         }
     }
 }

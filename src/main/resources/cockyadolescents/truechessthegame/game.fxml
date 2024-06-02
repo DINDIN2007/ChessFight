@@ -48,7 +48,7 @@
       <right>
          <VBox alignment="CENTER" prefHeight="200.0" prefWidth="60.0" BorderPane.alignment="CENTER">
             <children>
-               <Label fx:id="blackTimer" text="10:00">
+               <Label fx:id="blackTimer" text="10:00:00">
                   <VBox.margin>
                      <Insets bottom="80.0" />
                   </VBox.margin>
@@ -86,7 +86,7 @@
                      </Button>
                   </children>
                </VBox>
-               <Label fx:id="whiteTimer" text="10:00">
+               <Label fx:id="whiteTimer" text="10:00:00">
                   <VBox.margin>
                      <Insets top="80.0" />
                   </VBox.margin>
