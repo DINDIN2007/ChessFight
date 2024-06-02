@@ -1,4 +1,4 @@
-package cockyadolescents.truechessthegame;
+package cockyadolescents.truechessthegame.serverTest;
 
 import java.io.IOException;
 import java.net.ServerSocket;

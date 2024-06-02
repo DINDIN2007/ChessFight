@@ -53,7 +53,7 @@ public class ChessPiece {
     }
 
     // Find the possible moves according to its pieceType
-    public static int[][] getInitialPossibleMoves(ChessPiece piece) {
+    private static int[][] getInitialPossibleMoves(ChessPiece piece) {
         // Return nothing if the pieceTile is empty
         if (piece == null) return null;
 
@@ -108,7 +108,7 @@ public class ChessPiece {
     }
 
     // This method checks if the given coordinate is out of the chessboard's bound
-    public static boolean isOutOfBound(int x, int y) {
+    private static boolean isOutOfBound(int x, int y) {
         return x < 0 || x >= 8 || y < 0 || y >= 8;
     }
 

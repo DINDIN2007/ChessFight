@@ -126,7 +126,7 @@ public class Game {
     }
 
     // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
-    public void createBoard(GridPane buttonBoard, GridPane labelBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar, Stage window) {
+    private void createBoard(GridPane buttonBoard, GridPane labelBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar, Stage window) {
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             // Creates new label to add to labelBoard
@@ -313,7 +313,7 @@ public class Game {
     }
 
     // Draws the pieces and un-disables the tiles on the board
-    public static void drawBoard(Button[][] tileArray) {
+    private static void drawBoard(Button[][] tileArray) {
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             tileArray[i][j].setDisable(false);
@@ -323,7 +323,7 @@ public class Game {
     }
 
     // Changes the Number/Sides depending on the Side of the Board
-    public static void turnBoard(VBox leftNumbers, HBox topNumbers) {
+    private static void turnBoard(VBox leftNumbers, HBox topNumbers) {
         for (int i = 0; i < 8; i++) {
             Label left = (Label)(leftNumbers.getChildren().get(i));
             int pos = Math.abs(8 - (left.getText().charAt(0) - '1'));
@@ -335,7 +335,7 @@ public class Game {
     }
 
     // Draws a single piece using information from the ChessBoard object
-    public static void drawPiece(ChessPiece piece) {
+    private static void drawPiece(ChessPiece piece) {
         int pieceSource = 0, pieceColor = 0;
 
         pieceColor = switch (piece.pieceColor) {
@@ -369,7 +369,7 @@ public class Game {
     }
 
     // Clears canvas to later redraw on it
-    public static void clearCanvas() {
+    private static void clearCanvas() {
         graphicsContext.clearRect(0, -(canvas.getHeight() - 60), canvas.getWidth(), canvas.getHeight());
     }
 

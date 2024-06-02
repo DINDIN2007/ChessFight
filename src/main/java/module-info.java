@@ -7,4 +7,6 @@ module org.cockyadolescents.truechessthegame {
 
     opens cockyadolescents.truechessthegame to javafx.fxml;
     exports cockyadolescents.truechessthegame;
+    exports cockyadolescents.truechessthegame.serverTest;
+    opens cockyadolescents.truechessthegame.serverTest to javafx.fxml;
 }

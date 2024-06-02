@@ -1,4 +1,4 @@
-package cockyadolescents.truechessthegame;
+package cockyadolescents.truechessthegame.serverTest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
