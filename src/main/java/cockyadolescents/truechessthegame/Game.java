@@ -29,8 +29,7 @@ import static cockyadolescents.truechessthegame.Main.*;
 public class Game {
     private Button[][] tileArray= new Button[8][8];
     private static boolean lockIntoPiece = false, boardCanFlip = false, isPromoting = false;
-    private static int selectX = -1, selectY = -1;
-    private static int moveX, moveY;
+    private static int selectX = -1, selectY = -1, moveX, moveY, timeLeftWhite = 6000, timeLeftBlack = 6000;
     private static String playingSide = "White";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
     public static boolean onlineGame = false, hasStarted = false;
@@ -39,7 +38,7 @@ public class Game {
     @FXML private GridPane buttonBoard, labelBoard;
     @FXML private VBox leftNumbers;
     @FXML private HBox topNumbers;
-    @FXML private static Label isCheckedLabel;
+    @FXML private static Label isCheckedLabel, whiteTimer, blackTimer;
     @FXML private static ProgressBar progressBar;
     @FXML private Button home, newgame;
     @FXML private VBox promotionBar;
@@ -104,13 +103,22 @@ public class Game {
         progressBar = (ProgressBar) root.lookup("#progressBar");
         promotionToggle = (ToggleButton) root.lookup("#turnBoardOn");
 
+        // The two timer
+        whiteTimer = (Label) root.lookup("#whiteTimer");
+        blackTimer = (Label) root.lookup("#blackTimer");
+        timeLeftWhite = 60000; timeLeftBlack = 60000;
+
         // Hide the pawn promotion selector
         promotionBar.setVisible(false);
+
         // Resets booleans
         hasStarted = false;
         boardCanFlip = false;
         playingSide = "White";
-        // animationLoop = new GameLoop(new Game(), 0.25);
+
+        // Start animation loop
+        animationLoop = new GameLoop(this, 0.01);
+        animationLoop.start();
 
         // Assigns the pawn promotion buttons their function
         String[] possiblePromotions = {"Queen", "Rook", "Bishop", "Knight"};
@@ -404,11 +412,28 @@ public class Game {
 
     // Turn on the flipping feature
     public void turnBoardOn(ActionEvent event) {
-        boardCanFlip = true; ((ToggleButton) event.getSource()).setDisable(true);
+        if (!hasStarted) boardCanFlip = true;
+        ((ToggleButton) event.getSource()).setDisable(true);
     }
 
     // Animation for chess game
-    public static void animate() {
-        // Noah do animation here (it repeats every delay you give it in startGame() )
+    public static void update() {
+        // Noah do animation here (it repeats every delay you give it in startGame())
+
+        // Changes the timer
+        if (!hasStarted) return;
+
+        if (playingSide.equals("White")) {
+            timeLeftWhite--;
+            String sec = "" + (timeLeftWhite % 6000 % 100); sec = ((sec.length() == 1) ? "0" : "1") + sec;
+            String min = "" + (int)(timeLeftWhite % 6000 / 100); min = ((min.length() == 1) ? "0" : "1") + min;
+            whiteTimer.setText((timeLeftWhite / 6000) + ":" + min + ":" + sec);
+        }
+        else {
+            timeLeftBlack--;
+            String sec = "" + (timeLeftBlack % 6000 % 100); sec = ((sec.length() == 1) ? "0" : "1") + sec;
+            String min = "" + (int)(timeLeftBlack % 6000 / 100); min = ((min.length() == 1) ? "0" : "1") + min;
+            blackTimer.setText((timeLeftBlack / 6000) + ":" + (int)(timeLeftBlack % 6000 / 100) + ":" + (timeLeftBlack % 6000 % 100));
+        }
     }
 }
