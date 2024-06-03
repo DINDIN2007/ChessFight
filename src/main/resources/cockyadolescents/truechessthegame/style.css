@@ -86,7 +86,7 @@
 }*/
 
 .boxingBackground {
-    -fx-background-color: white;
+    -fx-background-color: gray;
     -fx-border-color: black;
     -fx-border-width: 5px;
 }

@@ -31,34 +31,21 @@ public class Boxing {
     public static ChessPiece attack, defense;
     public static Stage stage;
 
+    private GameLoop loop;
+
     @FXML private Parent root;
     @FXML private static Canvas canvas;
     @FXML private static GraphicsContext graphicsContext;
     private static Image source;
+    private int movingx;
+    private int movingy;
+    private int movingx1;
+    private int movingy1;
 
     public static void main(String[] args) throws IOException {
         Boxing newGame = new Boxing();
         newGame.showBoxingPopup(stage);
     }
-
-    /*public static void startMatch(Stage primaryStage) {
-        Application.launch(Boxing.class);
-    }
-
-    /*@Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Box!");
-
-        Button startButton = new Button("Start Boxing");
-        startButton.setOnAction(e -> showBoxingPopup(primaryStage));
-
-        VBox layout = new VBox(10);
-        layout.getChildren().addAll(startButton);
-
-        Scene scene = new Scene(layout, 700, 450);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }*/
 
     public void showBoxingPopup(Stage ownerStage) throws IOException {
         // Loads FXML file
@@ -68,27 +55,15 @@ public class Boxing {
         Popup popup = new Popup();
         popup.getContent().add(root);
 
-        /*
-        Pane pane = new Pane();
-        pane.setPrefSize(700, 450);
-
-        Text timerText = new Text("Time remaining: 1:30");
-        timerText.setLayoutX(300);
-        timerText.setLayoutY(20);
-
-        Button punchButtonPlayer1 = new Button("Player 1 Punch");
-        punchButtonPlayer1.setLayoutX(150);
-        punchButtonPlayer1.setLayoutY(200);
+        Button punchButtonPlayer1 = (Button)root.lookup("#P1");
         punchButtonPlayer1.setOnAction(e -> handlePunchAction(1));
 
-        Button punchButtonPlayer2 = new Button("Player 2 Punch");
-        punchButtonPlayer2.setLayoutX(450);
-        punchButtonPlayer2.setLayoutY(200);
+        Button punchButtonPlayer2 = (Button)root.lookup("#P2");
         punchButtonPlayer2.setOnAction(e -> handlePunchAction(2));
 
-        pane.getChildren().addAll(timerText, punchButtonPlayer1, punchButtonPlayer2);
-        // popup.getContent().add(pane);
-         */
+        // Run Game Loop
+        loop = new GameLoop(this, 5000);
+        loop.start();
 
         // Timer text
         Text timerText = (Text)root.lookup("#timer_text");
@@ -134,6 +109,43 @@ public class Boxing {
 
     public void updateElement() {
         // What to run after an iteration of loop
+        // graphicsContext.fillRect(0, 0, 48, 48);
+        int v = 0;
+        int v1 = 0;
+        int x = 0;
+        int x1 = 0;
+
+
+        switch(attack.pieceType){
+            case "Pawn": v=0; break;
+            case "Rook": v=48; break;
+            case "Knight": v=48*2; break;
+            case "Bishop": v=48*3; break;
+            case "Queen": v=48*4;break;
+            case "King": v=48*5;break;
+        }
+        switch(attack.pieceColor){
+            case "White": v1=48;break;
+            case "Black": v1=0;break;
+        }
+
+        switch(defense.pieceType){
+            case "Pawn": x=0;break;
+            case "Rook": x=48;break;
+            case "Knight": x=48*2;break;
+            case "Bishop": x=48*3;break;
+            case "Queen": x=48*4;break;
+            case "King": x=48*5;break;
+        }
+        switch(defense.pieceColor){
+            case "White": x1=48;break;
+            case "Black": x1=0;break;
+        }
+        
+
+        graphicsContext.drawImage(source, v, v1, 48, 48, movingx, movingy, 48, 48);
+        graphicsContext.drawImage(source, x, x1, 48, 48, movingx1, movingy1, 48, 48);
+
     }
 }
 
