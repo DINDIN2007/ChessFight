@@ -37,10 +37,8 @@ public class Boxing {
     @FXML private static Canvas canvas;
     @FXML private static GraphicsContext graphicsContext;
     private static Image source;
-    private int movingx;
-    private int movingy;
-    private int movingx1;
-    private int movingy1;
+    private double movingx, movingy;
+    private double movingx1, movingy1;
 
     public static void main(String[] args) throws IOException {
         Boxing newGame = new Boxing();
@@ -79,6 +77,10 @@ public class Boxing {
         canvas = (Canvas)root.lookup("#gameScreen");
         graphicsContext = canvas.getGraphicsContext2D();
         source = new Image(getClass().getResourceAsStream("images/ChessPieces-2.png"));
+
+        // Set the pieces at starting positions
+        movingx = 300 - 24; movingy = 300 * 3.0/4;
+        movingx1 = 300 - 24; movingy1 = 300 * 1.0/4;
 
         // Start timer countdown
         startTimer(timerText, popup);
