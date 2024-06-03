@@ -28,7 +28,7 @@ import static cockyadolescents.truechessthegame.Main.*;
 
 public class Game {
     private Button[][] tileArray= new Button[8][8];
-    private static boolean lockIntoPiece = false, boardCanFlip = false, isPromoting = false;
+    private static boolean lockIntoPiece = false, boardCanFlip = false, isPromoting = false, boxingOn = false;
     private static int selectX = -1, selectY = -1, moveX, moveY, timeLeftWhite = 60000, timeLeftBlack = 60000;
     private static String playingSide = "White";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
@@ -114,6 +114,7 @@ public class Game {
         // Resets booleans
         hasStarted = false;
         boardCanFlip = false;
+        boxingOn = false;
         playingSide = "White";
 
         // Start animation loop
@@ -224,7 +225,7 @@ public class Game {
             }
 
             // If capturing a piece, start the Boxing Match !!!
-            if (tilePiece != null) {
+            if (tilePiece != null && boxingOn) {
                 boxGame.showBoxingPopup(window);
                 Boxing.attack = selectedPiece;
                 Boxing.defense = tilePiece;
@@ -413,6 +414,12 @@ public class Game {
     // Turn on the flipping feature
     public void turnBoardOn(ActionEvent event) {
         if (!hasStarted) boardCanFlip = true;
+        ((ToggleButton) event.getSource()).setDisable(true);
+    }
+
+    // Turn on the boxing feature
+    public void turnBoxingOn(ActionEvent event) {
+        if (!hasStarted) boxingOn = true;
         ((ToggleButton) event.getSource()).setDisable(true);
     }
 

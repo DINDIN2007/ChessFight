@@ -110,5 +110,6 @@
       <Button fx:id="home" onAction="#home" text="Home" />
       <Button fx:id="newgame" onAction="#newGame" text="Start New Game" />
       <ToggleButton fx:id="turnBoardOn" mnemonicParsing="false" onAction="#turnBoardOn" text="Turn On Board Feature" />
+      <ToggleButton fx:id="turnBoxingOn" mnemonicParsing="false" onAction="#turnBoardOn" text="Turn On Boxing Feature" />
    </HBox>
 </VBox>
