@@ -118,7 +118,7 @@ public class Game {
         playingSide = "White";
 
         // Start animation loop
-        animationLoop = new GameLoop(this, 0.01);
+        animationLoop = new GameLoop(this, 0.1);
         animationLoop.start();
 
         // Assigns the pawn promotion buttons their function

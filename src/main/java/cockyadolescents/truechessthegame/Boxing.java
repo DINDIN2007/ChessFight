@@ -1,24 +1,17 @@
 package cockyadolescents.truechessthegame;
 
-import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -147,7 +140,6 @@ public class Boxing {
 
         graphicsContext.drawImage(source, v, v1, 48, 48, movingx, movingy, 48, 48);
         graphicsContext.drawImage(source, x, x1, 48, 48, movingx1, movingy1, 48, 48);
-
     }
 }
 
