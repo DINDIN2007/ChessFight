@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
@@ -19,7 +20,7 @@ import java.io.IOException;
 
 public class Boxing {
     private Timeline timer;
-    private int remainingTime = 90;
+    public int remainingTime = 90;
 
     public static ChessPiece attack, defense;
     public static Stage stage;
@@ -53,7 +54,7 @@ public class Boxing {
         punchButtonPlayer2.setOnAction(e -> handlePunchAction(2));
 
         // Run Game Loop
-        loop = new GameLoop(this, 5000);
+        loop = new GameLoop(this, 50);
         loop.start();
 
         // Timer text
@@ -63,8 +64,6 @@ public class Boxing {
         // Show the PopUp
         popup.setAutoHide(false);
         popup.show(ownerStage);
-
-        // newStage.show();
 
         // Gets the canvas from the FXML file
         canvas = (Canvas)root.lookup("#gameScreen");
@@ -90,7 +89,7 @@ public class Boxing {
             if (remainingTime <= 0) {
                 timer.stop();
                 popup.hide();
-                System.out.println("RAN");
+                Game.isBoxing = false;
             }
         }));
         timer.setCycleCount(Timeline.INDEFINITE);
@@ -102,14 +101,20 @@ public class Boxing {
         // Implement punch action logic
     }
 
+    // What to run after an iteration of loop
     public void updateElement() {
-        // What to run after an iteration of loop
+        // Clear canvas
+        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        // Redraw background
+        graphicsContext.setFill(Color.rgb(128, 128, 128));
+        graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
         // graphicsContext.fillRect(0, 0, 48, 48);
         int v = 0;
         int v1 = 0;
         int x = 0;
         int x1 = 0;
-
 
         switch(attack.pieceType){
             case "Pawn": v=0; break;
@@ -137,7 +142,7 @@ public class Boxing {
             case "Black": x1=0;break;
         }
         
-
+        // Draw the two pieces
         graphicsContext.drawImage(source, v, v1, 48, 48, movingx, movingy, 48, 48);
         graphicsContext.drawImage(source, x, x1, 48, 48, movingx1, movingy1, 48, 48);
     }

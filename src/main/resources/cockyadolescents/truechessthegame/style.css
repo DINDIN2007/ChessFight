@@ -13,6 +13,24 @@
     -fx-font-size: 20px;
 }
 
+.boardNum {
+    -fx-min-width: 30px;
+    -fx-min-height: 60px;
+    -fx-background-radius: 0px;
+    -fx-alignment: center;
+    -fx-font-size: 15px;
+    -fx-padding:10px;
+}
+
+.boardLetters {
+    -fx-min-width: 60px;
+    -fx-min-height: 60px;
+    -fx-background-radius: 0px;
+    -fx-alignment: center;
+    -fx-font-size: 15px;
+    -fx-padding:10px;
+}
+
 .oddTiles {
     -fx-background-color: #3e3d3d;
 }
@@ -86,7 +104,7 @@
 }*/
 
 .boxingBackground {
-    -fx-background-color: gray;
+    -fx-background-color: white;
     -fx-border-color: black;
     -fx-border-width: 5px;
 }

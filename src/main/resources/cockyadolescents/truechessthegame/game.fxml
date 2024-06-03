@@ -35,7 +35,7 @@
       </center>
 
             <top>
-         <HBox fx:id="topNumbers" maxWidth="604.0" minWidth="540.0" prefHeight="60.0" prefWidth="604.0" BorderPane.alignment="CENTER">
+         <HBox fx:id="topNumbers" alignment="BOTTOM_LEFT" maxWidth="604.0" minWidth="540.0" prefHeight="60.0" prefWidth="604.0" BorderPane.alignment="CENTER">
             <BorderPane.margin>
                <Insets />
             </BorderPane.margin>
@@ -43,12 +43,12 @@
       </top>
 
             <left>
-         <VBox fx:id="leftNumbers" maxHeight="480.0" maxWidth="60.0" minHeight="480.0" minWidth="60.0" prefHeight="480.0" prefWidth="60.0" BorderPane.alignment="CENTER" />
+         <VBox fx:id="leftNumbers" alignment="TOP_CENTER" maxHeight="480.0" maxWidth="60.0" minHeight="480.0" minWidth="60.0" prefHeight="480.0" prefWidth="60.0" BorderPane.alignment="CENTER" />
       </left>
       <right>
          <VBox alignment="CENTER" prefHeight="200.0" prefWidth="60.0" BorderPane.alignment="CENTER">
             <children>
-               <Label fx:id="blackTimer" text="10:00:00">
+               <Label fx:id="blackTimer" text="10:00">
                   <VBox.margin>
                      <Insets bottom="80.0" />
                   </VBox.margin>
@@ -86,7 +86,7 @@
                      </Button>
                   </children>
                </VBox>
-               <Label fx:id="whiteTimer" text="10:00:00">
+               <Label fx:id="whiteTimer" text="10:00">
                   <VBox.margin>
                      <Insets top="80.0" />
                   </VBox.margin>
@@ -110,6 +110,6 @@
       <Button fx:id="home" onAction="#home" text="Home" />
       <Button fx:id="newgame" onAction="#newGame" text="Start New Game" />
       <ToggleButton fx:id="turnBoardOn" mnemonicParsing="false" onAction="#turnBoardOn" text="Turn On Board Feature" />
-      <ToggleButton fx:id="turnBoxingOn" mnemonicParsing="false" onAction="#turnBoxingOn" text="Turn On Boxing Feature" />
+      <ToggleButton fx:id="turnBoxingOn" mnemonicParsing="false" onAction="#turnBoxingOn" text="Turn Off Boxing Feature" />
    </HBox>
 </VBox>
