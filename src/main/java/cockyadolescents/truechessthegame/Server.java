@@ -10,15 +10,17 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ServerTest implements Runnable {
+public class Server implements Runnable {
 
     private ArrayList<ConnectionHandler> connections;
     private ServerSocket serversocket;
-    private Boolean closed;
+    private boolean closed;
     private ExecutorService pool;
 
+    public static int port = 9999;
 
-    public ServerTest() {
+
+    public Server() {
         connections = new ArrayList<>();
         closed = false;
     }
@@ -26,15 +28,15 @@ public class ServerTest implements Runnable {
     @Override
     public void run() {
         try {
-            serversocket = new ServerSocket(9999);
+            serversocket = new ServerSocket(port);
             pool = Executors.newCachedThreadPool();
             while(!closed) {
                 Socket client = serversocket.accept();
                 ConnectionHandler handler = new ConnectionHandler(client);
                 connections.add(handler);
-                pool.equals(handler);
+                pool.execute(handler);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             shutdown();
         }
     }
@@ -74,6 +76,7 @@ public class ServerTest implements Runnable {
                 System.out.println(username + " connected");
                 broadcast(username + " joined the chat");
                 String message;
+
                 while ((message = in.readLine()) != null) {
                     if (message.startsWith("/username")) {
                         String[] messageSplit = message.split(" ", 2);
@@ -122,7 +125,7 @@ public class ServerTest implements Runnable {
     }
 
     public static void main (String[] args) {
-        ServerTest server = new ServerTest();
+        Server server = new Server();
         server.run();
     }
 }
