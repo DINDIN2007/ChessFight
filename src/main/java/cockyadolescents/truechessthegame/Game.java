@@ -28,7 +28,7 @@ import static cockyadolescents.truechessthegame.Main.*;
 
 public class Game {
     private Button[][] tileArray= new Button[8][8];
-    private static boolean lockIntoPiece = false, boardCanFlip = false, isPromoting = false, boxingOn = false;
+    private static boolean lockIntoPiece = false, boardCanFlip = false, isPromoting = false, boxingOn = true;
     private static int selectX = -1, selectY = -1, moveX, moveY, timeLeftWhite = 60000, timeLeftBlack = 60000;
     private static String playingSide = "White";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
@@ -52,6 +52,7 @@ public class Game {
     @FXML private Parent root;
     private Scene scene;
     private static Boxing boxGame = new Boxing();
+    public static boolean isBoxing = false;
 
     @FXML
     public void home() throws IOException {
@@ -114,7 +115,7 @@ public class Game {
         // Resets booleans
         hasStarted = false;
         boardCanFlip = false;
-        boxingOn = false;
+        boxingOn = true;
         playingSide = "White";
 
         // Start animation loop
@@ -132,6 +133,9 @@ public class Game {
 
         // Start music
         music.playMusic();
+
+        // Stop any boxing game
+        boxGame.remainingTime = 0;
     }
 
     // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
@@ -173,11 +177,11 @@ public class Game {
         // Initializing the labels on the side of the board
         for (int i = 0; i < 8; i++) {
             Label number = new Label(String.valueOf(8 - i));
-            number.getStyleClass().add("tile");
+            number.getStyleClass().add("boardNum");
             leftNumbers.getChildren().add(number);
 
             Label letter = new Label(String.valueOf((char) ('A' + i)));
-            letter.getStyleClass().add("tile");
+            letter.getStyleClass().add("boardLetters");
             topNumbers.getChildren().add(letter);
         }
 
@@ -419,7 +423,7 @@ public class Game {
 
     // Turn on the boxing feature
     public void turnBoxingOn(ActionEvent event) {
-        if (!hasStarted) boxingOn = true;
+        if (!hasStarted) boxingOn = false;
         ((ToggleButton) event.getSource()).setDisable(true);
     }
 

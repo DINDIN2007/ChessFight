@@ -237,7 +237,7 @@ public class ChessPiece {
         if (piece.pieceType.equals("King")) return false;
 
         // Save the piece that is on coord newX and newY
-        ChessPiece tempPiece = CheckBoard[newX][newY];
+        ChessPiece tempPiece = (ChessBoard[newX][newY] == null) ? null : new ChessPiece(ChessBoard[newX][newY]);
 
         // Moves the piece
         CheckBoard[newX][newY] = new ChessPiece(piece);
@@ -248,7 +248,7 @@ public class ChessPiece {
 
         // Moves the piece back
         CheckBoard[newX][newY] = tempPiece;
-        CheckBoard[piece.pieceX][piece.pieceX] = new ChessPiece(piece);
+        CheckBoard[piece.pieceX][piece.pieceY] = new ChessPiece(piece);
 
         return isChecked;
     }
