@@ -5,7 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.io.IOException;
@@ -31,8 +30,8 @@ public class HomePage {
     }
 
     @FXML
-    public void queueOnline() throws IOException {
-        waitingroom.queue();
+    public void playOnline() throws IOException {
+        waitingroom.display();
     }
 
     // debug

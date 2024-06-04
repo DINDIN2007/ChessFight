@@ -21,26 +21,26 @@
          </VBox.margin>
       </Label>
 
-      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0">
-         <Label text="Start New Online Game : ">
-            <HBox.margin>
-               <Insets right="20.0" />
-            </HBox.margin>
-         </Label>
-         <Button mnemonicParsing="false" text="Generate Room Code" />
-      </HBox>
-
       <HBox alignment="CENTER" prefHeight="25.0" prefWidth="200.0">
-         <Label text="Join Online Game :">
+         <Label text="Join an Online Game :">
             <HBox.margin>
                <Insets right="20.0" />
             </HBox.margin>
          </Label>
-         <TextField promptText="Enter Host" />
-         <Button mnemonicParsing="false" text="Join" />
+         <TextField fx:id="addressField" promptText="Enter Address" />
+         <Button fx:id="joinServer" onAction="#joinServer" mnemonicParsing="false" text="Join" />
       </HBox>
 
-      <Label text="Room Code">
+      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0">
+         <Label text="Host an Online Game : ">
+            <HBox.margin>
+               <Insets right="20.0" />
+            </HBox.margin>
+         </Label>
+         <Button fx:id="hostServer" onAction="#hostServer" mnemonicParsing="false" text="Get Host Address" />
+      </HBox>
+
+      <Label fx:id="addressLabel">
          <VBox.margin>
             <Insets top="20.0" />
          </VBox.margin>
@@ -48,6 +48,7 @@
             <Font size="24.0" />
          </font>
       </Label>
+
       <Button fx:id="home" onAction="#home" text="Go back to Homepage">
          <VBox.margin>
             <Insets top="20.0" />

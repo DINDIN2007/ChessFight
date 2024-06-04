@@ -30,7 +30,7 @@
           </VBox.margin>
       </Button>
 
-       <Button onAction="#queueOnline" styleClass="buttonStyle" stylesheets="@style.css" text="Play on 2 Devices" textAlignment="CENTER">
+       <Button onAction="#playOnline" styleClass="buttonStyle" stylesheets="@style.css" text="Play on 2 Devices" textAlignment="CENTER">
           <font>
               <Font name="Cooper Black" size="19.0" />
           </font>

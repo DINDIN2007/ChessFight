@@ -13,8 +13,12 @@ public class Client implements Runnable {
     private BufferedReader in;
     private PrintWriter out;
     private boolean done = false;
-    private static String host = "127.0.0.1";
+    private static String host;
     private static int port = 9999;
+
+    public Client(String address) {
+        host = address;
+    }
 
     @Override
     public void run() {
@@ -69,7 +73,7 @@ public class Client implements Runnable {
     }
 
     public static void main(String[] args) {
-        Client client = new Client();
+        Client client = new Client("127.0.0.1");
         client.run();
     }
 }
