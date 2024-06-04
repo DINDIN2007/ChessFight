@@ -36,7 +36,7 @@
                <Insets right="20.0" />
             </HBox.margin>
          </Label>
-         <TextField promptText="Enter Room Code" />
+         <TextField promptText="Enter Host" />
          <Button mnemonicParsing="false" text="Join" />
       </HBox>
 
@@ -53,10 +53,5 @@
             <Insets top="20.0" />
          </VBox.margin>
       </Button>
-      <!--<Button onAction="#startGame" mnemonicParsing="false" text="Play only on this Device">
-         <VBox.margin>
-            <Insets top="20.0" />
-         </VBox.margin>
-      </Button>-->
    </VBox>
 </AnchorPane>

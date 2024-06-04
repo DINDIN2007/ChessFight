@@ -44,6 +44,7 @@ public class Server implements Runnable {
     public void shutdown() {
         try {
             closed = true;
+            pool.shutdown();
             if (!serversocket.isClosed()) {
                 serversocket.close();
             }
@@ -101,6 +102,7 @@ public class Server implements Runnable {
         }
 
         public void broadcast (String message) {
+            System.out.println(message);
             for (ConnectionHandler ch : connections) {
                 ch.sendMessage(message);
             }

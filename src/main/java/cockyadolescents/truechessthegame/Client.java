@@ -13,16 +13,13 @@ public class Client implements Runnable {
     private BufferedReader in;
     private PrintWriter out;
     private boolean done = false;
+    private static String host = "127.0.0.1";
     private static int port = 9999;
-
-//    private String username = "anonymous" + (int) (Math.random() * 9999);
-//    private static Timer timer;
-//    private static TimerTask task;
 
     @Override
     public void run() {
         try {
-            Socket clientSocket = new Socket("127.0.0.1", port);
+            clientSocket = new Socket(host, port);
             out =  new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
@@ -50,7 +47,7 @@ public class Client implements Runnable {
         }
     }
 
-    class InputHandler implements Runnable{
+    class InputHandler implements Runnable {
         @Override
         public void run() {
             try {
@@ -58,6 +55,7 @@ public class Client implements Runnable {
                 while (!done) {
                     String message = inReader.readLine();
                     if (message.equals("/quit")) {
+                        out.println(message);
                         inReader.close();
                         shutdown();
                     } else {
@@ -75,3 +73,6 @@ public class Client implements Runnable {
         client.run();
     }
 }
+
+// cd IdeaProjects\ChessFight\target\classes
+// java cockyadolescents.truechessthegame.Client
