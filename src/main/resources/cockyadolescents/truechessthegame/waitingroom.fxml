@@ -22,7 +22,7 @@
       </Label>
 
       <HBox alignment="CENTER" prefHeight="25.0" prefWidth="200.0">
-         <Label text="Join an Online Game :">
+         <Label text="Join a Game :">
             <HBox.margin>
                <Insets right="20.0" />
             </HBox.margin>
@@ -32,12 +32,13 @@
       </HBox>
 
       <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0">
-         <Label text="Host an Online Game : ">
+         <Label text="Host a Game : ">
             <HBox.margin>
                <Insets right="20.0" />
             </HBox.margin>
          </Label>
-         <Button fx:id="hostServer" onAction="#hostServer" mnemonicParsing="false" text="Get Host Address" />
+         <Button fx:id="hostServer" onAction="#hostServer" mnemonicParsing="false" text="Host Server" />
+         <Button fx:id="displayAddress" onAction="#displayAddress" mnemonicParsing="false" text="Get Host Address" />
       </HBox>
 
       <Label fx:id="addressLabel">

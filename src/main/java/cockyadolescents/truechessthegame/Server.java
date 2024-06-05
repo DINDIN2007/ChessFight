@@ -24,6 +24,7 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
+        serverLog("Server started");
         try {
             serversocket = new ServerSocket(port);
             pool = Executors.newCachedThreadPool();
@@ -39,6 +40,7 @@ public class Server implements Runnable {
     }
 
     public void shutdown() {
+        serverLog("Server shutting down");
         try {
             closed = true;
             pool.shutdown();
@@ -51,6 +53,10 @@ public class Server implements Runnable {
         } catch (IOException e) {
             // ignore
         }
+    }
+
+    public void serverLog(String message) {
+        System.out.println("SERVER: " + message);
     }
 
     class ConnectionHandler implements Runnable {
@@ -71,7 +77,7 @@ public class Server implements Runnable {
                 in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 out.println("Enter username: ");
                 username = in.readLine();
-                System.out.println(username + " connected");
+                serverLog(username + " connected");
                 broadcast(username + " joined the chat");
                 String message;
 
@@ -80,7 +86,7 @@ public class Server implements Runnable {
                         String[] messageSplit = message.split(" ", 2);
                         if (messageSplit.length == 2) {
                             broadcast(username + " renamed themselves to " + messageSplit[1]);
-                            System.out.println(username + " renamed themselves to " + messageSplit[1]);
+                            serverLog(username + " renamed themselves to " + messageSplit[1]);
                             username = messageSplit[1];
                             out.println("changed to username to " + username);
                         } else {
@@ -90,7 +96,7 @@ public class Server implements Runnable {
                         broadcast(username + " left the chat");
                         // quit
                     } else {
-                        broadcast(username + ":" + message);
+                        broadcast(username + ": " + message);
                     }
                 }
             } catch (IOException e) {
@@ -98,15 +104,13 @@ public class Server implements Runnable {
             }
         }
 
-        public void broadcast (String message) {
-            System.out.println(message);
+        public void broadcast(String message) {
             for (ConnectionHandler ch : connections) {
                 ch.sendMessage(message);
             }
-
         }
 
-        public void sendMessage (String message) {
+        public void sendMessage(String message) {
             out.println(message);
         }
 
@@ -123,7 +127,7 @@ public class Server implements Runnable {
         }
     }
 
-    public static void main (String[] args) {
+    public static void main(String[] args) {
         Server server = new Server();
         server.run();
     }

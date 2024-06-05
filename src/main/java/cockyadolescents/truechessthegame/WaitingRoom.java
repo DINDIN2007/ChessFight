@@ -21,7 +21,9 @@ import static cockyadolescents.truechessthegame.Main.*;
 public class WaitingRoom {
     @FXML private TextField addressField;
     @FXML private Button hostServer;
+    @FXML private Button displayAddress;
     @FXML private Label addressLabel;
+    String hostAddress = getHostAddress();
     Parent root;
     Scene scene;
 
@@ -63,15 +65,19 @@ public class WaitingRoom {
     }
 
     @FXML
-    public void hostServer() {
-        String hostAddress = getHostAddress();
+    public void displayAddress() {
         addressLabel.setText("Host Address: " + hostAddress);
-        Server server = new Server();
-        Client client = new Client(hostAddress);
+    }
+
+    @FXML
+    public void hostServer() {
+        Thread t = new Thread(new Server());
+        t.start();
     }
 
     @FXML
     public void joinServer() {
         Client client = new Client(addressField.getText());
+        client.run();
     }
 }
