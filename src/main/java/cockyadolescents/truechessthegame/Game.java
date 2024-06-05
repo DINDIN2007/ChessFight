@@ -51,7 +51,7 @@ public class Game {
     @FXML private Parent root;
     private Scene scene;
     private static Boxing boxGame = new Boxing();
-    public static boolean isBoxing = false;
+    public static boolean isBoxing = false, boxingWon = false;
 
     @FXML
     public void home() throws IOException {
@@ -118,7 +118,8 @@ public class Game {
         playingSide = "White";
 
         // Start animation loop
-        animationLoop = new GameLoop(this, 0.1);
+        if (animationLoop != null) animationLoop.stop();
+        animationLoop = new GameLoop(this, 10);
         animationLoop.start();
 
         // Assigns the pawn promotion buttons their function
@@ -132,6 +133,16 @@ public class Game {
 
         // Stop any boxing game
         boxGame.remainingTime = 0;
+    }
+
+    // End game setup
+    public void endGame() throws IOException {
+        // Load new scene to start the game
+        root = FXMLLoader.load(getClass().getResource("gameover.fxml"));
+        scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+        window.setScene(scene);
     }
 
     // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
@@ -232,6 +243,13 @@ public class Game {
                 music.capturePiece();
             }
             else music.movePiece();
+
+            boxingWon = true; // Set in David's file instead
+            if (boxingWon && tilePiece != null) {
+                if (tilePiece.pieceType.equals("King")) {
+                    endGame();
+                }
+            }
 
             // Disable special moves for pawn (2 step forward) or king (castle)
             selectedPiece.hasMoved = true;

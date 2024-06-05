@@ -20,7 +20,7 @@ import java.io.IOException;
 
 public class Boxing {
     private Timeline timer;
-    public int remainingTime = 90;
+    public int remainingTime = 30;
 
     public static ChessPiece attack, defense;
     public static Stage stage;
@@ -59,7 +59,7 @@ public class Boxing {
 
         // Timer text
         Text timerText = (Text)root.lookup("#timer_text");
-        timerText.setText("Time remaining: 1:30");
+        timerText.setText("Time remaining: 0:30");
 
         // Show the PopUp
         popup.setAutoHide(false);
@@ -79,7 +79,7 @@ public class Boxing {
     }
 
     private void startTimer(Text timerText, Popup popup) {
-        remainingTime = 90;
+        remainingTime = 30;
         timer = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             remainingTime--;
             int minutes = remainingTime / 60;
