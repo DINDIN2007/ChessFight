@@ -37,8 +37,8 @@
                <Insets right="20.0" />
             </HBox.margin>
          </Label>
-         <Button fx:id="hostServer" onAction="#hostServer" mnemonicParsing="false" text="Host Server" />
-         <Button fx:id="displayAddress" onAction="#displayAddress" mnemonicParsing="false" text="Get Host Address" />
+         <Button onAction="#hostServer" mnemonicParsing="false" text="Host Server" />
+         <Button onAction="#displayAddress" mnemonicParsing="false" text="Get Host Address" />
       </HBox>
 
       <Label fx:id="addressLabel">
@@ -50,7 +50,7 @@
          </font>
       </Label>
 
-      <Button fx:id="home" onAction="#home" text="Go back to Homepage">
+      <Button onAction="#home" text="Go back to Homepage">
          <VBox.margin>
             <Insets top="20.0" />
          </VBox.margin>

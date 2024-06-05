@@ -35,13 +35,12 @@ public class Audio {
         songPlayer = new MediaPlayer(currentSong);
         songPlayer.play();
 
-        if (!disabled) {
-            songPlayer.setOnEndOfMedia(new Runnable() {
-                public void run() {
-                    playMusic();
-                }
-            });
-        }
+
+        songPlayer.setOnEndOfMedia(new Runnable() {
+            public void run() {
+                playMusic();
+            }
+        });
     }
 
     public void movePiece() {

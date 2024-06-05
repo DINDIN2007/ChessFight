@@ -132,7 +132,9 @@ public class Game {
         createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers, promotionBar, window);
 
         // Start music
-        music.playMusic();
+        if (!Audio.disabled) {
+            music.playMusic();
+        }
 
         // Stop any boxing game
         boxGame.remainingTime = 0;

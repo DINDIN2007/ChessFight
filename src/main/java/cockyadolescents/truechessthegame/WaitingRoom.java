@@ -20,12 +20,12 @@ import static cockyadolescents.truechessthegame.Main.*;
 // Online game
 public class WaitingRoom {
     @FXML private TextField addressField;
-    @FXML private Button hostServer;
-    @FXML private Button displayAddress;
     @FXML private Label addressLabel;
-    String hostAddress = getHostAddress();
-    Parent root;
-    Scene scene;
+    private String hostAddress;
+    private Thread thread;
+
+    private Parent root;
+    private Scene scene;
 
     @FXML
     public void home() throws IOException {
@@ -42,7 +42,7 @@ public class WaitingRoom {
     }
 
     // gets ip address of host and runs server
-    public String getHostAddress() {
+    public void getHostAddress() {
         try {
             // retrieves available network interfaces
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
@@ -52,27 +52,32 @@ public class WaitingRoom {
                 Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
                 while (addresses.hasMoreElements()) {
                     InetAddress address = addresses.nextElement();
-                    // filters out loopback addresses and returns IPv4 addresses
+                    // filters out loopback addresses and returns IPv4 address
                     if (!address.isLoopbackAddress() && address instanceof Inet4Address) {
-                        return address.getHostAddress();
+                        // assigns first one and logs the rest (debugging)
+                        String hostaddress = address.getHostAddress();
+                        this.hostAddress = (hostAddress == null)? hostaddress : hostAddress;
+                        System.out.println(hostaddress);
                     }
                 }
             }
         } catch (SocketException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     @FXML
     public void displayAddress() {
-        addressLabel.setText("Host Address: " + hostAddress);
+        getHostAddress();
+        addressLabel.setText("Host Address: " + this.hostAddress);
     }
 
     @FXML
     public void hostServer() {
-        Thread t = new Thread(new Server());
-        t.start();
+        if (thread == null) { // prevents hosting multiple instances of server (temporary bug fix)
+         thread = new Thread(new Server());
+         thread.start();
+        }
     }
 
     @FXML
