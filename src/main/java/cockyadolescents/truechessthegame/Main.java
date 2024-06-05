@@ -11,6 +11,8 @@ public class Main extends Application {
     public static WaitingRoom waitingroom = new WaitingRoom();
     public static Game maingame = new Game();
 
+    public static Audio music = new Audio();
+
     @Override
     public void start(Stage stage) throws IOException {
         window = stage;
@@ -18,6 +20,11 @@ public class Main extends Application {
         homepage.display();
         window.show();
         maingame.startGame();
+
+        // Start music
+        if (!Audio.disabled) {
+            music.playMusic();
+        }
     }
 
     public static void main(String[] args) {launch();}

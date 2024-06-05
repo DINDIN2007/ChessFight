@@ -37,6 +37,7 @@ public class HomePage {
     @FXML
     public void enableMusic() {
         Audio.disabled = false;
+        music.playMusic();
     }
 
     // debug

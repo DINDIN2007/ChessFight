@@ -47,7 +47,6 @@ public class Game {
     private static Image source;
     private static GraphicsContext graphicsContext;
     private static GameLoop animationLoop;
-    public static Audio music = new Audio();
 
     @FXML private Parent root;
     private Scene scene;
@@ -130,11 +129,6 @@ public class Game {
 
         // Create all elements in the previously mentioned containers
         createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers, promotionBar, window);
-
-        // Start music
-        if (!Audio.disabled) {
-            music.playMusic();
-        }
 
         // Stop any boxing game
         boxGame.remainingTime = 0;
