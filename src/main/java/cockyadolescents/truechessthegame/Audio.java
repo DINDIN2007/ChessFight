@@ -4,6 +4,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 public class Audio {
+    public static boolean disabled = true;
     private Media[] playlist;
     private Media pieceMoved, pieceCaptured, newGame;
     private MediaPlayer songPlayer;
@@ -34,11 +35,13 @@ public class Audio {
         songPlayer = new MediaPlayer(currentSong);
         songPlayer.play();
 
-        songPlayer.setOnEndOfMedia(new Runnable() {
-            public void run() {
-                playMusic();
-            }
-        });
+        if (!disabled) {
+            songPlayer.setOnEndOfMedia(new Runnable() {
+                public void run() {
+                    playMusic();
+                }
+            });
+        }
     }
 
     public void movePiece() {

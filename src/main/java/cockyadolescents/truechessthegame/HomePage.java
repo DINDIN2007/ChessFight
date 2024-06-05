@@ -34,6 +34,11 @@ public class HomePage {
         waitingroom.display();
     }
 
+    @FXML
+    public void enableMusic() {
+        Audio.disabled = false;
+    }
+
     // debug
     public static void printNewGameInConsole() {
         // THIS AREA IS TO TEST THE CHESSBOARD CLASS JAVA THROUGH CONSOLE

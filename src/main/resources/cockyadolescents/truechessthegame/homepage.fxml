@@ -35,6 +35,8 @@
               <Font name="Cooper Black" size="19.0" />
           </font>
       </Button>
+
+       <Button onAction="#enableMusic" text="Music"/>
       <VBox.margin>
          <Insets top="20.0" />
       </VBox.margin>
