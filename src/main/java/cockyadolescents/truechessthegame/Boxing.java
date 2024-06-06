@@ -29,21 +29,32 @@ public class Boxing {
 
     private GameLoop loop;
 
-    @FXML private Parent root;
-    @FXML private static Canvas canvas;
-    @FXML private static GraphicsContext graphicsContext;
+    @FXML
+    private Parent root;
+    @FXML
+    private static Canvas canvas;
+    @FXML
+    private static GraphicsContext graphicsContext;
     private static Image source;
 
-    private double movingx, movingy;
+    private double movingx;
+    private double movingy;
     private double movingx1, movingy1;
 
-    private static double movementSpeed = 3;
+    private static double movementSpeed = 5;
 
     //private Set<KeyCode> pressedKeys = new HashSet<>();
     //private Thread movementThread1, movementThread2;
 
     private boolean isUpPressed, isDownPressed, isLeftPressed, isRightPressed;
     private boolean isWPressed, isSPressed, isAPressed, isDPressed;
+
+    private boolean isHitboxActive = false;
+    private boolean canPressL = true;
+    private double hitboxX, hitboxY;
+    private boolean isSecondHitboxActive = false;
+    private boolean canPressF = true;
+    private double secondHitboxX, secondHitboxY;
 
     public static void main(String[] args) throws IOException {
         Boxing newGame = new Boxing();
@@ -69,7 +80,7 @@ public class Boxing {
         loop.start();
 
         // Timer text
-        Text timerText = (Text)root.lookup("#timer_text");
+        Text timerText = (Text) root.lookup("#timer_text");
         timerText.setText("Time remaining: 0:30");
 
         // Show the PopUp
@@ -77,13 +88,15 @@ public class Boxing {
         popup.show(ownerStage);
 
         // Gets the canvas from the FXML file
-        canvas = (Canvas)root.lookup("#gameScreen");
+        canvas = (Canvas) root.lookup("#gameScreen");
         graphicsContext = canvas.getGraphicsContext2D();
         source = new Image(getClass().getResourceAsStream("images/ChessPieces-2.png"));
 
         // Set the pieces at starting positions
-        movingx = 300 - 24; movingy = 300 * 3.0/4;
-        movingx1 = 300 - 24; movingy1 = 300 * 1.0/4;
+        movingx = 300 - 24;
+        movingy = 300 * 3.0 / 4;
+        movingx1 = 300 - 24;
+        movingy1 = 300 * 1.0 / 4;
 
         // Start timer countdown
         startTimer(timerText, popup);
@@ -117,8 +130,42 @@ public class Boxing {
     }
 
     private void handlePunchAction(int i) {
+        if (i == 2 && canPressL) {
+            activateHitbox();
+            canPressL = false;
+            Timeline cooldownTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> canPressL = true));
+            cooldownTimeline.setCycleCount(1);
+            cooldownTimeline.play();
+        }
+    }
+
+    private void handlePunchAction1(int i) {
+        if (i == 2 && canPressF) {
+            activateHitbox();
+            canPressF = false;
+            Timeline cooldownTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> canPressF = true));
+            cooldownTimeline.setCycleCount(1);
+            cooldownTimeline.play();
+        }
+    }
+
+    /*private void handlePunchAction(int i) {
         System.out.println("Punch action executed!");
         // Implement punch action logic
+    }*/
+
+    private void activateHitbox() {
+        isHitboxActive = true;
+        hitboxX = movingx1 + 24;
+        hitboxY = movingy1;
+
+        isSecondHitboxActive = true;
+        secondHitboxX = movingx + 24;
+        secondHitboxY = movingy;
+
+        Timeline hitboxTimeline = new Timeline(new KeyFrame(Duration.seconds(0.5), e -> isHitboxActive = false));
+        hitboxTimeline.setCycleCount(1);
+        hitboxTimeline.play();
     }
 
     private void handleKeyPressed(KeyEvent event) {
@@ -215,38 +262,101 @@ public class Boxing {
         int v = 0, v1 = 0;
         int x = 0, x1 = 0;
 
-        switch(attack.pieceType){
-            case "Pawn": v=0; break;
-            case "Rook": v=48; break;
-            case "Knight": v=48*2; break;
-            case "Bishop": v=48*3; break;
-            case "Queen": v=48*4;break;
-            case "King": v=48*5;break;
+        switch (attack.pieceType) {
+            case "Pawn":
+                v = 0;
+                break;
+            case "Rook":
+                v = 48;
+                break;
+            case "Knight":
+                v = 48 * 2;
+                break;
+            case "Bishop":
+                v = 48 * 3;
+                break;
+            case "Queen":
+                v = 48 * 4;
+                break;
+            case "King":
+                v = 48 * 5;
+                break;
         }
-        switch(attack.pieceColor){
-            case "White": v1=48;break;
-            case "Black": v1=0;break;
+        switch (attack.pieceColor) {
+            case "White":
+                v1 = 48;
+                break;
+            case "Black":
+                v1 = 0;
+                break;
         }
 
-        switch(defense.pieceType){
-            case "Pawn": x=0;break;
-            case "Rook": x=48;break;
-            case "Knight": x=48*2;break;
-            case "Bishop": x=48*3;break;
-            case "Queen": x=48*4;break;
-            case "King": x=48*5;break;
+        switch (defense.pieceType) {
+            case "Pawn":
+                x = 0;
+                break;
+            case "Rook":
+                x = 48;
+                break;
+            case "Knight":
+                x = 48 * 2;
+                break;
+            case "Bishop":
+                x = 48 * 3;
+                break;
+            case "Queen":
+                x = 48 * 4;
+                break;
+            case "King":
+                x = 48 * 5;
+                break;
         }
-        switch(defense.pieceColor){
-            case "White": x1=48;break;
-            case "Black": x1=0;break;
+        switch (defense.pieceColor) {
+            case "White":
+                x1 = 48;
+                break;
+            case "Black":
+                x1 = 0;
+                break;
         }
-        
+
         // Draw the two pieces
         graphicsContext.drawImage(source, v, v1, 48, 48, movingx, movingy, 48, 48);
         graphicsContext.drawImage(source, x, x1, 48, 48, movingx1, movingy1, 48, 48);
 
+        if (isHitboxActive) {
+            hitboxX = movingx1 + 24;  // Update hitbox position to follow the bottom piece
+            hitboxY = movingy1;
+            graphicsContext.setFill(Color.RED);
+            graphicsContext.fillRect(hitboxX, hitboxY, 24, 24);
+            checkHitboxCollision();
+        }
+        if (isSecondHitboxActive) {
+            secondHitboxX = movingx + 24;  // Update second hitbox position to follow the top piece
+            secondHitboxY = movingy;
+            graphicsContext.setFill(Color.RED);
+            graphicsContext.fillRect(secondHitboxX, secondHitboxY, 24, 24);
+            checkSecondHitboxCollision();
+        }
+
         // movementSpeed = Math.max(0.0000001, movementSpeed - 0.001);
         updatePositions();
+    }
+
+    private void checkHitboxCollision() {
+        if (hitboxX < movingx + 48 && hitboxX + 24 > movingx &&
+                hitboxY < movingy + 48 && hitboxY + 24 > movingy) {
+            Popup popup = (Popup) root.getScene().getWindow();
+            popup.hide();
+        }
+    }
+
+    private void checkSecondHitboxCollision() {
+        if (secondHitboxX < movingx1 + 48 && secondHitboxX + 24 > movingx1 &&
+                secondHitboxY < movingy1 + 48 && secondHitboxY + 24 > movingy1) {
+            Popup popup = (Popup) root.getScene().getWindow();
+            popup.hide();
+        }
     }
 }
 
