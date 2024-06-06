@@ -29,12 +29,9 @@ public class Boxing {
 
     private GameLoop loop;
 
-    @FXML
-    private Parent root;
-    @FXML
-    private static Canvas canvas;
-    @FXML
-    private static GraphicsContext graphicsContext;
+    @FXML private Parent root;
+    @FXML private static Canvas canvas;
+    @FXML private static GraphicsContext graphicsContext;
     private static Image source;
 
     private double movingx;
@@ -80,7 +77,7 @@ public class Boxing {
         loop.start();
 
         // Timer text
-        Text timerText = (Text) root.lookup("#timer_text");
+        Text timerText = (Text)root.lookup("#timer_text");
         timerText.setText("Time remaining: 0:30");
 
         // Show the PopUp
@@ -88,15 +85,13 @@ public class Boxing {
         popup.show(ownerStage);
 
         // Gets the canvas from the FXML file
-        canvas = (Canvas) root.lookup("#gameScreen");
+        canvas = (Canvas)root.lookup("#gameScreen");
         graphicsContext = canvas.getGraphicsContext2D();
         source = new Image(getClass().getResourceAsStream("images/ChessPieces-2.png"));
 
         // Set the pieces at starting positions
-        movingx = 300 - 24;
-        movingy = 300 * 3.0 / 4;
-        movingx1 = 300 - 24;
-        movingy1 = 300 * 1.0 / 4;
+        movingx = 300 - 24; movingy = 300 * 3.0/4;
+        movingx1 = 300 - 24; movingy1 = 300 * 1.0/4;
 
         // Start timer countdown
         startTimer(timerText, popup);
@@ -138,7 +133,6 @@ public class Boxing {
             cooldownTimeline.play();
         }
     }
-
     private void handlePunchAction1(int i) {
         if (i == 2 && canPressF) {
             activateHitbox();
@@ -262,62 +256,30 @@ public class Boxing {
         int v = 0, v1 = 0;
         int x = 0, x1 = 0;
 
-        switch (attack.pieceType) {
-            case "Pawn":
-                v = 0;
-                break;
-            case "Rook":
-                v = 48;
-                break;
-            case "Knight":
-                v = 48 * 2;
-                break;
-            case "Bishop":
-                v = 48 * 3;
-                break;
-            case "Queen":
-                v = 48 * 4;
-                break;
-            case "King":
-                v = 48 * 5;
-                break;
+        switch(attack.pieceType){
+            case "Pawn": v=0; break;
+            case "Rook": v=48; break;
+            case "Knight": v=48*2; break;
+            case "Bishop": v=48*3; break;
+            case "Queen": v=48*4;break;
+            case "King": v=48*5;break;
         }
-        switch (attack.pieceColor) {
-            case "White":
-                v1 = 48;
-                break;
-            case "Black":
-                v1 = 0;
-                break;
+        switch(attack.pieceColor){
+            case "White": v1=48;break;
+            case "Black": v1=0;break;
         }
 
-        switch (defense.pieceType) {
-            case "Pawn":
-                x = 0;
-                break;
-            case "Rook":
-                x = 48;
-                break;
-            case "Knight":
-                x = 48 * 2;
-                break;
-            case "Bishop":
-                x = 48 * 3;
-                break;
-            case "Queen":
-                x = 48 * 4;
-                break;
-            case "King":
-                x = 48 * 5;
-                break;
+        switch(defense.pieceType){
+            case "Pawn": x=0;break;
+            case "Rook": x=48;break;
+            case "Knight": x=48*2;break;
+            case "Bishop": x=48*3;break;
+            case "Queen": x=48*4;break;
+            case "King": x=48*5;break;
         }
-        switch (defense.pieceColor) {
-            case "White":
-                x1 = 48;
-                break;
-            case "Black":
-                x1 = 0;
-                break;
+        switch(defense.pieceColor){
+            case "White": x1=48;break;
+            case "Black": x1=0;break;
         }
 
         // Draw the two pieces
@@ -342,7 +304,6 @@ public class Boxing {
         // movementSpeed = Math.max(0.0000001, movementSpeed - 0.001);
         updatePositions();
     }
-
     private void checkHitboxCollision() {
         if (hitboxX < movingx + 48 && hitboxX + 24 > movingx &&
                 hitboxY < movingy + 48 && hitboxY + 24 > movingy) {
@@ -350,7 +311,6 @@ public class Boxing {
             popup.hide();
         }
     }
-
     private void checkSecondHitboxCollision() {
         if (secondHitboxX < movingx1 + 48 && secondHitboxX + 24 > movingx1 &&
                 secondHitboxY < movingy1 + 48 && secondHitboxY + 24 > movingy1) {
@@ -358,7 +318,7 @@ public class Boxing {
             popup.hide();
         }
     }
-}
+    }
 
  /*   public static void doStuff () {
 
