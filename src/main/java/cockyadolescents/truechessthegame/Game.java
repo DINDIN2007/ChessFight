@@ -237,9 +237,9 @@ public class Game {
 
             // If capturing a piece, start the Boxing Match !!!
             if (tilePiece != null && boxingOn) {
-                boxGame.showBoxingPopup(window);
                 Boxing.attack = selectedPiece;
                 Boxing.defense = tilePiece;
+                boxGame.showBoxingPopup(window);
                 music.capturePiece();
             }
             else music.movePiece();
