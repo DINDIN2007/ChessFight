@@ -30,7 +30,7 @@ public class Game {
     private Button[][] tileArray= new Button[8][8];
     private static boolean lockIntoPiece = false, boardCanFlip = false, isPromoting = false, boxingOn = true;
     private static int selectX = -1, selectY = -1, moveX, moveY, timeLeftWhite = 60000, timeLeftBlack = 60000;
-    private static String playingSide = "White";
+    private static String playingSide = "White", winner = "";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
     public static boolean onlineGame = false, hasStarted = false;
 
@@ -50,7 +50,7 @@ public class Game {
 
     @FXML private Parent root;
     private Scene scene;
-    private static Boxing boxGame = new Boxing();
+    private Boxing boxGame = new Boxing();
     public static boolean isBoxing = false, boxingWon = false;
 
     @FXML
@@ -141,6 +141,15 @@ public class Game {
         root = FXMLLoader.load(getClass().getResource("gameover.fxml"));
         scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+        Label cryLabel = (Label) root.lookup("#cryLabel");
+        cryLabel.setVisible(false);
+
+        Button cryButton = (Button) root.lookup("#cryButton");
+        cryButton.setOnAction(event -> cryLabel.setVisible(true));
+
+        Label winnerButton = (Label) root.lookup("#winner");
+        winnerButton.setText(winner + " won !");
 
         window.setScene(scene);
     }
@@ -237,70 +246,60 @@ public class Game {
 
             // If capturing a piece, start the Boxing Match !!!
             if (tilePiece != null && boxingOn) {
+                boxGame = new Boxing();
                 Boxing.attack = selectedPiece;
                 Boxing.defense = tilePiece;
+
                 boxGame.showBoxingPopup(window);
-                music.capturePiece();
+
+                PauseTransition pause = new PauseTransition(Duration.seconds(1));
+                pause.setOnFinished(event1 -> {
+                    if (boxGame.remainingTime > 0) {
+                        pause.play();
+                    }
+
+                    else {
+                        if (Boxing.attackWon) {
+                            if (tilePiece.pieceType.equals("King")) {
+                                try {
+                                    winner = (tilePiece.pieceColor.equals("White")) ? "Black" : "White";
+                                    endGame();
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            // Move the piece in ChessPiece 2D board array
+                            ChessPiece.moveChessPiece(selectedPiece, moveX, moveY);
+                            music.capturePiece();
+
+                        } else {
+                            // Changes who is playing now
+                            clearCanvas();
+                            drawBoard(tileArray);
+
+                            // Rotates the board if feature is activated
+                            if (boardCanFlip) {
+                                turnBoard(leftNumbers, topNumbers);
+                                buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
+                            }
+                        }
+
+                        // Update the board
+                        movePiece(selectedPiece);
+                    }
+                });
+                pause.play();
+
+                return;
             }
             else music.movePiece();
-
-            boxingWon = true; // Set in David's file instead
-            if (boxingWon && tilePiece != null) {
-                if (tilePiece.pieceType.equals("King")) {
-                    endGame();
-                }
-            }
-
-            // Disable special moves for pawn (2 step forward) or king (castle)
-            selectedPiece.hasMoved = true;
 
             // Move the piece in ChessPiece 2D board array
             ChessPiece.moveChessPiece(selectedPiece, moveX, moveY);
 
-            // Pawn promotion if it reaches the other end of the board
-            if (ChessBoard[moveX][moveY].canPromote) {
-                promotionBar.setVisible(true);
-                isPromoting = true;
-                return;
-            }
-            else {
-                promotionBar.setVisible(false);
-                isPromoting = false;
-            }
-
-            // Changes who is playing now
-            playingSide = (playingSide.equals("White")) ? "Black" : "White";
-            clearCanvas();
-            drawBoard(tileArray);
-
-            // Detecting checking feature
-            String checkedCheck = ChessPiece.checkChecking(ChessBoard);
-            if (!checkedCheck.equals("None")) {
-                isCheckedLabel.setVisible(true);
-                isCheckedLabel.setText(checkedCheck + " King CHECK !");
-
-                // Disappears after 1 sec
-                PauseTransition delay = new PauseTransition(Duration.seconds(1));
-                delay.setOnFinished(e -> isCheckedLabel.setVisible(false));
-                delay.play();
-            }
-            else isCheckedLabel.setText("");
-
-            // Resets which piece is selected
-            selectX = -1; selectY = -1;
-            lockIntoPiece = false;
-
-            // Rotates the board if feature is activated
-            if (boardCanFlip) {
-                turnBoard(leftNumbers, topNumbers);
-                buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
-            }
-
-            // Change the progress bar
-            progressBar.setProgress((double)score[0] / (score[0] + score[1]));
-
-            // Disable the toggle button
-            promotionToggle.setSelected(true);
+            // Moves piece
+            movePiece(selectedPiece);
         }
 
         // Marks the places that the piece can move to
@@ -337,6 +336,51 @@ public class Game {
             lockIntoPiece = true;
             selectX = moveX; selectY = moveY;
         }
+    }
+
+    // Moves piece to another position on the board
+    private void movePiece(ChessPiece selectedPiece) {
+        // Disable special moves for pawn (2 step forward) or king (castle)
+        selectedPiece.hasMoved = true;
+
+        // Pawn promotion if it reaches the other end of the board
+        if (ChessBoard[moveX][moveY].canPromote) {
+            promotionBar.setVisible(true);
+            isPromoting = true;
+            return;
+        }
+        else {
+            promotionBar.setVisible(false);
+            isPromoting = false;
+        }
+
+        // Changes who is playing now
+        playingSide = (playingSide.equals("White")) ? "Black" : "White";
+        clearCanvas();
+        drawBoard(tileArray);
+
+        // Detecting checking feature
+        String checkedCheck = ChessPiece.checkChecking(ChessBoard);
+        if (!checkedCheck.equals("None")) {
+            isCheckedLabel.setVisible(true);
+            isCheckedLabel.setText(checkedCheck + " King CHECK !");
+
+            // Disappears after 1 sec
+            PauseTransition delay = new PauseTransition(Duration.seconds(1));
+            delay.setOnFinished(e -> isCheckedLabel.setVisible(false));
+            delay.play();
+        }
+        else isCheckedLabel.setText("");
+
+        // Resets which piece is selected
+        selectX = -1; selectY = -1;
+        lockIntoPiece = false;
+
+        // Change the progress bar
+        progressBar.setProgress((double)score[0] / (score[0] + score[1]));
+
+        // Disable the toggle button
+        promotionToggle.setSelected(true);
     }
 
     // Draws the pieces and un-disables the tiles on the board

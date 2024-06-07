@@ -35,6 +35,7 @@ public class Boxing {
     public static Image source, source2;
 
     public static BoxingPiece player1, player2;
+    public static boolean attackWon = false; // Defending piece wins by default
 
     public static void main(String[] args) throws IOException {
         Boxing newGame = new Boxing();
@@ -60,8 +61,15 @@ public class Boxing {
         source2 = new Image(getClass().getResourceAsStream("images/GloveSprites.png"));
 
         // Set the pieces at starting positions
-        player1 = new BoxingPiece(300.0 - 24, 300 * 3.0/4, attack.pieceType, attack.pieceColor);
-        player2 = new BoxingPiece(300.0 - 24, 300 * 1.0/4, defense.pieceType, defense.pieceColor);
+        if (attack.pieceColor.equals("White")) { // Player 1 as white
+            player1 = new BoxingPiece(300.0 - 24, 300 * 3.0/4, attack.pieceType, attack.pieceColor);
+            player2 = new BoxingPiece(300.0 - 24, 300 * 1.0/4, defense.pieceType, defense.pieceColor);
+        }
+        else { // Player 1 as black
+            player2 = new BoxingPiece(300.0 - 24, 300 * 1.0/4, attack.pieceType, attack.pieceColor);
+            player1 = new BoxingPiece(300.0 - 24, 300 * 3.0/4, defense.pieceType, defense.pieceColor);
+        }
+        attackWon = false;
 
         // Timer text
         Text timerText = (Text)root.lookup("#timer_text");
@@ -126,10 +134,10 @@ public class Boxing {
             case D:
                 player2.moveRight = true; // Move right
                 break;
-            case F:
+            case L:
                 player1.launchAttack();
                 break;
-            case L:
+            case F:
                 player2.launchAttack();
                 break;
             default:
@@ -175,21 +183,35 @@ public class Boxing {
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         // Redraw background
-        //graphicsContext.setFill(Color.rgb(128, 128, 128));
-        //graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        graphicsContext.setFill(Color.rgb(128, 128, 128));
+        graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         // graphicsContext.fillRect(0, 0, 48, 48);
         player1.update(player2); player2.update(player1);
 
         if (player1.isDefeated) {
+            attackWon = !attack.pieceColor.equals("White");
+
+            System.out.println((attackWon) ? "White Won" : "Black Won");
+
             Timeline cooldownTimeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> popup.hide()));
             cooldownTimeline.setCycleCount(1);
             cooldownTimeline.play();
+
+            remainingTime = 0;
+            loop.stop();
         }
-        if (player2.isDefeated) {
+        else if (player2.isDefeated) {
+            attackWon = !defense.pieceColor.equals("White");
+
+            System.out.println((attackWon) ? "White Won" : "Black Won");
+
             Timeline cooldownTimeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> popup.hide()));
             cooldownTimeline.setCycleCount(1);
             cooldownTimeline.play();
+
+            remainingTime = 0;
+            loop.stop();
         }
     }
 }

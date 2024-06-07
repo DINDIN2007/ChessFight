@@ -15,7 +15,7 @@
             <Font name="Calisto MT" size="36.0" />
          </font>
       </Label>
-      <Label text="_____ won !">
+      <Label fx:id="winner" text="_____ won !">
          <font>
             <Font size="18.0" />
          </font>
@@ -32,9 +32,9 @@
                   <Insets right="5.0" />
                </HBox.margin>
             </Button>
-            <Button mnemonicParsing="false" text="Cry about it" />
+            <Button fx:id="cryButton" mnemonicParsing="false" text="Cry about it" />
          </children>
       </HBox>
-      <Label text="Womp Womp" />
+      <Label fx:id="cryLabel" text="Womp Womp" />
    </children>
 </VBox>

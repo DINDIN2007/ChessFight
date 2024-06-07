@@ -11,16 +11,16 @@ public class BoxingPiece {
     // Piece position and dimensions
     public double x, y;
     private int width = 48, height = 48; // To be change to scale the piece
-    public double gloveX, gloveY, gloveSize = 30;
+    public double gloveX, gloveY, gloveSize = 48;
 
     // Piece information
     private int pieceType, pieceColor;
-    private int speed = 10;
+    private int speed = 5;
     public boolean isDefeated = false;
 
     // Attack information
     public boolean canAttack = true, isAttacking = false;
-    private double punchingReach = 30, punchingWidth = 0;
+    private double punchingReach = 20, punchingWidth = 0;
 
     // Movement booleans
     public boolean moveUp, moveDown, moveLeft, moveRight;
@@ -117,14 +117,14 @@ public class BoxingPiece {
     private void glove() {
         if (this.isAttacking) {
             if (this.punchingWidth < this.punchingReach) {
-                this.punchingWidth += 2;
+                this.punchingWidth += 5;
             }
-            this.gloveX = this.x + 24;
-            this.gloveY = this.y + 24 + this.punchingWidth;
+            this.gloveX = this.x + 12;
+            this.gloveY = this.y - 10 + this.punchingWidth;
         }
         else {
-            this.gloveX = this.x + 24;
-            this.gloveY = this.y + 24;
+            this.gloveX = this.x + 12;
+            this.gloveY = this.y - 10;
         }
         graphicsContext.drawImage(source2, 48, 24, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
     }
