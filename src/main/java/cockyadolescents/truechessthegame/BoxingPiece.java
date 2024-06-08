@@ -119,13 +119,32 @@ public class BoxingPiece {
             if (this.punchingWidth < this.punchingReach) {
                 this.punchingWidth += 5;
             }
-            this.gloveX = this.x + 12;
-            this.gloveY = this.y - 10 + this.punchingWidth;
+            if (this.y < canvas.getHeight() / 2) {
+                this.gloveX = this.x + 12;
+                this.gloveY = this.y + this.height + this.punchingWidth;
+            }
+            else {
+                this.gloveX = this.x + 12;
+                this.gloveY = this.y - this.punchingWidth;
+                }
+            }
+            else {
+            if (this.y < canvas.getHeight() / 2) {
+                this.gloveX = this.x + 12;
+                this.gloveY = this.y + this.height;
+            }
+            else {
+                this.gloveX = this.x + 12;
+                this.gloveY = this.y;
+                }
+            }
+            /*this.gloveX = this.x + 12;
+            this.gloveY = this.y - this.punchingWidth;
         }
         else {
             this.gloveX = this.x + 12;
             this.gloveY = this.y - 10;
-        }
+        }*/
         graphicsContext.drawImage(source2, 48, 24, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
     }
 
