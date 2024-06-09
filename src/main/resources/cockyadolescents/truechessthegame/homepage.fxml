@@ -35,11 +35,11 @@
               <Font name="Cooper Black" size="19.0" />
           </font>
            <VBox.margin>
-               <Insets bottom="5.0"/>
+               <Insets bottom="5.0" />
            </VBox.margin>
       </Button>
 
-       <Button onAction="#enableMusic" text="Enable music"/>
+       <Button onAction="#enableMusic" text="Settings" />
       <VBox.margin>
          <Insets top="20.0" />
       </VBox.margin>

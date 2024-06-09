@@ -126,9 +126,11 @@ public class BoxingPiece {
             else {
                 this.gloveX = this.x + 12;
                 this.gloveY = this.y - this.punchingWidth;
-                }
             }
-            else {
+            graphicsContext.drawImage(source2, 48, 24, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
+        }
+
+        else {
             if (this.y < canvas.getHeight() / 2) {
                 this.gloveX = this.x + 12;
                 this.gloveY = this.y + this.height;
@@ -136,8 +138,10 @@ public class BoxingPiece {
             else {
                 this.gloveX = this.x + 12;
                 this.gloveY = this.y;
-                }
             }
+
+            graphicsContext.drawImage(source2, 48, 0, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
+        }
             /*this.gloveX = this.x + 12;
             this.gloveY = this.y - this.punchingWidth;
         }
@@ -145,7 +149,6 @@ public class BoxingPiece {
             this.gloveX = this.x + 12;
             this.gloveY = this.y - 10;
         }*/
-        graphicsContext.drawImage(source2, 48, 24, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
     }
 
     // Draws the piece on the canvas
