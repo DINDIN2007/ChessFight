@@ -112,9 +112,45 @@ public class BoxingPiece {
             punchTimeline.play();
         }
     }
-
-    // Draws glove sprite
     private void glove() {
+        if (this.isAttacking) {
+            if (this.punchingWidth < this.punchingReach) {
+                this.punchingWidth += 5;
+            }
+            if (this.moveUp) {
+                this.gloveX = this.x + 12;
+                this.gloveY = this.y - this.punchingWidth;
+                graphicsContext.drawImage(source2, 72, 0, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
+            } else if (this.moveDown) {
+                this.gloveX = this.x + 12;
+                this.gloveY = this.y + this.height + this.punchingWidth;
+                graphicsContext.drawImage(source2, 72, 24, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
+            } else {
+                if (this.y < canvas.getHeight() / 2) {
+                    this.gloveX = this.x + 12;
+                    this.gloveY = this.y + this.height + this.punchingWidth;
+                    graphicsContext.drawImage(source2, 72, 0, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
+                } else {
+                    this.gloveX = this.x + 12;
+                    this.gloveY = this.y - this.punchingWidth;
+                    graphicsContext.drawImage(source2, 72, 24, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
+                }
+            }
+        } else {
+            if (this.y < canvas.getHeight() / 2) {
+                this.gloveX = this.x + 12;
+                this.gloveY = this.y + this.height;
+                graphicsContext.drawImage(source2, 48, 0, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
+            } else {
+                this.gloveX = this.x + 12;
+                this.gloveY = this.y;
+                graphicsContext.drawImage(source2, 48, 24, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
+
+            }
+        }
+    }
+    // Draws glove sprite
+    /*private void glove() {
         if (this.isAttacking) {
             if (this.punchingWidth < this.punchingReach) {
                 this.punchingWidth += 5;
@@ -145,8 +181,9 @@ public class BoxingPiece {
             this.gloveX = this.x + 12;
             this.gloveY = this.y - 10;
         }*/
-        graphicsContext.drawImage(source2, 48, 24, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
-    }
+        //graphicsContext.drawImage(source2, 48, 24, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
+    //}
+
 
     // Draws the piece on the canvas
     private void drawPiece() {
