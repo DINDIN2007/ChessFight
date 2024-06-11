@@ -376,7 +376,7 @@ public class Game {
         selectedPiece.hasMoved = true;
 
         // Pawn promotion if it reaches the other end of the board
-        if (ChessBoard[moveX][moveY].canPromote) {
+        if (ChessBoard[moveX][moveY] != null && ChessBoard[moveX][moveY].canPromote) {
             promotionBar.setVisible(true);
             isPromoting = true;
             return;
