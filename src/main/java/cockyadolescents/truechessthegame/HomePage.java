@@ -10,9 +10,8 @@ import javafx.util.Pair;
 import java.io.IOException;
 import java.util.Vector;
 
-import static cockyadolescents.truechessthegame.ChessPiece.CheckBoard;
+import static cockyadolescents.truechessthegame.ChessPiece.*;
 import static cockyadolescents.truechessthegame.Main.*;
-import static cockyadolescents.truechessthegame.ChessPiece.ChessBoard;
 
 public class HomePage {
     @FXML Label welcomeText;
@@ -35,9 +34,8 @@ public class HomePage {
     }
 
     @FXML
-    public void enableMusic() {
-        Audio.disabled = false;
-        music.playMusic();
+    public void goToSetting() throws IOException {
+        settingroom.display();
     }
 
     // debug

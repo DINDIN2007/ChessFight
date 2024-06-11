@@ -2,11 +2,13 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="450" minWidth="700" prefHeight="450.0" prefWidth="700.0" styleClass="boxingBackground" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.Boxing">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="700.0" styleClass="boxingBackground" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.Boxing">
    <center>
       <Canvas fx:id="gameScreen" height="350.0" styleClass="boxingCanvas" width="600.0" BorderPane.alignment="CENTER" />
    </center>
@@ -19,4 +21,14 @@
             <Font name="Bell MT" size="32.0" />
          </font></Text>
    </top>
+   <bottom>
+      <ImageView fitHeight="60.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+         <image>
+            <Image url="@images/Controls.png" />
+         </image>
+         <BorderPane.margin>
+            <Insets bottom="20.0" />
+         </BorderPane.margin>
+      </ImageView>
+   </bottom>
 </BorderPane>

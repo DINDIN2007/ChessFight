@@ -12,7 +12,7 @@
 <AnchorPane prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.WaitingRoom">
    <VBox alignment="CENTER" prefHeight="640.0" prefWidth="800.0">
 
-      <Label fx:id="welcomeText" text="Play Online" textAlignment="CENTER">
+      <Label fx:id="welcomeText" text="Play Online 🚧 (IN PROGRESS)" textAlignment="CENTER">
          <font>
             <Font name="Bell MT" size="36.0" />
          </font>
@@ -28,7 +28,7 @@
             </HBox.margin>
          </Label>
          <TextField fx:id="addressField" promptText="Enter Address" />
-         <Button fx:id="joinServer" onAction="#joinServer" mnemonicParsing="false" text="Join" />
+         <Button fx:id="joinServer" mnemonicParsing="false" onAction="#joinServer" text="Join" />
       </HBox>
 
       <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0">
@@ -37,8 +37,8 @@
                <Insets right="20.0" />
             </HBox.margin>
          </Label>
-         <Button onAction="#hostServer" mnemonicParsing="false" text="Host Server" />
-         <Button onAction="#displayAddress" mnemonicParsing="false" text="Get Host Address" />
+         <Button mnemonicParsing="false" onAction="#hostServer" text="Host Server" />
+         <Button mnemonicParsing="false" onAction="#displayAddress" text="Get Host Address" />
       </HBox>
 
       <Label fx:id="addressLabel">

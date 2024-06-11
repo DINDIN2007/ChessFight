@@ -7,34 +7,40 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.Game">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="800.0" styleClass="mainGameBackground" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.Game">
    <children>
-      <Label text="MATCH OVER" textAlignment="CENTER">
-         <font>
-            <Font name="Calisto MT" size="36.0" />
-         </font>
-      </Label>
-      <Label fx:id="winner" text="_____ won !">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
-      <HBox alignment="CENTER" prefHeight="60.0" prefWidth="200.0">
+      <VBox alignment="CENTER" maxWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" styleClass="simpleBackground" stylesheets="@style.css">
          <children>
-            <Button mnemonicParsing="false" text="Rematch">
-               <HBox.margin>
-                  <Insets right="5.0" />
-               </HBox.margin>
-            </Button>
-            <Button minWidth="62.4" mnemonicParsing="false" text="Home">
-               <HBox.margin>
-                  <Insets right="5.0" />
-               </HBox.margin>
-            </Button>
-            <Button fx:id="cryButton" mnemonicParsing="false" text="Cry about it" />
+            <Label text="MATCH OVER" textAlignment="CENTER">
+               <font>
+                  <Font name="Calisto MT" size="36.0" />
+               </font>
+            </Label>
+            <Label fx:id="winner" text="_____ won !">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER" prefHeight="60.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="rematchbutton" mnemonicParsing="false" styleClass="off-button" stylesheets="@style.css" text="Rematch">
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="homebutton" minWidth="62.4" mnemonicParsing="false" styleClass="dark-button" stylesheets="@style.css" text="Home">
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="cryButton" mnemonicParsing="false" styleClass="orange-button" stylesheets="@style.css" text="Cry about it" />
+               </children>
+            </HBox>
+            <Label fx:id="cryLabel" text="Womp Womp">
+               <font>
+                  <Font name="Bell MT" size="12.0" />
+               </font></Label>
          </children>
-      </HBox>
-      <Label fx:id="cryLabel" text="Womp Womp" />
+      </VBox>
    </children>
 </VBox>

@@ -7,7 +7,8 @@ public class Audio {
     public static boolean disabled = true;
     private Media[] playlist;
     private Media pieceMoved, pieceCaptured, newGame;
-    private MediaPlayer songPlayer;
+    private Media missedPunch, hitPunch;
+    public MediaPlayer songPlayer;
 
     public Audio() {
         this.playlist = new Media[] {
@@ -22,10 +23,14 @@ public class Audio {
         this.pieceCaptured =  new Media(getClass().getResource("audio/capture.mp3").toExternalForm());
         this.newGame = new Media(getClass().getResource("audio/board-start.mp3").toExternalForm());
 
+        this.missedPunch = new Media(getClass().getResource("audio/swooch.wav").toExternalForm());
+        this.hitPunch = new Media(getClass().getResource("audio/hits.mp3").toExternalForm());
+
         // Set songPlayer to anything
         songPlayer = new MediaPlayer(this.newGame);
     }
 
+    // This plays a random music track from the given ones in the constructors
     public void playMusic() {
         // Stops previous music
         songPlayer.stop();
@@ -44,6 +49,7 @@ public class Audio {
         }
     }
 
+    // The remaining methods simply play a short sfx after specific actions
     public void movePiece() {
         MediaPlayer sound = new MediaPlayer(this.pieceMoved);
         sound.play();
@@ -56,6 +62,16 @@ public class Audio {
 
     public void startGame() {
         MediaPlayer sound = new MediaPlayer(this.newGame);
+        sound.play();
+    }
+
+    public void missPunch() {
+        MediaPlayer sound = new MediaPlayer(this.missedPunch);
+        sound.play();
+    }
+
+    public void hitPunch() {
+        MediaPlayer sound = new MediaPlayer(this.hitPunch);
         sound.play();
     }
 }

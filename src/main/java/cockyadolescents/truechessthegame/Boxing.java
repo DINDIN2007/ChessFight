@@ -201,7 +201,8 @@ public class Boxing {
             remainingTime = 0;
             loop.stop();
         }
-        else if (player2.isDefeated) {
+
+        if (player2.isDefeated) {
             attackWon = !defense.pieceColor.equals("White");
 
             System.out.println((attackWon) ? "White Won" : "Black Won");
@@ -212,6 +213,10 @@ public class Boxing {
 
             remainingTime = 0;
             loop.stop();
+        }
+
+        if (player1.isDefeated && player2.isDefeated) {
+            attackWon = ((int)(Math.random() * 2) == 1);
         }
     }
 }

@@ -28,7 +28,8 @@ import static cockyadolescents.truechessthegame.Main.*;
 
 public class Game {
     private Button[][] tileArray= new Button[8][8];
-    private static boolean lockIntoPiece = false, boardCanFlip = false, isPromoting = false, boxingOn = true;
+    private static boolean lockIntoPiece = false, isPromoting = false;
+    public static boolean boardCanFlip = false, boxingOn = true;
     private static int selectX = -1, selectY = -1, moveX, moveY, timeLeftWhite = 60000, timeLeftBlack = 60000;
     private static String playingSide = "White", winner = "";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
@@ -42,7 +43,6 @@ public class Game {
     @FXML private static ProgressBar progressBar;
     @FXML private Button home, newgame;
     @FXML private VBox promotionBar;
-    @FXML private ToggleButton promotionToggle;
 
     private static Image source;
     private static GraphicsContext graphicsContext;
@@ -101,7 +101,6 @@ public class Game {
         promotionBar = (VBox) root.lookup("#promotionBar");
         isCheckedLabel = (Label) root.lookup("#isCheckedLabel"); isCheckedLabel.setVisible(false);
         progressBar = (ProgressBar) root.lookup("#progressBar");
-        promotionToggle = (ToggleButton) root.lookup("#turnBoardOn");
 
         // The two timer
         whiteTimer = (Label) root.lookup("#whiteTimer");
@@ -111,11 +110,11 @@ public class Game {
         // Hide the pawn promotion selector
         promotionBar.setVisible(false);
 
-        // Resets booleans
+        // Resets to starting values
         hasStarted = false;
-        boardCanFlip = false;
-        boxingOn = true;
+        lockIntoPiece = false;
         playingSide = "White";
+        selectX = -1; selectY = -1;
 
         // Start animation loop
         if (animationLoop != null) animationLoop.stop();
@@ -150,6 +149,24 @@ public class Game {
 
         Label winnerButton = (Label) root.lookup("#winner");
         winnerButton.setText(winner + " won !");
+
+        Button homeButton = (Button) root.lookup("#homebutton");
+        homeButton.setOnAction(event -> {
+            try {
+                startGame(); newGame();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        Button rematchButton = (Button) root.lookup("#rematchbutton");
+        rematchButton.setOnAction(event -> {
+            try {
+                newGame();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         window.setScene(scene);
     }
@@ -277,12 +294,6 @@ public class Game {
                             // Changes who is playing now
                             clearCanvas();
                             drawBoard(tileArray);
-
-                            // Rotates the board if feature is activated
-                            if (boardCanFlip) {
-                                turnBoard(leftNumbers, topNumbers);
-                                buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
-                            }
                         }
 
                         // Update the board
@@ -293,6 +304,21 @@ public class Game {
 
                 return;
             }
+
+            // If boxing mode is turned off
+            else if (tilePiece != null) {
+                music.capturePiece();
+                if (tilePiece.pieceType.equals("King")) {
+                    try {
+                        winner = (tilePiece.pieceColor.equals("White")) ? "Black" : "White";
+                        endGame();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            // Simply moves to empty tile
             else music.movePiece();
 
             // Move the piece in ChessPiece 2D board array
@@ -300,6 +326,12 @@ public class Game {
 
             // Moves piece
             movePiece(selectedPiece);
+
+            // Rotates the board if feature is activated
+            if (boardCanFlip) {
+                turnBoard(leftNumbers, topNumbers);
+                buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
+            }
         }
 
         // Marks the places that the piece can move to
@@ -378,9 +410,6 @@ public class Game {
 
         // Change the progress bar
         progressBar.setProgress((double)score[0] / (score[0] + score[1]));
-
-        // Disable the toggle button
-        promotionToggle.setSelected(true);
     }
 
     // Draws the pieces and un-disables the tiles on the board
@@ -473,20 +502,8 @@ public class Game {
         isPromoting = false;
     }
 
-    // Turn on the flipping feature
-    public void turnBoardOn(ActionEvent event) {
-        if (!hasStarted) boardCanFlip = true;
-        ((ToggleButton) event.getSource()).setDisable(true);
-    }
-
-    // Turn on the boxing feature
-    public void turnBoxingOn(ActionEvent event) {
-        if (!hasStarted) boxingOn = false;
-        ((ToggleButton) event.getSource()).setDisable(true);
-    }
-
     // Animation for chess game
-    public static void update() {
+    public static void update() throws IOException {
         // Noah do animation here (it repeats every delay you give it in startGame())
 
         // Changes the timer
@@ -503,6 +520,16 @@ public class Game {
             String mil = "" + (timeLeftBlack % 6000 % 100); mil = ((mil.length() == 1) ? "0" : "") + mil;
             String sec = "" + (int)(timeLeftBlack % 6000 / 100); sec = ((sec.length() == 1) ? "0" : "") + sec;
             blackTimer.setText((timeLeftBlack / 6000) + ":" + sec + ":" + mil);
+        }
+
+        if (timeLeftWhite <= 0) {
+            winner = "Black";
+            maingame.endGame();
+        }
+
+        if (timeLeftBlack <= 0) {
+            winner = "White";
+            maingame.endGame();
         }
     }
 }

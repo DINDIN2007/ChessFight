@@ -2,6 +2,8 @@ package cockyadolescents.truechessthegame;
 
 import javafx.animation.AnimationTimer;
 
+import java.io.IOException;
+
 public class GameLoop extends AnimationTimer {
     private long lastUpdateTime;
     private double lastSavedIteration = 0, delay; // Delay between updates
@@ -37,12 +39,16 @@ public class GameLoop extends AnimationTimer {
 
         // Update elements and canvas if passed delay
         if (lastSavedIteration > delay) {
-            update(elapsedTime);
+            try {
+                update(elapsedTime);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             lastSavedIteration = 0;
         }
     }
 
-    private void update(double elapsedTime) {
+    private void update(double elapsedTime) throws IOException {
         switch(typeOfGameLoop) {
             case 1: boxingGameElement.updateElement(); break;
             case 2: Game.update(); break;

@@ -10,6 +10,7 @@ public class Main extends Application {
     public static HomePage homepage = new HomePage();
     public static WaitingRoom waitingroom = new WaitingRoom();
     public static Game maingame = new Game();
+    public static Setting settingroom = new Setting();
 
     public static Audio music = new Audio();
 
@@ -17,14 +18,14 @@ public class Main extends Application {
     public void start(Stage stage) throws IOException {
         window = stage;
         window.setTitle("True Chess the Game");
+
         homepage.display();
         window.show();
         maingame.startGame();
+        settingroom.setupPage();
 
         // Start music
-        if (!Audio.disabled) {
-            music.playMusic();
-        }
+        music.playMusic();
     }
 
     public static void main(String[] args) {launch();}

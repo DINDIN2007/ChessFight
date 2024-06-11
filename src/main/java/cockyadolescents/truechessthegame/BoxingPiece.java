@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import static cockyadolescents.truechessthegame.Boxing.*;
+import static cockyadolescents.truechessthegame.Main.music;
 
 public class BoxingPiece {
     // Piece position and dimensions
@@ -53,7 +54,7 @@ public class BoxingPiece {
 
         // this.drawHitbox();
         this.drawPiece();
-        this.glove();
+        this.glove(opponent);
     }
 
     // Update piece position
@@ -75,6 +76,8 @@ public class BoxingPiece {
                 opponent.gloveY < this.y + this.height &&
                 opponent.gloveY + gloveSize > this.y) {
                     this.isDefeated = true;
+                    music.hitPunch();
+                    return;
             }
         }
 
@@ -110,11 +113,13 @@ public class BoxingPiece {
             Timeline punchTimeline = new Timeline(new KeyFrame(Duration.seconds(0.5), e -> this.isAttacking = false));
             punchTimeline.setCycleCount(1);
             punchTimeline.play();
+
+            music.missPunch();
         }
     }
 
     //Draws glove sprite
-    private void glove() {
+    private void glove(BoxingPiece opponent) {
         if (this.isAttacking) {
             if (this.punchingWidth < this.punchingReach) {
                 this.punchingWidth += 5;
@@ -131,7 +136,7 @@ public class BoxingPiece {
             }
             //Default glove image
             else {
-                if (this.y < canvas.getHeight() / 2) {
+                if (this.y < opponent.y - opponent.height) {
                     this.gloveX = this.x - 10;
                     this.gloveY = this.y + this.height - 25 + this.punchingWidth;
                     graphicsContext.drawImage(source2, 72, 0, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
@@ -144,7 +149,7 @@ public class BoxingPiece {
         }
 
         else {
-            if (this.y < canvas.getHeight() / 2) {
+            if (this.y < opponent.y - opponent.height) {
                 this.gloveX = this.x - 10;
                 this.gloveY = this.y + this.height - 25;
                 graphicsContext.drawImage(source2, 48, 0, 24, 24, this.gloveX, this.gloveY, this.gloveSize, this.gloveSize);
