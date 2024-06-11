@@ -1,6 +1,7 @@
 package cockyadolescents.truechessthegame;
 
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -16,13 +17,19 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        // Set up the main window of the game
         window = stage;
-        window.setTitle("True Chess the Game");
+        window.setTitle("Chess Fight");
 
+        // Set up the other scenes
         homepage.display();
         window.show();
         maingame.startGame();
         settingroom.setupPage();
+
+        // Set up the icon of the game
+        Image icon = new Image(getClass().getResource("images/icon.png").toExternalForm());
+        window.getIcons().add(icon);
 
         // Start music
         music.playMusic();

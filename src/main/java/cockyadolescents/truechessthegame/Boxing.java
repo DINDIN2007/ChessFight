@@ -26,6 +26,7 @@ public class Boxing {
     public static ChessPiece attack, defense;
     public static Stage stage;
     private static Popup popup;
+    private static Text timerText;
 
     private GameLoop loop;
 
@@ -72,11 +73,11 @@ public class Boxing {
         attackWon = false;
 
         // Timer text
-        Text timerText = (Text)root.lookup("#timer_text");
+        timerText = (Text)root.lookup("#timer_text");
         timerText.setText("Time remaining: 0:30");
 
         // Start timer countdown
-        startTimer(timerText, popup);
+        startTimer();
 
         // Run Game Loop
         loop = new GameLoop(this, 5);
@@ -90,7 +91,7 @@ public class Boxing {
         scene.setOnKeyReleased(this::handleKeyReleased);
     }
 
-    private void startTimer(Text timerText, Popup popup) {
+    private void startTimer() {
         remainingTime = 30;
         timer = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             remainingTime--;
@@ -192,12 +193,11 @@ public class Boxing {
         if (player1.isDefeated) {
             attackWon = !attack.pieceColor.equals("White");
 
-            System.out.println((attackWon) ? "White Won" : "Black Won");
-
             Timeline cooldownTimeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> popup.hide()));
             cooldownTimeline.setCycleCount(1);
             cooldownTimeline.play();
 
+            timerText.setText((attackWon) ? "White Won" : "Black Won");
             remainingTime = 0;
             loop.stop();
         }
@@ -205,12 +205,11 @@ public class Boxing {
         if (player2.isDefeated) {
             attackWon = !defense.pieceColor.equals("White");
 
-            System.out.println((attackWon) ? "White Won" : "Black Won");
-
             Timeline cooldownTimeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> popup.hide()));
             cooldownTimeline.setCycleCount(1);
             cooldownTimeline.play();
 
+            timerText.setText((attackWon) ? "White Won" : "Black Won");
             remainingTime = 0;
             loop.stop();
         }
