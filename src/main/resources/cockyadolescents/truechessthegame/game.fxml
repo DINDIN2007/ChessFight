@@ -103,7 +103,7 @@
          </VBox>
       </right>
       <bottom>
-         <ProgressBar fx:id="progressBar" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="480.0" progress="0.51" stylesheets="@style.css" BorderPane.alignment="CENTER">
+         <ProgressBar fx:id="progressBar" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="480.0" progress="0.5" stylesheets="@style.css" BorderPane.alignment="CENTER">
             <BorderPane.margin>
                <Insets bottom="10.0" top="20.0" />
             </BorderPane.margin>

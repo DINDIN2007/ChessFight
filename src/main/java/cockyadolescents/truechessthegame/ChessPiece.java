@@ -9,6 +9,8 @@ public class ChessPiece {
     int[][] possibleMoves;              // 2d array storing all the possible coordinates to move to
     boolean hasMoved = false;           // Exclusively for pawns so that they don't move 2 up on the next move
     boolean canPromote = false;         // Exclusively for pawns so that they can promote
+    boolean enpassant = false;          // Boolean for en passant rule
+    int numOfMoves = 0;
 
     // 2d array storing all the pieces on the chessboard
     public static ChessPiece[][] ChessBoard = new ChessPiece[8][8];
@@ -77,31 +79,31 @@ public class ChessPiece {
             case "Rook" -> {
                 possibleMoves = new int[28][2];
                 for (int i = 0; i < 4; i++) {
-                for (int j = 1; j < 8; j++) {
-                    possibleMoves[7 * i + j - 1] = new int[]{hDirection[i][0] * j, hDirection[i][1] * j};
-                }}
+                    for (int j = 1; j < 8; j++) {
+                        possibleMoves[7 * i + j - 1] = new int[]{hDirection[i][0] * j, hDirection[i][1] * j};
+                    }}
                 yield possibleMoves;
             }
             case "Bishop" -> {
                 possibleMoves = new int[28][2];
                 for (int i = 0; i < 4; i++) {
-                for (int j = 1; j < 8; j++) {
-                    possibleMoves[7 * i + j - 1] = new int[]{dDirection[i][0] * j, dDirection[i][1] * j};
-                }}
+                    for (int j = 1; j < 8; j++) {
+                        possibleMoves[7 * i + j - 1] = new int[]{dDirection[i][0] * j, dDirection[i][1] * j};
+                    }}
                 yield possibleMoves;
             }
             case "Queen" -> {
                 possibleMoves = new int[56][2];
                 for (int i = 0; i < 4; i++) {
-                for (int j = 1; j < 8; j++) {
-                    possibleMoves[7 * i + j - 1] = new int[]{hDirection[i][0] * j, hDirection[i][1] * j};
-                    possibleMoves[28 + (7 * i + j - 1)] = new int[]{dDirection[i][0] * j, dDirection[i][1] * j};
-                }}
+                    for (int j = 1; j < 8; j++) {
+                        possibleMoves[7 * i + j - 1] = new int[]{hDirection[i][0] * j, hDirection[i][1] * j};
+                        possibleMoves[28 + (7 * i + j - 1)] = new int[]{dDirection[i][0] * j, dDirection[i][1] * j};
+                    }}
                 yield possibleMoves;
             }
             case "King" -> new int[][] {
-                hDirection[0], hDirection[1], hDirection[2], hDirection[3],
-                dDirection[0], dDirection[1], dDirection[2], dDirection[3],
+                    hDirection[0], hDirection[1], hDirection[2], hDirection[3],
+                    dDirection[0], dDirection[1], dDirection[2], dDirection[3],
             };
             default -> null;
         };
@@ -135,7 +137,15 @@ public class ChessPiece {
                         }
                         // Case : Pawn takes enemy piece on its two diagonals
                         else  {
-                            if (pieceOnThatPosition == null) continue;
+                            if (pieceOnThatPosition == null) {
+                                // En passant rule
+                                ChessPiece adjPiece = board[newCoords.getKey()][newCoords.getValue() - 1];
+                                if (adjPiece != null && !adjPiece.pieceColor.equals(this.pieceColor) &&
+                                    adjPiece.pieceType.equals("Pawn") && this.numOfMoves >= 3 && adjPiece.enpassant) {
+                                    moves.add(new Pair<>(newCoords.getKey(), newCoords.getValue()));
+                                }
+                                continue;
+                            }
                             if (!pieceOnThatPosition.pieceColor.equals(this.pieceColor)) moves.add(newCoords);
                         }
                     }
@@ -212,6 +222,14 @@ public class ChessPiece {
         };
     }
 
+    // En-passant rule : Can only happen directly after pawn moved 2 up
+    public static void turnOffEnPassant() {
+        for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if (ChessBoard[i][j] != null) ChessBoard[i][j].enpassant = false;
+        }}
+    }
+
     // Method to see if either king are in check, and return which side is checked
     public static String checkChecking(ChessPiece[][] board) {
         for (int i = 0; i < 8; i++) {
@@ -253,13 +271,14 @@ public class ChessPiece {
         return isChecked;
     }
 
+    // Copies the Chessboard 2D array to a temporary Chessboard array (to find checks)
     public static void copyChessBoardToCheckBoard() {
         // Recreates the board
         for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            if (ChessBoard[i][j] == null) CheckBoard[i][j] = null;
-            else CheckBoard[i][j] = new ChessPiece(ChessBoard[i][j]);
-        }}
+            for (int j = 0; j < 8; j++) {
+                if (ChessBoard[i][j] == null) CheckBoard[i][j] = null;
+                else CheckBoard[i][j] = new ChessPiece(ChessBoard[i][j]);
+            }}
     }
 
     // Swaps the position of the piece to a new position
@@ -268,6 +287,22 @@ public class ChessPiece {
         ChessPiece targetTile = ChessBoard[newX][newY];
         if (targetTile != null) {
             score[((piece.pieceColor.equals("White")) ? 0 : 1)] += targetTile.pieceValue;
+        }
+
+        // Record values for the pawn en-passant
+        turnOffEnPassant();
+        if (piece.pieceType.equals("Pawn")) {
+            if (Math.abs(piece.pieceY - newY) == 2) {
+                piece.enpassant = true;
+                System.out.println("RAN !");
+            }
+            piece.numOfMoves++;
+
+            // Checks if piece went on an en-passant
+            if (targetTile == null && Math.abs(piece.pieceX - newX) == 1) {
+                score[((piece.pieceColor.equals("White")) ? 0 : 1)] += ChessBoard[newX][piece.pieceY].pieceValue;
+                ChessBoard[newX][piece.pieceY] = null;
+            }
         }
 
         // Move piece

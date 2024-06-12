@@ -261,25 +261,34 @@ public class Game {
                 }
             }
 
+            // Detects en-passant
+            boolean hasEnPassanted = selectedPiece.pieceType.equals("Pawn")
+                        && tilePiece == null
+                        && Math.abs(selectedPiece.pieceX - moveX) == 1;
+
+            ChessPiece enPassantPawn = ChessBoard[moveX][selectedPiece.pieceY];
+
             // If capturing a piece, start the Boxing Match !!!
-            if (tilePiece != null && boxingOn) {
+            if ((tilePiece != null || hasEnPassanted) && boxingOn) {
                 boxGame = new Boxing();
                 Boxing.attack = selectedPiece;
-                Boxing.defense = tilePiece;
+                Boxing.defense = (hasEnPassanted) ? enPassantPawn : tilePiece;
+
+                if (hasEnPassanted) tilePiece = enPassantPawn;
 
                 boxGame.showBoxingPopup(window);
 
                 PauseTransition pause = new PauseTransition(Duration.seconds(1));
+                ChessPiece finalTilePiece = tilePiece;
+
                 pause.setOnFinished(event1 -> {
-                    if (boxGame.remainingTime > 0) {
-                        pause.play();
-                    }
+                    if (boxGame.remainingTime > 0) pause.play();
 
                     else {
                         if (Boxing.attackWon) {
-                            if (tilePiece.pieceType.equals("King")) {
+                            if (finalTilePiece.pieceType.equals("King")) {
                                 try {
-                                    winner = (tilePiece.pieceColor.equals("White")) ? "Black" : "White";
+                                    winner = (finalTilePiece.pieceColor.equals("White")) ? "Black" : "White";
                                     endGame();
                                 } catch (IOException e) {
                                     throw new RuntimeException(e);
