@@ -1,9 +1,6 @@
 package cockyadolescents.truechessthegame;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -13,9 +10,13 @@ import java.util.concurrent.Executors;
 public class Server implements Runnable {
     private ArrayList<ConnectionHandler> connections;
     private ServerSocket serversocket;
-    private boolean closed;
     private ExecutorService pool;
-    public static int port = 9999;
+
+    private boolean closed;
+    public int port = 9999;
+
+    private ConnectionHandler player1;
+    private ConnectionHandler player2;
 
     public Server() {
         connections = new ArrayList<>();
@@ -29,9 +30,16 @@ public class Server implements Runnable {
             serversocket = new ServerSocket(port);
             pool = Executors.newCachedThreadPool();
             while(!closed) {
-                Socket client = serversocket.accept();
-                ConnectionHandler handler = new ConnectionHandler(client);
+                Socket clientSocket = serversocket.accept();
+                ConnectionHandler handler = new ConnectionHandler(clientSocket);
                 connections.add(handler);
+
+                /*if (player1 == null) {
+                    player1 = handler;
+                } else if (player2 == null) {
+                    player2 = handler;
+                }*/
+
                 pool.execute(handler);
             }
         } catch (Exception e) {
@@ -50,9 +58,7 @@ public class Server implements Runnable {
             for (ConnectionHandler ch : connections) {
                 ch.shutdown();
             }
-        } catch (IOException e) {
-            // ignore
-        }
+        } catch (IOException _) {}
     }
 
     public void serverLog(String message) {
@@ -60,7 +66,6 @@ public class Server implements Runnable {
     }
 
     class ConnectionHandler implements Runnable {
-
         private Socket client;
         private BufferedReader in;
         private PrintWriter out;
@@ -93,8 +98,7 @@ public class Server implements Runnable {
                             out.println("no username provided");
                         }
                     } else if (message.startsWith("/quit")) {
-                        broadcast(username + " left the chat");
-                        // quit
+                        broadcast(username + " disconnected");
                     } else {
                         broadcast(username + ": " + message);
                     }
@@ -121,9 +125,7 @@ public class Server implements Runnable {
                 if (!client.isClosed()) {
                     client.close();
                 }
-            } catch (IOException e){
-                // ignore
-            }
+            } catch (IOException _) {}
         }
     }
 

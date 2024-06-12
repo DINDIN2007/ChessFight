@@ -12,6 +12,7 @@ public class Main extends Application {
     public static WaitingRoom waitingroom = new WaitingRoom();
     public static Game maingame = new Game();
     public static Setting settingroom = new Setting();
+    public static Client client;
 
     public static Audio music = new Audio();
 

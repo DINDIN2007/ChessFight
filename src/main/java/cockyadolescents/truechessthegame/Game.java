@@ -11,7 +11,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -30,10 +29,10 @@ public class Game {
     private Button[][] tileArray= new Button[8][8];
     private static boolean lockIntoPiece = false, isPromoting = false;
     public static boolean boardCanFlip = false, boxingOn = true;
-    private static int selectX = -1, selectY = -1, moveX, moveY, timeLeftWhite = 60000, timeLeftBlack = 60000;
+    private static int x1 = -1, y1 = -1, x2, y2, timeLeftWhite = 60000, timeLeftBlack = 60000;
     private static String playingSide = "White", winner = "";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
-    public static boolean onlineGame = false, hasStarted = false;
+    public static boolean onlineGame = false, hasStarted = false, playerTurn = playingSide.equals("White");;
 
     @FXML private static Canvas canvas;
     @FXML private GridPane buttonBoard, labelBoard;
@@ -114,7 +113,7 @@ public class Game {
         hasStarted = false;
         lockIntoPiece = false;
         playingSide = "White";
-        selectX = -1; selectY = -1;
+        x1 = -1; y1 = -1;
 
         // Start animation loop
         if (animationLoop != null) animationLoop.stop();
@@ -232,32 +231,32 @@ public class Game {
 
         // Finds the coordinate of the button pressed based on who's playing
         Button tile = (Button) event.getSource();
-        moveX = tile.getId().charAt(0) - '0';
-        moveY = tile.getId().charAt(2) - '0';
+        x2 = tile.getId().charAt(0) - '0';
+        y2 = tile.getId().charAt(2) - '0';
 
         // Finds the matching piece saved in ChessBoard class
-        ChessPiece tilePiece = ChessBoard[moveX][moveY];
+        ChessPiece tilePiece = ChessBoard[x2][y2];
 
         // Unselect piece
-        if (selectX == moveX && selectY == moveY) {
+        if (x1 == x2 && y1 == y2) {
             drawBoard(tileArray);
-            selectX = -1; selectY = -1;
+            x1 = -1; y1 = -1;
             lockIntoPiece = false;
         }
 
         // Go to marked place
         else if (lockIntoPiece && !(tilePiece != null && tilePiece.pieceColor.equals(playingSide))) {
-            ChessPiece selectedPiece = ChessBoard[selectX][selectY];
+            ChessPiece selectedPiece = ChessBoard[x1][y1];
 
             // Moving the rook when castling
-            if (selectedPiece.pieceType.equals("King") && moveY == selectY) {
+            if (selectedPiece.pieceType.equals("King") && y2 == y1) {
                 // Left Castle
-                if (selectedPiece.pieceX - moveX == 2) {
-                    ChessPiece.moveChessPiece(ChessBoard[0][moveY], 3, moveY);
+                if (selectedPiece.pieceX - x2 == 2) {
+                    ChessPiece.moveChessPiece(ChessBoard[0][y2], 3, y2);
                 }
                 // Right Castle
-                if (moveX - selectedPiece.pieceX == 2) {
-                    ChessPiece.moveChessPiece(ChessBoard[7][moveY], 5, moveY);
+                if (x2 - selectedPiece.pieceX == 2) {
+                    ChessPiece.moveChessPiece(ChessBoard[7][y2], 5, y2);
                 }
             }
 
@@ -287,7 +286,7 @@ public class Game {
                             }
 
                             // Move the piece in ChessPiece 2D board array
-                            ChessPiece.moveChessPiece(selectedPiece, moveX, moveY);
+                            ChessPiece.moveChessPiece(selectedPiece, x2, y2);
                             music.capturePiece();
 
                         } else {
@@ -322,7 +321,7 @@ public class Game {
             else music.movePiece();
 
             // Move the piece in ChessPiece 2D board array
-            ChessPiece.moveChessPiece(selectedPiece, moveX, moveY);
+            ChessPiece.moveChessPiece(selectedPiece, x2, y2);
 
             // Moves piece
             movePiece(selectedPiece);
@@ -366,7 +365,7 @@ public class Game {
             }}
 
             lockIntoPiece = true;
-            selectX = moveX; selectY = moveY;
+            x1 = x2; y1 = y2;
         }
     }
 
@@ -376,7 +375,7 @@ public class Game {
         selectedPiece.hasMoved = true;
 
         // Pawn promotion if it reaches the other end of the board
-        if (ChessBoard[moveX][moveY] != null && ChessBoard[moveX][moveY].canPromote) {
+        if (ChessBoard[x2][y2] != null && ChessBoard[x2][y2].canPromote) {
             promotionBar.setVisible(true);
             isPromoting = true;
             return;
@@ -405,7 +404,7 @@ public class Game {
         else isCheckedLabel.setText("");
 
         // Resets which piece is selected
-        selectX = -1; selectY = -1;
+        x1 = -1; y1 = -1;
         lockIntoPiece = false;
 
         // Change the progress bar
@@ -476,7 +475,7 @@ public class Game {
     // Lets the user choose what to promote the pawn to
     public void promotePawn(String promotedPieceType, Button[][] tileArray, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar) {
         // Changes the type of piece on the board by creating a new piece to replace pawn
-        ChessBoard[moveX][moveY] = new ChessPiece(promotedPieceType, playingSide, moveX, moveY);
+        ChessBoard[x2][y2] = new ChessPiece(promotedPieceType, playingSide, x2, y2);
         promotionBar.setVisible(false);
 
         // Changes who is playing now
@@ -490,7 +489,7 @@ public class Game {
         else isCheckedLabel.setText("");
 
         // Resets which piece is selected
-        selectX = -1; selectY = -1;
+        x1 = -1; y1 = -1;
         lockIntoPiece = false;
 
         // Rotates the board if feature is activated

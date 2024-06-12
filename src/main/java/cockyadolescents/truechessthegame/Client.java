@@ -1,29 +1,34 @@
 package cockyadolescents.truechessthegame;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
+import static cockyadolescents.truechessthegame.Main.*;
+
 public class Client implements Runnable {
-    private Socket clientSocket;
+    private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
-    private boolean done = false;
-    private static String host;
-    private static int port = 9999;
 
-    public Client(String address) {
-        host = address;
-    }
+    private DataOutputStream dataOut;
+    private DataInputStream dataIn;
+
+    private boolean connected = true;
+    private String address;
+    private int port = 9999;
+
+    public Client(String address) {this.address = address;}
 
     @Override
     public void run() {
         try {
-            clientSocket = new Socket(host, port);
-            out =  new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            socket = new Socket(address, port);
+
+            dataOut = new DataOutputStream(socket.getOutputStream());
+            dataIn = new DataInputStream(socket.getInputStream());
+
+            out =  new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             InputHandler inputHandler = new InputHandler();
             Thread thread = new Thread(inputHandler);
@@ -34,27 +39,55 @@ public class Client implements Runnable {
                 System.out.println(inMessage);
             }
         } catch (IOException e) {
+            waitingroom.notification("Failed to connect to Server");
             shutdown();
         }
     }
 
     public void shutdown() {
-        done = true;
+        connected = false;
         try {
             in.close(); out.close();
-            if (!clientSocket.isClosed())
-                clientSocket.close();
+            dataIn.close(); dataOut.close();
+            if (!socket.isClosed())
+                socket.close();
+        } catch (IOException _) {}
+    }
+
+    /*public void OutMove(int x1, int y1, int x2, int y2) {
+        try {
+            if (connected) {
+                dataOut.writeInt(x1);
+                dataOut.writeInt(y1);
+                dataOut.writeInt(x2);
+                dataOut.writeInt(y2);
+                dataOut.flush();
+            }
         } catch (IOException e) {
-            // ignore
+            shutdown();
         }
     }
+
+    public void InMove() {
+        try {
+            if (connected) {
+                dataIn.readInt();
+                dataIn.readInt();
+                dataIn.readInt();
+                dataIn.readInt();
+                dataOut.flush();
+            }
+        } catch (IOException e) {
+            shutdown();
+        }
+    }*/
 
     class InputHandler implements Runnable {
         @Override
         public void run() {
             try {
                 BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
-                while (!done) {
+                while (connected) {
                     String message = inReader.readLine();
                     if (message.equals("/quit")) {
                         out.println(message);
@@ -71,7 +104,7 @@ public class Client implements Runnable {
     }
 
     public static void main(String[] args) {
-        Client client = new Client("127.0.0.1");
+        Client client = new Client("localhost");
         client.run();
     }
 }

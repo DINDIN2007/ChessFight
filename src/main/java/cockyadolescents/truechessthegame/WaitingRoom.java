@@ -1,5 +1,9 @@
 package cockyadolescents.truechessthegame;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -20,7 +25,9 @@ import static cockyadolescents.truechessthegame.Main.*;
 // Online game
 public class WaitingRoom {
     @FXML private TextField addressField;
+    @FXML private Button joinServer;
     @FXML private Label addressLabel;
+    @FXML private Label notificationLabel;
     private String hostAddress;
     private Thread thread;
 
@@ -38,6 +45,7 @@ public class WaitingRoom {
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         window.setScene(scene);
         addressLabel = (Label) root.lookup("#hostAddress");
+        notificationLabel = (Label) root.lookup("#notificationLabel");
         Game.onlineGame = true; // to change some features in the normal game
     }
 
@@ -54,10 +62,8 @@ public class WaitingRoom {
                     InetAddress address = addresses.nextElement();
                     // filters out loopback addresses and returns IPv4 address
                     if (!address.isLoopbackAddress() && address instanceof Inet4Address) {
-                        // assigns first one and logs the rest (debugging)
-                        String hostaddress = address.getHostAddress();
-                        this.hostAddress = (hostAddress == null)? hostaddress : hostAddress;
-                        System.out.println(hostaddress);
+                        this.hostAddress = address.getHostAddress();
+                        return;
                     }
                 }
             }
@@ -74,7 +80,7 @@ public class WaitingRoom {
 
     @FXML
     public void hostServer() {
-        if (thread == null) { // prevents hosting multiple instances of server (temporary bug fix)
+        if (thread == null) { // prevents hosting multiple instances of server
          thread = new Thread(new Server());
          thread.start();
         }
@@ -84,5 +90,17 @@ public class WaitingRoom {
     public void joinServer() {
         Client client = new Client(addressField.getText());
         client.run();
+    }
+
+    Timeline timeline;
+    public void notification(String message) {
+        if (timeline != null) timeline.stop();
+        notificationLabel.setText(message);
+        timeline = new Timeline(
+            new KeyFrame(Duration.millis(2000), event -> {
+                notificationLabel.setText("");
+            })
+        );
+        timeline.play();
     }
 }
