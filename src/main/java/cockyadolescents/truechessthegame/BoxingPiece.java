@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import static cockyadolescents.truechessthegame.Boxing.*;
-import static cockyadolescents.truechessthegame.Main.music;
+import static cockyadolescents.truechessthegame.SecondMain.music;
 
 public class BoxingPiece {
     // Piece position and dimensions

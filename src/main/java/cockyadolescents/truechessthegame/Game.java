@@ -11,7 +11,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -24,7 +23,7 @@ import java.io.IOException;
 import java.util.Vector;
 
 import static cockyadolescents.truechessthegame.ChessPiece.*;
-import static cockyadolescents.truechessthegame.Main.*;
+import static cockyadolescents.truechessthegame.SecondMain.*;
 
 public class Game {
     private Button[][] tileArray= new Button[8][8];
