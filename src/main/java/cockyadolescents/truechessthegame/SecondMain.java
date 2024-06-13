@@ -22,6 +22,7 @@ public class SecondMain extends Application {
         window = stage;
         window.setTitle("Chess Fight");
 
+        // Set up the other pages
         homepage = new HomePage();
         waitingroom = new WaitingRoom();
         maingame = new Game();
