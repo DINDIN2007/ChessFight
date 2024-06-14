@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import static cockyadolescents.truechessthegame.Boxing.*;
-import static cockyadolescents.truechessthegame.SecondMain.music;
+import static cockyadolescents.truechessthegame.GameApplication.music;
 
 public class BoxingPiece {
     // Piece position and dimensions
@@ -15,7 +15,7 @@ public class BoxingPiece {
     public double gloveX, gloveY, gloveSize = 48;
 
     // Piece information
-    private int pieceType, pieceColor;
+    public int pieceType, pieceColor;
     private int speed = 5;
     public boolean isDefeated = false;
 

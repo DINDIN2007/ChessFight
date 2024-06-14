@@ -9,7 +9,7 @@ import javafx.scene.control.Slider;
 import java.io.IOException;
 
 import static cockyadolescents.truechessthegame.Game.*;
-import static cockyadolescents.truechessthegame.SecondMain.*;
+import static cockyadolescents.truechessthegame.GameApplication.*;
 
 public class Setting {
     private Scene scene;

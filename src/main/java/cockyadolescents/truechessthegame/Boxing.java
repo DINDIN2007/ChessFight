@@ -66,7 +66,7 @@ public class Boxing {
             player1 = new BoxingPiece(300.0 - 24, 300 * 3.0/4, attack.pieceType, attack.pieceColor);
             player2 = new BoxingPiece(300.0 - 24, 300 * 1.0/4, defense.pieceType, defense.pieceColor);
         }
-        else { // Player 1 as black
+        else { // Player 2 as white
             player2 = new BoxingPiece(300.0 - 24, 300 * 1.0/4, attack.pieceType, attack.pieceColor);
             player1 = new BoxingPiece(300.0 - 24, 300 * 3.0/4, defense.pieceType, defense.pieceColor);
         }
@@ -180,6 +180,9 @@ public class Boxing {
 
     // What to run after an iteration of loop
     public void updateElement() {
+        // Stops updating when game is over
+        if (remainingTime <= 0) return;
+
         // Clear canvas
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
@@ -190,32 +193,39 @@ public class Boxing {
         // graphicsContext.fillRect(0, 0, 48, 48);
         player1.update(player2); player2.update(player1);
 
-        if (player1.isDefeated) {
-            attackWon = !attack.pieceColor.equals("White");
-
-            Timeline cooldownTimeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> popup.hide()));
-            cooldownTimeline.setCycleCount(1);
-            cooldownTimeline.play();
-
-            timerText.setText((attackWon) ? "White Won" : "Black Won");
-            remainingTime = 0;
-            loop.stop();
-        }
-
-        if (player2.isDefeated) {
-            attackWon = !defense.pieceColor.equals("White");
-
-            Timeline cooldownTimeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> popup.hide()));
-            cooldownTimeline.setCycleCount(1);
-            cooldownTimeline.play();
-
-            timerText.setText((attackWon) ? "White Won" : "Black Won");
-            remainingTime = 0;
-            loop.stop();
-        }
-
+        // If punched at the same time, decide at random
         if (player1.isDefeated && player2.isDefeated) {
             attackWon = ((int)(Math.random() * 2) == 1);
+        }
+
+        // White side won
+        if (player1.isDefeated) {
+            // player 1 is always white
+            attackWon = !attack.pieceType.equals("White");
+
+            Timeline cooldownTimeline = new Timeline(new KeyFrame(Duration.seconds(1.5), e -> popup.hide()));
+            cooldownTimeline.setCycleCount(1);
+            cooldownTimeline.play();
+
+            timerText.setText((attack.pieceType.equals("White") ? "White" : "Black") + " Won !");
+            remainingTime = 0;
+            timer.stop();
+            loop.stop();
+        }
+
+        // Black side won
+        if (player2.isDefeated) {
+            // player 2 is always black
+            attackWon = !attack.pieceType.equals("Black");
+
+            Timeline cooldownTimeline = new Timeline(new KeyFrame(Duration.seconds(1.5), e -> popup.hide()));
+            cooldownTimeline.setCycleCount(1);
+            cooldownTimeline.play();
+
+            timerText.setText((attack.pieceType.equals("Black") ? "Black" : "White") + " Won !");
+            remainingTime = 0;
+            timer.stop();
+            loop.stop();
         }
     }
 }

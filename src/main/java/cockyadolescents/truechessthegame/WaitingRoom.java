@@ -14,7 +14,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-import static cockyadolescents.truechessthegame.SecondMain.*;
+import static cockyadolescents.truechessthegame.GameApplication.*;
 
 // Online game
 public class WaitingRoom {

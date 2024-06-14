@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Vector;
 
 import static cockyadolescents.truechessthegame.ChessPiece.*;
-import static cockyadolescents.truechessthegame.SecondMain.*;
+import static cockyadolescents.truechessthegame.GameApplication.*;
 
 public class Game {
     private Button[][] tileArray= new Button[8][8];
@@ -276,6 +276,7 @@ public class Game {
                 if (hasEnPassanted) tilePiece = enPassantPawn;
 
                 boxGame.showBoxingPopup(window);
+                boxGame.remainingTime = 30;
 
                 PauseTransition pause = new PauseTransition(Duration.seconds(1));
                 ChessPiece finalTilePiece = tilePiece;
@@ -334,12 +335,6 @@ public class Game {
 
             // Moves piece
             movePiece(selectedPiece);
-
-            // Rotates the board if feature is activated
-            if (boardCanFlip) {
-                turnBoard(leftNumbers, topNumbers);
-                buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
-            }
         }
 
         // Marks the places that the piece can move to
@@ -411,6 +406,12 @@ public class Game {
             delay.play();
         }
         else isCheckedLabel.setText("");
+
+        // Rotates the board if feature is activated
+        if (boardCanFlip) {
+            turnBoard(leftNumbers, topNumbers);
+            buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
+        }
 
         // Resets which piece is selected
         selectX = -1; selectY = -1;
