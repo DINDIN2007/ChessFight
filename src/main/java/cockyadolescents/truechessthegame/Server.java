@@ -8,15 +8,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server implements Runnable {
-    private ArrayList<ConnectionHandler> connections;
+    private ArrayList<clientHandler> connections;
     private ServerSocket serversocket;
-    private ExecutorService pool;
+    private ExecutorService threadPool;
 
     private boolean closed;
     public int port = 9999;
 
-    private ConnectionHandler player1;
-    private ConnectionHandler player2;
+    private clientHandler player1;
+    private clientHandler player2;
 
     public Server() {
         connections = new ArrayList<>();
@@ -25,13 +25,13 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
-        serverLog("Server started");
+        System.out.println("Server started");
         try {
             serversocket = new ServerSocket(port);
-            pool = Executors.newCachedThreadPool();
+            threadPool = Executors.newCachedThreadPool();
             while(!closed) {
                 Socket clientSocket = serversocket.accept();
-                ConnectionHandler handler = new ConnectionHandler(clientSocket);
+                clientHandler handler = new clientHandler(clientSocket);
                 connections.add(handler);
 
                 /*if (player1 == null) {
@@ -40,7 +40,7 @@ public class Server implements Runnable {
                     player2 = handler;
                 }*/
 
-                pool.execute(handler);
+                threadPool.execute(handler);
             }
         } catch (Exception e) {
             shutdown();
@@ -48,58 +48,56 @@ public class Server implements Runnable {
     }
 
     public void shutdown() {
-        serverLog("Server shutting down");
+        System.out.println("Server shutting down");
         try {
             closed = true;
-            pool.shutdown();
+            threadPool.shutdown();
             if (!serversocket.isClosed()) {
                 serversocket.close();
             }
-            for (ConnectionHandler ch : connections) {
+            for (clientHandler ch : connections) {
                 ch.shutdown();
             }
-        } catch (IOException _) {}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void serverLog(String message) {
-        System.out.println("SERVER: " + message);
-    }
-
-    class ConnectionHandler implements Runnable {
-        private Socket client;
+    class clientHandler implements Runnable {
+        private Socket clientSocket;
         private BufferedReader in;
         private PrintWriter out;
         private String username;
 
-        public ConnectionHandler(Socket client) {
-            this.client = client;
+        public clientHandler(Socket client) {
+            this.clientSocket = client;
         }
 
         @Override
         public void run() {
             try {
-                out = new PrintWriter(client.getOutputStream(), true);
-                in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                out = new PrintWriter(clientSocket.getOutputStream(), true); // send to client
+                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); // recieve from client
+
                 out.println("Enter username: ");
                 username = in.readLine();
                 serverLog(username + " connected");
-                broadcast(username + " joined the chat");
-                String message;
 
+                String message;
                 while ((message = in.readLine()) != null) {
-                    if (message.startsWith("/username")) {
-                        String[] messageSplit = message.split(" ", 2);
-                        if (messageSplit.length == 2) {
-                            broadcast(username + " renamed themselves to " + messageSplit[1]);
-                            serverLog(username + " renamed themselves to " + messageSplit[1]);
-                            username = messageSplit[1];
-                            out.println("changed to username to " + username);
+                    if (message.startsWith("/username")) { // change username
+                        String[] messageSplit = message.split(" ", 1); // no spaces in username
+                        if (messageSplit.length == 1) {
+                            serverLog(username + " changed username to " + message);
+                            username = message;
                         } else {
-                            out.println("no username provided");
+                            out.println("Invalid username");
                         }
-                    } else if (message.startsWith("/quit")) {
-                        broadcast(username + " disconnected");
-                    } else {
+                    }
+                    else if (message.startsWith("/quit")) { // disconnect
+                        serverLog(username + " disconnected");
+                    }
+                    else {
                         broadcast(username + ": " + message);
                     }
                 }
@@ -108,22 +106,27 @@ public class Server implements Runnable {
             }
         }
 
+        // sends data to all users
         public void broadcast(String message) {
-            for (ConnectionHandler ch : connections) {
-                ch.sendMessage(message);
+            for (clientHandler client : connections) {
+                if (!client.username.equals(this.username)) { // to avoid repeat send
+                    client.out.println(message);
+                }
             }
         }
 
-        public void sendMessage(String message) {
-            out.println(message);
+        public void serverLog(String message) {
+            for (clientHandler client : connections) {
+                client.out.println("SERVER: " + message);
+            }
         }
 
         public void shutdown() {
             try {
                 in.close();
                 out.close();
-                if (!client.isClosed()) {
-                    client.close();
+                if (!clientSocket.isClosed()) {
+                    clientSocket.close();
                 }
             } catch (IOException _) {}
         }

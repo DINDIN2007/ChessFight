@@ -35,7 +35,7 @@ public class Client implements Runnable {
             thread.start();
 
             String inMessage;
-            while ((inMessage = in.readLine()) != null) {
+            while ((inMessage = in.readLine()) != null) { // read from server
                 System.out.println(inMessage);
             }
         } catch (IOException e) {
@@ -86,15 +86,15 @@ public class Client implements Runnable {
         @Override
         public void run() {
             try {
-                BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
+                BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
                 while (connected) {
-                    String message = inReader.readLine();
-                    if (message.equals("/quit")) {
+                    String message = inputReader.readLine(); // reads user input
+                    if (message.equals("/quit")) { // disconnect
                         out.println(message);
-                        inReader.close();
+                        inputReader.close();
                         shutdown();
                     } else {
-                        out.println(message);
+                        out.println(message); // send to server
                     }
                 }
             } catch (IOException e) {

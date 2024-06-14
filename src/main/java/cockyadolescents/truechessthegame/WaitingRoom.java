@@ -49,7 +49,7 @@ public class WaitingRoom {
         Game.onlineGame = true; // to change some features in the normal game
     }
 
-    // gets ip address of host and runs server
+    // gets ip address of device and runs server
     public void getHostAddress() {
         try {
             // retrieves available network interfaces
@@ -80,7 +80,7 @@ public class WaitingRoom {
 
     @FXML
     public void hostServer() {
-        if (thread == null) { // prevents hosting multiple instances of server
+        if (thread == null) { // prevents multiple instances of server
          thread = new Thread(new Server());
          thread.start();
         }
@@ -89,7 +89,8 @@ public class WaitingRoom {
     @FXML
     public void joinServer() {
         Client client = new Client(addressField.getText());
-        client.run();
+        Thread t = new Thread(client);
+        t.start();
     }
 
     Timeline timeline;
