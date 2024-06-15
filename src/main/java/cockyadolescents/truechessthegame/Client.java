@@ -3,6 +3,7 @@ package cockyadolescents.truechessthegame;
 import java.io.*;
 import java.net.Socket;
 
+import static cockyadolescents.truechessthegame.ChessPiece.ChessBoard;
 import static cockyadolescents.truechessthegame.Main.*;
 
 public class Client implements Runnable {
@@ -24,10 +25,7 @@ public class Client implements Runnable {
         try {
             socket = new Socket(address, port);
 
-            dataOut = new DataOutputStream(socket.getOutputStream());
-            dataIn = new DataInputStream(socket.getInputStream());
-
-            out =  new PrintWriter(socket.getOutputStream(), true);
+            /*out =  new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             InputHandler inputHandler = new InputHandler();
@@ -35,9 +33,16 @@ public class Client implements Runnable {
             thread.start();
 
             String inMessage;
-            while ((inMessage = in.readLine()) != null) { // read from server
+            while ((inMessage = in.readLine()) != null) { // reads from server
                 System.out.println(inMessage);
-            }
+            }*/
+
+            dataOut = new DataOutputStream(socket.getOutputStream());
+            dataIn = new DataInputStream(socket.getInputStream());
+
+            /*while () {
+
+            }*/
         } catch (IOException e) {
             waitingroom.notification("Failed to connect to Server");
             shutdown();
@@ -54,33 +59,29 @@ public class Client implements Runnable {
         } catch (IOException _) {}
     }
 
-    /*public void OutMove(int x1, int y1, int x2, int y2) {
-        try {
-            if (connected) {
-                dataOut.writeInt(x1);
-                dataOut.writeInt(y1);
-                dataOut.writeInt(x2);
-                dataOut.writeInt(y2);
-                dataOut.flush();
-            }
-        } catch (IOException e) {
-            shutdown();
+    public void sendMove(int[] move) throws IOException {
+        for (int i = 0; i < 4; i++) {
+            dataOut.writeInt(move[i]); dataOut.flush();
         }
     }
 
-    public void InMove() {
-        try {
-            if (connected) {
-                dataIn.readInt();
-                dataIn.readInt();
-                dataIn.readInt();
-                dataIn.readInt();
-                dataOut.flush();
+    class MoveHandler implements Runnable {
+
+        @Override
+        public void run() {
+            try {
+                while (connected) {
+                    int x1 = dataIn.readInt();
+                    int y1 = dataIn.readInt();
+                    int y2 = dataIn.readInt();
+                    int x2 = dataIn.readInt();
+                    ChessPiece.moveChessPiece(ChessBoard[x1][y1], x2, y2);
+                }
+            } catch (IOException e) {
+                shutdown();
             }
-        } catch (IOException e) {
-            shutdown();
         }
-    }*/
+    }
 
     class InputHandler implements Runnable {
         @Override
@@ -94,7 +95,7 @@ public class Client implements Runnable {
                         inputReader.close();
                         shutdown();
                     } else {
-                        out.println(message); // send to server
+                        out.println(message); // sends to server
                     }
                 }
             } catch (IOException e) {
@@ -108,6 +109,3 @@ public class Client implements Runnable {
         client.run();
     }
 }
-
-// cd IdeaProjects\ChessFight\target\classes
-// java cockyadolescents.truechessthegame.Client

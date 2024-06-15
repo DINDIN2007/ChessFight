@@ -12,11 +12,11 @@ public class Server implements Runnable {
     private ServerSocket serversocket;
     private ExecutorService threadPool;
 
+    private playerHandler white;
+    private playerHandler black;
+
     private boolean closed;
     public int port = 9999;
-
-    private clientHandler player1;
-    private clientHandler player2;
 
     public Server() {
         connections = new ArrayList<>();
@@ -31,16 +31,18 @@ public class Server implements Runnable {
             threadPool = Executors.newCachedThreadPool();
             while(!closed) {
                 Socket clientSocket = serversocket.accept();
-                clientHandler handler = new clientHandler(clientSocket);
-                connections.add(handler);
 
-                /*if (player1 == null) {
-                    player1 = handler;
-                } else if (player2 == null) {
-                    player2 = handler;
-                }*/
+                /*clientHandler ch = new clientHandler(clientSocket);
+                connections.add(ch);
+                threadPool.execute(ch);*/
 
-                threadPool.execute(handler);
+                playerHandler ph = new playerHandler(clientSocket);
+                if (white == null) {
+                    white = ph;
+                } else if (black == null) {
+                    black = ph;
+                }
+                threadPool.execute(ph);
             }
         } catch (Exception e) {
             shutdown();
@@ -63,14 +65,39 @@ public class Server implements Runnable {
         }
     }
 
+    class playerHandler implements Runnable {
+        private Socket clientSocket;
+        private DataOutputStream dataOut;
+        private DataInputStream dataIn;
+        private String color;
+
+
+        public playerHandler(Socket socket) {
+            this.clientSocket = socket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                dataOut = new DataOutputStream(clientSocket.getOutputStream());
+                dataIn = new DataInputStream(clientSocket.getInputStream());
+
+                /*while () {
+                }*/
+            } catch (IOException e) {
+                shutdown();
+            }
+        }
+    }
+
     class clientHandler implements Runnable {
         private Socket clientSocket;
         private BufferedReader in;
         private PrintWriter out;
         private String username;
 
-        public clientHandler(Socket client) {
-            this.clientSocket = client;
+        public clientHandler(Socket socket) {
+            this.clientSocket = socket;
         }
 
         @Override

@@ -29,7 +29,6 @@ public class WaitingRoom {
     @FXML private Label addressLabel;
     @FXML private Label notificationLabel;
     private String hostAddress;
-    private Thread thread;
 
     private Parent root;
     private Scene scene;
@@ -78,19 +77,23 @@ public class WaitingRoom {
         addressLabel.setText("Host Address: " + this.hostAddress);
     }
 
+    private Thread clientThread;
+    private Thread serverThread;
+
     @FXML
     public void hostServer() {
-        if (thread == null) { // prevents multiple instances of server
-         thread = new Thread(new Server());
-         thread.start();
+        if (serverThread == null) {
+            serverThread = new Thread(new Server());
+            serverThread.start();
         }
     }
 
     @FXML
-    public void joinServer() {
-        Client client = new Client(addressField.getText());
+    public void joinServer() throws IOException {
+        client = new Client(addressField.getText());
         Thread t = new Thread(client);
         t.start();
+        onlinegame.newGame();
     }
 
     Timeline timeline;

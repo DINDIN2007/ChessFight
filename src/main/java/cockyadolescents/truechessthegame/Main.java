@@ -10,11 +10,12 @@ public class Main extends Application {
     public static Stage window;
     public static HomePage homepage = new HomePage();
     public static WaitingRoom waitingroom = new WaitingRoom();
-    public static Game maingame = new Game();
     public static Setting settingroom = new Setting();
-    public static Client client;
-
     public static Audio music = new Audio();
+
+    public static Game maingame = new Game();
+    public static OnlineGame onlinegame = new OnlineGame();
+    public static Client client;
 
     @Override
     public void start(Stage stage) throws IOException {
