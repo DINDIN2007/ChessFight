@@ -90,10 +90,12 @@ public class WaitingRoom {
 
     @FXML
     public void joinServer() throws IOException {
-        client = new Client(addressField.getText());
-        Thread t = new Thread(client);
-        t.start();
         onlinegame.newGame();
+        String s = addressField.getText(); if (s.isEmpty()) s = "localhost";
+        client = new Client(s);
+        clientThread = new Thread(client);
+        clientThread.start();
+
     }
 
     Timeline timeline;

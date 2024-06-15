@@ -30,10 +30,12 @@ public class OnlineGame {
     private Button[][] tileArray= new Button[8][8];
     private static boolean lockIntoPiece = false, isPromoting = false;
     public static boolean boardCanFlip = false, boxingOn = false; // temp
-    private static int x1 = -1, y1 = -1, x2, y2, timeLeftWhite = 60000, timeLeftBlack = 60000;
-    private static String playingSide = "White", winner = "";
+    public static int x1 = -1, y1 = -1, x2, y2;
+    public static int[] move;
+    private static int timeLeftWhite = 60000, timeLeftBlack = 60000;
+    private static String playingSide = "", winner = "";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
-    public static boolean onlineGame = true, hasStarted = false, playerTurn = playingSide.equals("White");;
+    public static boolean onlineGame = true, hasStarted = false, playerTurn = playingSide.equals("White");
 
     @FXML private static Canvas canvas;
     @FXML private GridPane buttonBoard, labelBoard;
@@ -56,6 +58,7 @@ public class OnlineGame {
     @FXML
     public void home() throws IOException {
         homepage.display();
+        client.out.println("/quit");
         client.shutdown();
     }
 
@@ -133,6 +136,11 @@ public class OnlineGame {
 
         // Stop any boxing game
         boxGame.remainingTime = 0;
+
+        /*if (playingSide.equals("Black")) {
+            turnBoard(leftNumbers, topNumbers);
+            buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
+        }*/
     }
 
     // End game setup
@@ -319,13 +327,16 @@ public class OnlineGame {
                 }
             }
 
-            // Simply moves to empty tile
+            // Moves to empty tile
             else music.movePiece();
 
-            // Move the piece in ChessPiece 2D board array
+            // Moves piece in ChessPiece 2D board array
             ChessPiece.moveChessPiece(selectedPiece, x2, y2);
 
-            // Moves piece
+            // Sends move data to server
+            move = new int[] {x1, y1, x2, y2};
+
+            // Moves piece in the canvas
             movePiece(selectedPiece);
 
             // Rotates the board if feature is activated
@@ -333,8 +344,6 @@ public class OnlineGame {
                 turnBoard(leftNumbers, topNumbers);
                 buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
             }
-
-
         }
 
         // Marks the places that the piece can move to
@@ -374,7 +383,7 @@ public class OnlineGame {
     }
 
     // Moves piece to another position on the board
-    private void movePiece(ChessPiece selectedPiece) {
+    public void movePiece(ChessPiece selectedPiece) {
         // Disable special moves for pawn (2 step forward) or king (castle)
         selectedPiece.hasMoved = true;
 

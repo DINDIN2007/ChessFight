@@ -8,12 +8,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server implements Runnable {
-    private ArrayList<clientHandler> connections;
+    private ArrayList<ClientHandler> connections;
+    private ArrayList<PlayerHandler> players;
     private ServerSocket serversocket;
     private ExecutorService threadPool;
-
-    private playerHandler white;
-    private playerHandler black;
 
     private boolean closed;
     public int port = 9999;
@@ -32,16 +30,17 @@ public class Server implements Runnable {
             while(!closed) {
                 Socket clientSocket = serversocket.accept();
 
-                /*clientHandler ch = new clientHandler(clientSocket);
+                ClientHandler ch = new ClientHandler(clientSocket);
                 connections.add(ch);
-                threadPool.execute(ch);*/
+                threadPool.execute(ch);
 
-                playerHandler ph = new playerHandler(clientSocket);
-                if (white == null) {
-                    white = ph;
-                } else if (black == null) {
-                    black = ph;
-                }
+                PlayerHandler ph = new PlayerHandler(clientSocket);
+                ph.color = switch (players.size()) {
+                    case 0 -> "White";
+                    case 1 -> "Black";
+                    default -> "Spec";
+                };
+                players.add(ph);
                 threadPool.execute(ph);
             }
         } catch (Exception e) {
@@ -57,7 +56,7 @@ public class Server implements Runnable {
             if (!serversocket.isClosed()) {
                 serversocket.close();
             }
-            for (clientHandler ch : connections) {
+            for (ClientHandler ch : connections) {
                 ch.shutdown();
             }
         } catch (IOException e) {
@@ -65,14 +64,13 @@ public class Server implements Runnable {
         }
     }
 
-    class playerHandler implements Runnable {
+    class PlayerHandler implements Runnable {
         private Socket clientSocket;
         private DataOutputStream dataOut;
         private DataInputStream dataIn;
-        private String color;
+        private String color = "";
 
-
-        public playerHandler(Socket socket) {
+        public PlayerHandler(Socket socket) {
             this.clientSocket = socket;
         }
 
@@ -82,21 +80,36 @@ public class Server implements Runnable {
                 dataOut = new DataOutputStream(clientSocket.getOutputStream());
                 dataIn = new DataInputStream(clientSocket.getInputStream());
 
-                /*while () {
-                }*/
+                int i;
+                while (!closed) {
+                    i = dataIn.readInt();
+                    for (PlayerHandler player : players) if (!player.color.equals(color)) {
+                        player.dataOut.writeInt(i);
+                        player.dataOut.flush();
+                    }
+                }
             } catch (IOException e) {
                 shutdown();
             }
         }
+
+        public void shutdown() {
+            try {
+                dataOut.close(); dataOut.close();
+                if (!clientSocket.isClosed()) {
+                    clientSocket.close();
+                }
+            } catch (IOException _) {}
+        }
     }
 
-    class clientHandler implements Runnable {
+    class ClientHandler implements Runnable {
         private Socket clientSocket;
         private BufferedReader in;
         private PrintWriter out;
         private String username;
 
-        public clientHandler(Socket socket) {
+        public ClientHandler(Socket socket) {
             this.clientSocket = socket;
         }
 
@@ -120,11 +133,9 @@ public class Server implements Runnable {
                         } else {
                             out.println("Invalid username");
                         }
-                    }
-                    else if (message.startsWith("/quit")) { // disconnect
+                    } else if (message.startsWith("/quit")) { // disconnect
                         serverLog(username + " disconnected");
-                    }
-                    else {
+                    } else {
                         broadcast(username + ": " + message);
                     }
                 }
@@ -135,23 +146,20 @@ public class Server implements Runnable {
 
         // sends data to all users
         public void broadcast(String message) {
-            for (clientHandler client : connections) {
-                if (!client.username.equals(this.username)) { // to avoid repeat send
-                    client.out.println(message);
-                }
+            for (ClientHandler client : connections) if (!client.username.equals(this.username)) { // to avoid repeat send
+                client.out.println(message);
             }
         }
 
         public void serverLog(String message) {
-            for (clientHandler client : connections) {
+            for (ClientHandler client : connections) {
                 client.out.println("SERVER: " + message);
             }
         }
 
         public void shutdown() {
             try {
-                in.close();
-                out.close();
+                in.close(); out.close();
                 if (!clientSocket.isClosed()) {
                     clientSocket.close();
                 }

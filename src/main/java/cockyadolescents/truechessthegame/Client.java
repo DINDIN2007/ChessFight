@@ -4,15 +4,16 @@ import java.io.*;
 import java.net.Socket;
 
 import static cockyadolescents.truechessthegame.ChessPiece.ChessBoard;
+import static cockyadolescents.truechessthegame.OnlineGame.move;
 import static cockyadolescents.truechessthegame.Main.*;
 
 public class Client implements Runnable {
     private Socket socket;
-    private BufferedReader in;
-    private PrintWriter out;
+    public BufferedReader in;
+    public PrintWriter out;
 
-    private DataOutputStream dataOut;
-    private DataInputStream dataIn;
+    public DataOutputStream dataOut;
+    public DataInputStream dataIn;
 
     private boolean connected = true;
     private String address;
@@ -25,61 +26,61 @@ public class Client implements Runnable {
         try {
             socket = new Socket(address, port);
 
-            /*out =  new PrintWriter(socket.getOutputStream(), true);
+            // Chat
+            out =  new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             InputHandler inputHandler = new InputHandler();
-            Thread thread = new Thread(inputHandler);
-            thread.start();
+            Thread inputThread = new Thread(inputHandler);
+            inputThread.start();
 
             String inMessage;
-            while ((inMessage = in.readLine()) != null) { // reads from server
+            while ((inMessage = in.readLine()) != null) {
                 System.out.println(inMessage);
-            }*/
+            }
 
+            // Game
             dataOut = new DataOutputStream(socket.getOutputStream());
             dataIn = new DataInputStream(socket.getInputStream());
 
-            /*while () {
+            while (connected) {
+                receiveMove();
+                sendMove();
+            }
 
-            }*/
         } catch (IOException e) {
             waitingroom.notification("Failed to connect to Server");
             shutdown();
         }
     }
 
-    public void shutdown() {
-        connected = false;
-        try {
-            in.close(); out.close();
-            dataIn.close(); dataOut.close();
-            if (!socket.isClosed())
-                socket.close();
-        } catch (IOException _) {}
-    }
-
-    public void sendMove(int[] move) throws IOException {
-        for (int i = 0; i < 4; i++) {
-            dataOut.writeInt(move[i]); dataOut.flush();
+    public void sendMove() {
+        if (move != null) try {
+            for (int i = 0; i < 4; i++) {
+                dataOut.writeInt(move[i]);
+                System.out.print(move[i] + " "); // debug
+                dataOut.flush();
+            }
+            System.out.println();
+            move = null;
+        } catch (IOException e) {
+            shutdown();
         }
     }
 
-    class MoveHandler implements Runnable {
+    public void receiveMove() {
+        try {
+            if (dataIn.available() != 0) {
+                int x1 = dataIn.readInt(), y1 = dataIn.readInt();
+                int x2 = dataIn.readInt(), y2 = dataIn.readInt();
+                System.out.println(x1 + " " + y1 + " " + x2 + " " + y2); // debug
 
-        @Override
-        public void run() {
-            try {
-                while (connected) {
-                    int x1 = dataIn.readInt();
-                    int y1 = dataIn.readInt();
-                    int y2 = dataIn.readInt();
-                    int x2 = dataIn.readInt();
-                    ChessPiece.moveChessPiece(ChessBoard[x1][y1], x2, y2);
-                }
-            } catch (IOException e) {
-                shutdown();
+                ChessPiece selectedPiece = ChessBoard[x1][y1];
+                ChessPiece.moveChessPiece(selectedPiece, x2, y2);
+                onlinegame.movePiece(selectedPiece);
             }
+        } catch (IOException e) {
+            shutdown();
         }
     }
 
@@ -102,6 +103,16 @@ public class Client implements Runnable {
                 shutdown();
             }
         }
+    }
+
+    public void shutdown() {
+        connected = false;
+        try {
+            in.close(); out.close();
+            dataIn.close(); dataOut.close();
+            if (!socket.isClosed())
+                socket.close();
+        } catch (IOException _) {}
     }
 
     public static void main(String[] args) {
