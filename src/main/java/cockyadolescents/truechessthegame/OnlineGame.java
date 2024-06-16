@@ -75,6 +75,12 @@ public class OnlineGame {
         music.startGame();
     }
 
+    public void updateMove(int x1, int y1, int x2, int y2) {
+        ChessPiece selectedPiece = ChessBoard[x1][y1];
+        ChessPiece.moveChessPiece(selectedPiece, x2, y2);
+        onlinegame.movePiece(selectedPiece);
+    }
+
     // Main game setup
     public void startGame() throws IOException {
         // Load new scene to start the game

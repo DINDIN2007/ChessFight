@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static cockyadolescents.truechessthegame.Main.waitingroom;
-
 public class Server implements Runnable {
     private ArrayList<ClientHandler> connections;
     private ArrayList<PlayerHandler> players;
@@ -72,11 +70,10 @@ public class Server implements Runnable {
 
                 while (!closed) {
                     int i = dataIn.readInt();
-                    for (PlayerHandler player : players) /*if (!player.color.equals(color))*/ {
+                    for (PlayerHandler player : players) if (!player.color.equals(color)) {
                         player.dataOut.writeInt(i);
                         player.dataOut.flush();
                     }
-                    System.out.print("received" + color); // debug
                 }
             } catch (IOException e) {
                 shutdown();

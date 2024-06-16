@@ -1,14 +1,14 @@
 package cockyadolescents.truechessthegame;
 
+import javafx.application.Platform;
+
 import java.io.*;
 import java.net.Socket;
 
-import static cockyadolescents.truechessthegame.ChessPiece.ChessBoard;
 import static cockyadolescents.truechessthegame.Main.*;
 
 public class Client implements Runnable {
     private Socket chatSocket, gameSocket;
-    private Thread inputThread, gameThread;
 
     public BufferedReader textIn;
     public PrintWriter textOut;
@@ -21,7 +21,10 @@ public class Client implements Runnable {
 
     public Client(String address) {this.address = address;}
 
+    InputHandler inputHandler;
     MoveHandler moveHandler;
+    Thread inputThread; Thread moveThread;
+
     @Override
     public void run() {
         try {
@@ -32,8 +35,8 @@ public class Client implements Runnable {
             textOut =  new PrintWriter(chatSocket.getOutputStream(), true);
             textIn = new BufferedReader(new InputStreamReader(chatSocket.getInputStream()));
 
-            InputHandler inputHandler = new InputHandler();
-            Thread inputThread = new Thread(inputHandler);
+            inputHandler = new InputHandler();
+            inputThread = new Thread(inputHandler);
             inputThread.start();
 
             // Game
@@ -41,7 +44,7 @@ public class Client implements Runnable {
             dataIn = new DataInputStream(gameSocket.getInputStream());
 
             moveHandler = new MoveHandler();
-            Thread moveThread = new Thread(moveHandler);
+            moveThread = new Thread(moveHandler);
             moveThread.start();
 
             String inMessage;
@@ -63,11 +66,8 @@ public class Client implements Runnable {
                     if (dataIn.available() != 0) { // receive move
                         int x1 = dataIn.readInt(), y1 = dataIn.readInt();
                         int x2 = dataIn.readInt(), y2 = dataIn.readInt();
-
-                        ChessPiece selectedPiece = ChessBoard[x1][y1];
-                        ChessPiece.moveChessPiece(selectedPiece, x2, y2);
-                        onlinegame.movePiece(selectedPiece);
-                        System.out.println("read");
+                        Platform.runLater(() -> onlinegame.updateMove(x1, y1, x2, y2));
+                        System.out.println(x1 +","+ y1 +" "+ x2 +","+ y2); // debug
                     }
                 }
             } catch (IOException e) {
@@ -81,8 +81,8 @@ public class Client implements Runnable {
                     dataOut.writeInt(move[i]);
                     dataOut.flush();
                 }
+                System.out.println(move[0] +","+ move[1] +" "+ move[2] +","+ move[3]); // debug
                 onlinegame.move = null;
-                System.out.println("sent"); // debug
             } catch (IOException e) {
                 shutdown();
             }

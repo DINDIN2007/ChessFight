@@ -45,11 +45,11 @@ public class WaitingRoom {
         addressLabel = (Label) root.lookup("#hostAddress");
         notificationLabel = (Label) root.lookup("#notificationLabel");
         Game.onlineGame = true; // to change some features in the normal game
-        getHostAddress();
+        getDeviceAddress();
     }
 
     // gets ip address of device and runs server
-    public void getHostAddress() {
+    public void getDeviceAddress() {
         try {
             // retrieves available network interfaces
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
@@ -73,7 +73,8 @@ public class WaitingRoom {
 
     @FXML
     public void displayAddress() {
-        addressLabel.setText("Host Address: " + this.address);
+        getDeviceAddress();
+        addressLabel.setText(this.address);
     }
 
     public Thread clientThread;
