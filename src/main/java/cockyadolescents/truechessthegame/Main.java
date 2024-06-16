@@ -40,10 +40,12 @@ public class Main extends Application {
 
         // disconnects client and closes server
         window.setOnCloseRequest(e -> {
-            if (client != null) {
-                client.textOut.println("/quit");
+            if (client != null && client.chatSocket != null) {
+                if (!client.chatSocket.isClosed())
+                    client.textOut.println("/quit");
             }
-            if (server != null) server.shutdown();
+            if (server != null)
+                server.shutdown();
             stage.close();
             System.exit(0);
         });

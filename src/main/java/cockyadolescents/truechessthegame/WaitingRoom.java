@@ -75,6 +75,7 @@ public class WaitingRoom {
     public void displayAddress() {
         getDeviceAddress();
         addressLabel.setText(this.address);
+        addressField.setText(this.address);
     }
 
     public Thread clientThread;
@@ -91,14 +92,14 @@ public class WaitingRoom {
 
     @FXML
     public void joinServer() throws IOException {
-        onlinegame.newGame();
-        String s = addressField.getText(); if (s.isEmpty()) s = "localhost";
+        String s = addressField.getText();
+        if (s.isEmpty()) s = "localhost";
         client = new Client(s);
         clientThread = new Thread(client);
         clientThread.start();
-
     }
 
+    // notification message that displays for 2s
     Timeline timeline;
     public void notification(String message) {
         if (timeline != null) timeline.stop();

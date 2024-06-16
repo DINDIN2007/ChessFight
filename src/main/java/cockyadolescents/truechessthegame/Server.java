@@ -13,8 +13,8 @@ public class Server implements Runnable {
     private ServerSocket chatServerSocket, gameServerSocket;
     private ExecutorService threadPool;
 
-    private boolean closed;
-    private int port1 = 9999, port2 = 9998;
+    public boolean closed;
+    private int chatPort = 9999, gamePort = 9998;
 
     public Server() {
         connections = new ArrayList<>();
@@ -26,14 +26,16 @@ public class Server implements Runnable {
     public void run() {
         System.out.println("Server started");
         try {
-            chatServerSocket = new ServerSocket(port1);
-            gameServerSocket = new ServerSocket(port2);
+            chatServerSocket = new ServerSocket(chatPort);
+            gameServerSocket = new ServerSocket(gamePort);
             threadPool = Executors.newCachedThreadPool();
 
+            // constantly listen for connection requests from client
             while(!closed) {
                 Socket clientSocket = chatServerSocket.accept();
                 Socket playerSocket = gameServerSocket.accept();
 
+                // creates handlers for each client connection and executes process in thread pool
                 ClientHandler ch = new ClientHandler(clientSocket);
                 connections.add(ch);
                 threadPool.execute(ch);
@@ -130,7 +132,7 @@ public class Server implements Runnable {
             }
         }
 
-        // sends data to all users
+        // sends message to all users
         public void broadcast(String message) {
             for (ClientHandler client : connections) if (!client.username.equals(this.username)) { // to avoid repeat send
                 client.out.println(message);
@@ -154,6 +156,7 @@ public class Server implements Runnable {
         }
     }
 
+    // shuts down threadpool and handlers, closes sockets
     public void shutdown() {
         System.out.println("Server shutting down");
         try {

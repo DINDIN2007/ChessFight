@@ -55,12 +55,14 @@ public class OnlineGame {
     private Boxing boxGame = new Boxing();
     public static boolean isBoxing = false, boxingWon = false;
 
-    @FXML
+    /*@FXML
     public void home() throws IOException {
-        homepage.display();
         client.textOut.println("/quit");
-        client.shutdown();
-    }
+        waitingroom.display();
+        waitingroom.notification("Disconnected");
+        waitingroom.clientThread = null;
+        client = null;
+    }*/
 
     @FXML
     public void newGame() throws IOException {
@@ -147,6 +149,9 @@ public class OnlineGame {
             turnBoard(leftNumbers, topNumbers);
             buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
         }*/
+
+        root.lookup("#home").setDisable(true);
+        root.lookup("#newgame").setDisable(true);
     }
 
     // End game setup

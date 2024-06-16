@@ -8,16 +8,15 @@ import java.net.Socket;
 import static cockyadolescents.truechessthegame.Main.*;
 
 public class Client implements Runnable {
-    private Socket chatSocket, gameSocket;
-
     public BufferedReader textIn;
     public PrintWriter textOut;
     public DataOutputStream dataOut;
     public DataInputStream dataIn;
 
-    private boolean connected = true;
+    public boolean connected = false;
+    public Socket chatSocket, gameSocket;
     private String address;
-    private int port1 = 9999, port2 = 9998;
+    private int chatPort = 9999, gamePort = 9998;
 
     public Client(String address) {this.address = address;}
 
@@ -28,12 +27,13 @@ public class Client implements Runnable {
     @Override
     public void run() {
         try {
-            chatSocket = new Socket(address, port1);
-            gameSocket = new Socket(address, port2);
+            chatSocket = new Socket(address, chatPort);
+            gameSocket = new Socket(address, gamePort);
 
             // Chat
             textOut =  new PrintWriter(chatSocket.getOutputStream(), true);
             textIn = new BufferedReader(new InputStreamReader(chatSocket.getInputStream()));
+            connected = true;
 
             inputHandler = new InputHandler();
             inputThread = new Thread(inputHandler);
@@ -47,14 +47,23 @@ public class Client implements Runnable {
             moveThread = new Thread(moveHandler);
             moveThread.start();
 
+            if (connected) Platform.runLater(() -> {
+                try {
+                    onlinegame.newGame();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            // reads incoming chat messages then prints in console
             String inMessage;
             while ((inMessage = textIn.readLine()) != null) {
                 System.out.println(inMessage);
             }
 
         } catch (IOException e) {
-            waitingroom.notification("Failed to connect to Server");
             shutdown();
+            Platform.runLater(() -> waitingroom.notification("Failed to connect to Server"));
         }
     }
 
@@ -62,13 +71,11 @@ public class Client implements Runnable {
         @Override
         public void run() {
             try {;
-                while (connected) {
-                    if (dataIn.available() != 0) { // receive move
-                        int x1 = dataIn.readInt(), y1 = dataIn.readInt();
-                        int x2 = dataIn.readInt(), y2 = dataIn.readInt();
-                        Platform.runLater(() -> onlinegame.updateMove(x1, y1, x2, y2));
-                        System.out.println(x1 +","+ y1 +" "+ x2 +","+ y2); // debug
-                    }
+                while (connected) if (dataIn.available() != 0) { // receive move
+                    int x1 = dataIn.readInt(), y1 = dataIn.readInt();
+                    int x2 = dataIn.readInt(), y2 = dataIn.readInt();
+                    Platform.runLater(() -> onlinegame.updateMove(x1, y1, x2, y2));
+                    System.out.println(x1 +" "+ y1 +" "+ x2 +" "+ y2); // debug
                 }
             } catch (IOException e) {
                 shutdown();
@@ -81,7 +88,7 @@ public class Client implements Runnable {
                     dataOut.writeInt(move[i]);
                     dataOut.flush();
                 }
-                System.out.println(move[0] +","+ move[1] +" "+ move[2] +","+ move[3]); // debug
+                System.out.println(move[0] +" "+ move[1] +" "+ move[2] +" "+ move[3]); // debug
                 onlinegame.move = null;
             } catch (IOException e) {
                 shutdown();
@@ -113,15 +120,18 @@ public class Client implements Runnable {
 
     public void shutdown() {
         connected = false;
-        System.out.println("Disconnected");
+        System.out.println("Client shutting down");
         try {
-            textIn.close(); textOut.close();
-            dataIn.close(); dataOut.close();
-            if (!chatSocket.isClosed())
+            // closes io streams
+            if (textIn != null) {
+                textIn.close(); textOut.close();
+                dataIn.close(); dataOut.close();
+            }
+            // closes sockets
+            if (chatSocket != null && !chatSocket.isClosed()) {
                 chatSocket.close();
-            if (!gameSocket.isClosed())
                 gameSocket.close();
-
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
