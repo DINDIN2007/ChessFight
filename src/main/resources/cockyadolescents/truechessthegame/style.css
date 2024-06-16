@@ -83,6 +83,7 @@
     -fx-background-position: center center; /* Centers the image */
 }
 
+/* Home Page */
 .dark-button {
     -fx-background-color: #333333;
     -fx-text-fill: #ffffff;
@@ -157,10 +158,6 @@
     -fx-border-radius: 5px;
 }
 
-/*.buttonStyle:hover {
-    -fx-padding: 15px;
-}*/
-
 .boxingBackground {
     -fx-background-color: white;
     -fx-border-color: black;
@@ -215,4 +212,15 @@
 .volume-slider .track-fill {
     -fx-background-color: #4d90fe;
     -fx-background-radius: 4px;
+}
+
+#notificationLabel {
+    -fx-text-fill: white;
+    -fx-padding: 10 10;
+}
+
+.waitingRoomLabel {
+    -fx-font-family: "Bell MT Bold";
+    -fx-text-fill: black;
+    -fx-font-size: 16;
 }
