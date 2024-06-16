@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.Socket;
 
 import static cockyadolescents.truechessthegame.ChessPiece.ChessBoard;
-import static cockyadolescents.truechessthegame.OnlineGame.move;
 import static cockyadolescents.truechessthegame.Main.*;
 
 public class Client implements Runnable {
@@ -13,8 +12,8 @@ public class Client implements Runnable {
 
     public BufferedReader textIn;
     public PrintWriter textOut;
-    public ObjectOutputStream dataOut;
-    public ObjectInputStream dataIn;
+    public DataOutputStream dataOut;
+    public DataInputStream dataIn;
 
     private boolean connected = true;
     private String address;
@@ -22,6 +21,7 @@ public class Client implements Runnable {
 
     public Client(String address) {this.address = address;}
 
+    MoveHandler moveHandler;
     @Override
     public void run() {
         try {
@@ -37,10 +37,10 @@ public class Client implements Runnable {
             inputThread.start();
 
             // Game
-            dataOut = new ObjectOutputStream(gameSocket.getOutputStream());
-            dataIn = new ObjectInputStream(gameSocket.getInputStream());
+            dataOut = new DataOutputStream(gameSocket.getOutputStream());
+            dataIn = new DataInputStream(gameSocket.getInputStream());
 
-            MoveHandler moveHandler = new MoveHandler();
+            moveHandler = new MoveHandler();
             Thread moveThread = new Thread(moveHandler);
             moveThread.start();
 
@@ -58,30 +58,32 @@ public class Client implements Runnable {
     class MoveHandler implements Runnable {
         @Override
         public void run() {
-            try {
-                int[] mov;
+            try {;
                 while (connected) {
-                    if ((mov = (int[]) dataIn.readObject()) != null) { // receive move
-                        int x1 = mov[0], y1 = mov[1];
-                        int x2 = mov[2], y2 = mov[3];
+                    if (dataIn.available() != 0) { // receive move
+                        int x1 = dataIn.readInt(), y1 = dataIn.readInt();
+                        int x2 = dataIn.readInt(), y2 = dataIn.readInt();
 
                         ChessPiece selectedPiece = ChessBoard[x1][y1];
                         ChessPiece.moveChessPiece(selectedPiece, x2, y2);
                         onlinegame.movePiece(selectedPiece);
-
-                        System.out.println(x1 + " " + y1 + " " + x2 + " " + y2); // debug
-                        mov = null;
-                    }
-                    if (move != null) { // send move
-                        String s = "";
-                        for (int i = 0; i < 4; i++) s+= move[i] + " ";
-                        System.out.println(s); // debug
-
-                        dataOut.writeObject(move); dataOut.flush();
-                        move = null;
+                        System.out.println("read");
                     }
                 }
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException e) {
+                shutdown();
+            }
+        }
+
+        public void sendMove(int[] move) {
+            try {
+                for (int i = 0; i < 4; i++) {
+                    dataOut.writeInt(move[i]);
+                    dataOut.flush();
+                }
+                onlinegame.move = null;
+                System.out.println("sent"); // debug
+            } catch (IOException e) {
                 shutdown();
             }
         }
@@ -120,6 +122,8 @@ public class Client implements Runnable {
             if (!gameSocket.isClosed())
                 gameSocket.close();
 
-        } catch (IOException _) {}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -51,8 +51,8 @@ public class Server implements Runnable {
 
     class PlayerHandler implements Runnable {
         private Socket playerSocket;
-        private ObjectOutputStream dataOut;
-        private ObjectInputStream dataIn;
+        private DataOutputStream dataOut;
+        private DataInputStream dataIn;
         private String color;
 
         public PlayerHandler(Socket socket) {
@@ -67,18 +67,18 @@ public class Server implements Runnable {
         @Override
         public void run() {
             try {
-                dataOut = new ObjectOutputStream(playerSocket.getOutputStream());
-                dataIn = new ObjectInputStream(playerSocket.getInputStream());
+                dataOut = new DataOutputStream(playerSocket.getOutputStream());
+                dataIn = new DataInputStream(playerSocket.getInputStream());
 
-                int[] move;
-                while ((move = (int[]) dataIn.readObject()) != null) {
-                    for (PlayerHandler player : players) if (!player.color.equals(color)) {
-                        player.dataOut.writeObject(move);
+                while (!closed) {
+                    int i = dataIn.readInt();
+                    for (PlayerHandler player : players) /*if (!player.color.equals(color))*/ {
+                        player.dataOut.writeInt(i);
                         player.dataOut.flush();
                     }
-                    System.out.print(color + " "); // debug
+                    System.out.print("received" + color); // debug
                 }
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException e) {
                 shutdown();
             }
         }
@@ -181,3 +181,7 @@ public class Server implements Runnable {
         server.run();
     }
 }
+
+// to run from cmd
+// cd \IdeaProjects\ChessFight\target\classes
+// java cockyadolescents.truechessthegame.Server

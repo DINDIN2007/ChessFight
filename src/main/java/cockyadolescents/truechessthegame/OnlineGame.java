@@ -335,6 +335,7 @@ public class OnlineGame {
 
             // Sends move data to server
             move = new int[] {x1, y1, x2, y2};
+            client.moveHandler.sendMove(move);
 
             // Moves piece in the canvas
             movePiece(selectedPiece);
