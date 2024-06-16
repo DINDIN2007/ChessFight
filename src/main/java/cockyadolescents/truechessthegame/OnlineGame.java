@@ -58,7 +58,7 @@ public class OnlineGame {
     @FXML
     public void home() throws IOException {
         homepage.display();
-        client.out.println("/quit");
+        client.textOut.println("/quit");
         client.shutdown();
     }
 
@@ -425,7 +425,7 @@ public class OnlineGame {
     }
 
     // Draws the pieces and un-disables the tiles on the board
-    private static void drawBoard(Button[][] tileArray) {
+    public static void drawBoard(Button[][] tileArray) {
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             tileArray[i][j].setDisable(false);

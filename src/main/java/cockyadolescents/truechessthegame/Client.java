@@ -8,45 +8,45 @@ import static cockyadolescents.truechessthegame.OnlineGame.move;
 import static cockyadolescents.truechessthegame.Main.*;
 
 public class Client implements Runnable {
-    private Socket socket;
-    public BufferedReader in;
-    public PrintWriter out;
-
-    public DataOutputStream dataOut;
-    public DataInputStream dataIn;
+    private Socket chatSocket;
+    private Socket gameSocket;
+    public BufferedReader textIn;
+    public PrintWriter textOut;
+    public ObjectOutputStream dataOut;
+    public ObjectInputStream dataIn;
 
     private boolean connected = true;
     private String address;
-    private int port = 9999;
+    private int port1 = 9999, port2 = 9998;
 
     public Client(String address) {this.address = address;}
 
     @Override
     public void run() {
         try {
-            socket = new Socket(address, port);
+            chatSocket = new Socket(address, port1);
+            gameSocket = new Socket(address, port2);
 
             // Chat
-            out =  new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            textOut =  new PrintWriter(chatSocket.getOutputStream(), true);
+            textIn = new BufferedReader(new InputStreamReader(chatSocket.getInputStream()));
 
             InputHandler inputHandler = new InputHandler();
             Thread inputThread = new Thread(inputHandler);
             inputThread.start();
 
             String inMessage;
-            while ((inMessage = in.readLine()) != null) {
+            while ((inMessage = textIn.readLine()) != null) {
                 System.out.println(inMessage);
             }
 
             // Game
-            dataOut = new DataOutputStream(socket.getOutputStream());
-            dataIn = new DataInputStream(socket.getInputStream());
+            dataOut = new ObjectOutputStream(gameSocket.getOutputStream());
+            dataIn = new ObjectInputStream(gameSocket.getInputStream());
 
-            while (connected) {
-                receiveMove();
-                sendMove();
-            }
+            MoveHandler moveHandler = new MoveHandler();
+            Thread moveThread = new Thread(moveHandler);
+            moveThread.start();
 
         } catch (IOException e) {
             waitingroom.notification("Failed to connect to Server");
@@ -54,33 +54,35 @@ public class Client implements Runnable {
         }
     }
 
-    public void sendMove() {
-        if (move != null) try {
-            for (int i = 0; i < 4; i++) {
-                dataOut.writeInt(move[i]);
-                System.out.print(move[i] + " "); // debug
-                dataOut.flush();
-            }
-            System.out.println();
-            move = null;
-        } catch (IOException e) {
-            shutdown();
-        }
-    }
+    class MoveHandler implements Runnable {
+        @Override
+        public void run() {
+            try {
+                int[] mov;
+                while (connected) {
+                    if ((mov = (int[]) dataIn.readObject()) != null) { // receive move
+                        int x1 = mov[0], y1 = mov[1];
+                        int x2 = mov[2], y2 = mov[3];
 
-    public void receiveMove() {
-        try {
-            if (dataIn.available() != 0) {
-                int x1 = dataIn.readInt(), y1 = dataIn.readInt();
-                int x2 = dataIn.readInt(), y2 = dataIn.readInt();
-                System.out.println(x1 + " " + y1 + " " + x2 + " " + y2); // debug
+                        ChessPiece selectedPiece = ChessBoard[x1][y1];
+                        ChessPiece.moveChessPiece(selectedPiece, x2, y2);
+                        onlinegame.movePiece(selectedPiece);
 
-                ChessPiece selectedPiece = ChessBoard[x1][y1];
-                ChessPiece.moveChessPiece(selectedPiece, x2, y2);
-                onlinegame.movePiece(selectedPiece);
+                        mov = null;
+                        System.out.println(x1 + " " + y1 + " " + x2 + " " + y2); // debug
+                    }
+                    if (move != null) { // send move
+                        dataOut.writeObject(move); dataOut.flush();
+                        for (int i = 0; i < 4; i++) {
+                            System.out.print(move[i] + " "); // debug
+                        }
+                        System.out.println();
+                        move = null;
+                    }
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                shutdown();
             }
-        } catch (IOException e) {
-            shutdown();
         }
     }
 
@@ -92,11 +94,11 @@ public class Client implements Runnable {
                 while (connected) {
                     String message = inputReader.readLine(); // reads user input
                     if (message.equals("/quit")) { // disconnect
-                        out.println(message);
+                        textOut.println(message);
                         inputReader.close();
                         shutdown();
                     } else {
-                        out.println(message); // sends to server
+                        textOut.println(message); // sends to server
                     }
                 }
             } catch (IOException e) {
@@ -108,10 +110,12 @@ public class Client implements Runnable {
     public void shutdown() {
         connected = false;
         try {
-            in.close(); out.close();
+            textIn.close(); textOut.close();
             dataIn.close(); dataOut.close();
-            if (!socket.isClosed())
-                socket.close();
+            if (!chatSocket.isClosed())
+                chatSocket.close();
+            if (!gameSocket.isClosed())
+                gameSocket.close();
         } catch (IOException _) {}
     }
 

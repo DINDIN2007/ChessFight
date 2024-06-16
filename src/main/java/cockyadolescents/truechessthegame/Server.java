@@ -10,14 +10,16 @@ import java.util.concurrent.Executors;
 public class Server implements Runnable {
     private ArrayList<ClientHandler> connections;
     private ArrayList<PlayerHandler> players;
-    private ServerSocket serversocket;
+    private ServerSocket chatServerSocket;
+    private ServerSocket gameServerSocket;
     private ExecutorService threadPool;
 
     private boolean closed;
-    public int port = 9999;
+    private int port1 = 9999, port2 = 9998;
 
     public Server() {
         connections = new ArrayList<>();
+        players = new ArrayList<>();
         closed = false;
     }
 
@@ -25,21 +27,19 @@ public class Server implements Runnable {
     public void run() {
         System.out.println("Server started");
         try {
-            serversocket = new ServerSocket(port);
+            chatServerSocket = new ServerSocket(port1);
+            gameServerSocket = new ServerSocket(port2);
             threadPool = Executors.newCachedThreadPool();
+
             while(!closed) {
-                Socket clientSocket = serversocket.accept();
+                Socket clientSocket = chatServerSocket.accept();
+                Socket playerSocket = gameServerSocket.accept();
 
                 ClientHandler ch = new ClientHandler(clientSocket);
                 connections.add(ch);
                 threadPool.execute(ch);
 
-                PlayerHandler ph = new PlayerHandler(clientSocket);
-                ph.color = switch (players.size()) {
-                    case 0 -> "White";
-                    case 1 -> "Black";
-                    default -> "Spec";
-                };
+                PlayerHandler ph = new PlayerHandler(playerSocket);
                 players.add(ph);
                 threadPool.execute(ph);
             }
@@ -48,47 +48,36 @@ public class Server implements Runnable {
         }
     }
 
-    public void shutdown() {
-        System.out.println("Server shutting down");
-        try {
-            closed = true;
-            threadPool.shutdown();
-            if (!serversocket.isClosed()) {
-                serversocket.close();
-            }
-            for (ClientHandler ch : connections) {
-                ch.shutdown();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     class PlayerHandler implements Runnable {
-        private Socket clientSocket;
-        private DataOutputStream dataOut;
-        private DataInputStream dataIn;
-        private String color = "";
+        private Socket playerSocket;
+        private ObjectOutputStream dataOut;
+        private ObjectInputStream dataIn;
+        private String color;
 
         public PlayerHandler(Socket socket) {
-            this.clientSocket = socket;
+            this.playerSocket = socket;
+            this.color = switch (players.size()) {
+                case 0 -> "White";
+                case 1 -> "Black";
+                default -> "Spec"; // spectator (later feature maybe)
+            };
         }
 
         @Override
         public void run() {
             try {
-                dataOut = new DataOutputStream(clientSocket.getOutputStream());
-                dataIn = new DataInputStream(clientSocket.getInputStream());
+                dataOut = new ObjectOutputStream(playerSocket.getOutputStream());
+                dataIn = new ObjectInputStream(playerSocket.getInputStream());
 
-                int i;
-                while (!closed) {
-                    i = dataIn.readInt();
+                int[] move;
+                while ((move = (int[]) dataIn.readObject()) != null) {
                     for (PlayerHandler player : players) if (!player.color.equals(color)) {
-                        player.dataOut.writeInt(i);
+                        player.dataOut.writeObject(move);
                         player.dataOut.flush();
+                        System.out.print(color + " "); // debug
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 shutdown();
             }
         }
@@ -96,8 +85,8 @@ public class Server implements Runnable {
         public void shutdown() {
             try {
                 dataOut.close(); dataOut.close();
-                if (!clientSocket.isClosed()) {
-                    clientSocket.close();
+                if (!playerSocket.isClosed()) {
+                    playerSocket.close();
                 }
             } catch (IOException _) {}
         }
@@ -164,6 +153,24 @@ public class Server implements Runnable {
                     clientSocket.close();
                 }
             } catch (IOException _) {}
+        }
+    }
+
+    public void shutdown() {
+        System.out.println("Server shutting down");
+        try {
+            closed = true;
+            threadPool.shutdown();
+            if (!chatServerSocket.isClosed())
+                chatServerSocket.close();
+            if (!gameServerSocket.isClosed())
+                gameServerSocket.close();
+            for (ClientHandler ch : connections)
+                ch.shutdown();
+            for (PlayerHandler ph : players)
+                ph.shutdown();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
