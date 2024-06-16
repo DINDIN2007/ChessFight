@@ -8,8 +8,9 @@ import static cockyadolescents.truechessthegame.OnlineGame.move;
 import static cockyadolescents.truechessthegame.Main.*;
 
 public class Client implements Runnable {
-    private Socket chatSocket;
-    private Socket gameSocket;
+    private Socket chatSocket, gameSocket;
+    private Thread inputThread, gameThread;
+
     public BufferedReader textIn;
     public PrintWriter textOut;
     public ObjectOutputStream dataOut;
@@ -35,11 +36,6 @@ public class Client implements Runnable {
             Thread inputThread = new Thread(inputHandler);
             inputThread.start();
 
-            String inMessage;
-            while ((inMessage = textIn.readLine()) != null) {
-                System.out.println(inMessage);
-            }
-
             // Game
             dataOut = new ObjectOutputStream(gameSocket.getOutputStream());
             dataIn = new ObjectInputStream(gameSocket.getInputStream());
@@ -47,6 +43,11 @@ public class Client implements Runnable {
             MoveHandler moveHandler = new MoveHandler();
             Thread moveThread = new Thread(moveHandler);
             moveThread.start();
+
+            String inMessage;
+            while ((inMessage = textIn.readLine()) != null) {
+                System.out.println(inMessage);
+            }
 
         } catch (IOException e) {
             waitingroom.notification("Failed to connect to Server");
@@ -68,15 +69,15 @@ public class Client implements Runnable {
                         ChessPiece.moveChessPiece(selectedPiece, x2, y2);
                         onlinegame.movePiece(selectedPiece);
 
-                        mov = null;
                         System.out.println(x1 + " " + y1 + " " + x2 + " " + y2); // debug
+                        mov = null;
                     }
                     if (move != null) { // send move
+                        String s = "";
+                        for (int i = 0; i < 4; i++) s+= move[i] + " ";
+                        System.out.println(s); // debug
+
                         dataOut.writeObject(move); dataOut.flush();
-                        for (int i = 0; i < 4; i++) {
-                            System.out.print(move[i] + " "); // debug
-                        }
-                        System.out.println();
                         move = null;
                     }
                 }
@@ -91,6 +92,7 @@ public class Client implements Runnable {
         public void run() {
             try {
                 BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
+                textOut.println(waitingroom.address);
                 while (connected) {
                     String message = inputReader.readLine(); // reads user input
                     if (message.equals("/quit")) { // disconnect
@@ -109,6 +111,7 @@ public class Client implements Runnable {
 
     public void shutdown() {
         connected = false;
+        System.out.println("Disconnected");
         try {
             textIn.close(); textOut.close();
             dataIn.close(); dataOut.close();
@@ -116,11 +119,7 @@ public class Client implements Runnable {
                 chatSocket.close();
             if (!gameSocket.isClosed())
                 gameSocket.close();
-        } catch (IOException _) {}
-    }
 
-    public static void main(String[] args) {
-        Client client = new Client("localhost");
-        client.run();
+        } catch (IOException _) {}
     }
 }

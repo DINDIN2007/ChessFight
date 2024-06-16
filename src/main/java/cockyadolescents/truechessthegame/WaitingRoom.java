@@ -1,6 +1,5 @@
 package cockyadolescents.truechessthegame;
 
-import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 
@@ -28,7 +27,7 @@ public class WaitingRoom {
     @FXML private Button joinServer;
     @FXML private Label addressLabel;
     @FXML private Label notificationLabel;
-    private String hostAddress;
+    public String address;
 
     private Parent root;
     private Scene scene;
@@ -46,6 +45,7 @@ public class WaitingRoom {
         addressLabel = (Label) root.lookup("#hostAddress");
         notificationLabel = (Label) root.lookup("#notificationLabel");
         Game.onlineGame = true; // to change some features in the normal game
+        getHostAddress();
     }
 
     // gets ip address of device and runs server
@@ -61,7 +61,7 @@ public class WaitingRoom {
                     InetAddress address = addresses.nextElement();
                     // filters out loopback addresses and returns IPv4 address
                     if (!address.isLoopbackAddress() && address instanceof Inet4Address) {
-                        this.hostAddress = address.getHostAddress();
+                        this.address = address.getHostAddress();
                         return;
                     }
                 }
@@ -73,17 +73,17 @@ public class WaitingRoom {
 
     @FXML
     public void displayAddress() {
-        getHostAddress();
-        addressLabel.setText("Host Address: " + this.hostAddress);
+        addressLabel.setText("Host Address: " + this.address);
     }
 
-    private Thread clientThread;
-    private Thread serverThread;
+    public Thread clientThread;
+    public Thread serverThread;
 
     @FXML
     public void hostServer() {
         if (serverThread == null) {
-            serverThread = new Thread(new Server());
+            server = new Server();
+            serverThread = new Thread(server);
             serverThread.start();
         }
     }

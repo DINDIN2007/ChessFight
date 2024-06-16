@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static cockyadolescents.truechessthegame.Main.waitingroom;
+
 public class Server implements Runnable {
     private ArrayList<ClientHandler> connections;
     private ArrayList<PlayerHandler> players;
-    private ServerSocket chatServerSocket;
-    private ServerSocket gameServerSocket;
+    private ServerSocket chatServerSocket, gameServerSocket;
     private ExecutorService threadPool;
 
     private boolean closed;
@@ -74,8 +75,8 @@ public class Server implements Runnable {
                     for (PlayerHandler player : players) if (!player.color.equals(color)) {
                         player.dataOut.writeObject(move);
                         player.dataOut.flush();
-                        System.out.print(color + " "); // debug
                     }
+                    System.out.print(color + " "); // debug
                 }
             } catch (IOException | ClassNotFoundException e) {
                 shutdown();
@@ -84,7 +85,7 @@ public class Server implements Runnable {
 
         public void shutdown() {
             try {
-                dataOut.close(); dataOut.close();
+                dataIn.close(); dataOut.close();
                 if (!playerSocket.isClosed()) {
                     playerSocket.close();
                 }
@@ -108,17 +109,16 @@ public class Server implements Runnable {
                 out = new PrintWriter(clientSocket.getOutputStream(), true); // send to client
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); // recieve from client
 
-                out.println("Enter username: ");
                 username = in.readLine();
                 serverLog(username + " connected");
 
                 String message;
                 while ((message = in.readLine()) != null) {
                     if (message.startsWith("/username")) { // change username
-                        String[] messageSplit = message.split(" ", 1); // no spaces in username
-                        if (messageSplit.length == 1) {
-                            serverLog(username + " changed username to " + message);
-                            username = message;
+                        String[] messageSplit = message.split(" ", 2);
+                        if (messageSplit.length == 2) {
+                            serverLog(username + " set username to " + messageSplit[1]);
+                            username = messageSplit[1];
                         } else {
                             out.println("Invalid username");
                         }
@@ -141,6 +141,7 @@ public class Server implements Runnable {
         }
 
         public void serverLog(String message) {
+            System.out.println(message);
             for (ClientHandler client : connections) {
                 client.out.println("SERVER: " + message);
             }
@@ -160,7 +161,8 @@ public class Server implements Runnable {
         System.out.println("Server shutting down");
         try {
             closed = true;
-            threadPool.shutdown();
+            if (!threadPool.isShutdown())
+                threadPool.shutdown();
             if (!chatServerSocket.isClosed())
                 chatServerSocket.close();
             if (!gameServerSocket.isClosed())

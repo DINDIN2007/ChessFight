@@ -2,6 +2,7 @@ package cockyadolescents.truechessthegame;
 
 import javafx.application.Application;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ public class Main extends Application {
     public static Game maingame = new Game();
     public static OnlineGame onlinegame = new OnlineGame();
     public static Client client;
+    public static Server server;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -35,6 +37,16 @@ public class Main extends Application {
 
         // Start music
         music.playMusic();
+
+        // disconnects client and closes server
+        window.setOnCloseRequest(e -> {
+            if (client != null) {
+                client.textOut.println("/quit");
+            }
+            if (server != null) server.shutdown();
+            stage.close();
+            System.exit(0);
+        });
     }
 
     public static void main(String[] args) {launch();}
