@@ -6,4 +6,4 @@ Latest Update: The multi-device option is now up and running.
 
 ##### Downloading the app
 To play Chess Fight, please install the release in this github repository or press on the link below :
-[Download Link](https://github.com/DINDIN2007/ChessFight/releases/download/Chess-Fight.v1.0.0/Chess.Fight.jar)
+[Download Link](https://github.com/DINDIN2007/ChessFight/releases/download/Chess-Fight.v2.0.0/Chess.Fight.jar)
