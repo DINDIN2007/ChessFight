@@ -38,6 +38,10 @@ public class WaitingRoom {
     }
 
     public void display() throws IOException {
+        if (root != null) {
+            window.setScene(scene);
+            return;
+        }
         root = FXMLLoader.load(getClass().getResource("waitingroom.fxml"));
         scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
@@ -46,6 +50,17 @@ public class WaitingRoom {
         notificationLabel = (Label) root.lookup("#notificationLabel");
         Game.onlineGame = true; // to change some features in the normal game
         getDeviceAddress();
+    }
+
+    public void disconnect() {
+        try {
+            waitingroom.display();
+            waitingroom.notification("Disconnected");
+            waitingroom.clientThread = null;
+            client = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // gets ip address of device and runs server

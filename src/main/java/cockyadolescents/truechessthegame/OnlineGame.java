@@ -31,14 +31,13 @@ public class OnlineGame {
     private static boolean lockIntoPiece = false, isPromoting = false;
     public static boolean boardCanFlip = false, boxingOn = false; // temp
     public static int x1 = -1, y1 = -1, x2, y2;
-    public static int[] move;
     private static int timeLeftWhite = 60000, timeLeftBlack = 60000;
-    private static String playingSide = "", winner = "";
+    public static String playingSide = "", winner = "", playerColor = "";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
-    public static boolean onlineGame = true, hasStarted = false, playerTurn = playingSide.equals("White");
+    public static boolean onlineGame = true, hasStarted = false;
 
     @FXML private static Canvas canvas;
-    @FXML private GridPane buttonBoard, labelBoard;
+    @FXML public GridPane buttonBoard, labelBoard;
     @FXML private VBox leftNumbers;
     @FXML private HBox topNumbers;
     @FXML private static Label isCheckedLabel, whiteTimer, blackTimer;
@@ -65,11 +64,15 @@ public class OnlineGame {
     }*/
 
     @FXML
-    public void newGame() throws IOException {
-        onlinegame = null;
-        onlinegame = new OnlineGame();
-        onlinegame.startGame();
-        onlinegame.display();
+    public void newGame() {
+        try {
+            onlinegame = null;
+            onlinegame = new OnlineGame();
+            onlinegame.startGame();
+            onlinegame.display();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void display() {
@@ -80,7 +83,7 @@ public class OnlineGame {
     public void updateMove(int x1, int y1, int x2, int y2) {
         ChessPiece selectedPiece = ChessBoard[x1][y1];
         ChessPiece.moveChessPiece(selectedPiece, x2, y2);
-        onlinegame.movePiece(selectedPiece);
+        movePiece(selectedPiece);
     }
 
     // Main game setup
@@ -140,15 +143,10 @@ public class OnlineGame {
         }
 
         // Create all elements in the previously mentioned containers
-        createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers, promotionBar, window);
+        createBoard();
 
         // Stop any boxing game
         boxGame.remainingTime = 0;
-
-        /*if (playingSide.equals("Black")) {
-            turnBoard(leftNumbers, topNumbers);
-            buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
-        }*/
 
         root.lookup("#home").setDisable(true);
         root.lookup("#newgame").setDisable(true);
@@ -180,19 +178,13 @@ public class OnlineGame {
         });
 
         Button rematchButton = (Button) root.lookup("#rematchbutton");
-        rematchButton.setOnAction(event -> {
-            try {
-                newGame();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        rematchButton.setOnAction(event -> newGame());
 
         window.setScene(scene);
     }
 
     // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
-    private void createBoard(GridPane buttonBoard, GridPane labelBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar, Stage window) {
+    private void createBoard() {
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             // Creates new label to add to labelBoard
@@ -210,15 +202,19 @@ public class OnlineGame {
             tile.getStyleClass().add("boardTiles");
             tile.setOnAction(event -> {
                 try {
-                    tilePressed(event, buttonBoard, leftNumbers, topNumbers, promotionBar, window);
+                    tilePressed(event);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             });
             // tile.setText(i + " " + j); // Uncomment this to see the coordinates of the tiles
-            tileArray[i][j] = tile;
-
-            buttonBoard.add(tileArray[i][j], i, 7 - j);
+            /*if (playerColor.equals("White")) {*/
+                tileArray[i][j] = tile;
+                buttonBoard.add(tileArray[i][j], i, 7 - j);
+            /*} else {
+                tileArray[i][j] = tile;
+                buttonBoard.add(tileArray[i][j], 7-i, j);
+            }*/
         }}
 
         // Letter row and number column
@@ -246,7 +242,7 @@ public class OnlineGame {
     }
 
     // Either selects a piece or moves a piece to designated position through button clicks
-    public void tilePressed(ActionEvent event, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar, Stage window) throws IOException {
+    public void tilePressed(ActionEvent event) throws IOException {
         // Doesn't run this function while player is choosing what to promote his piece to
         if (isPromoting) return;
 
@@ -260,13 +256,13 @@ public class OnlineGame {
 
         // Unselect piece
         if (x1 == x2 && y1 == y2) {
-            drawBoard(tileArray);
+            drawBoard();
             x1 = -1; y1 = -1;
             lockIntoPiece = false;
         }
 
         // Go to marked place
-        else if (lockIntoPiece && !(tilePiece != null && tilePiece.pieceColor.equals(playingSide))) {
+        else if (lockIntoPiece && !(tilePiece != null && tilePiece.pieceColor.equals(playingSide)) && playerColor.equals(playingSide)) {
             ChessPiece selectedPiece = ChessBoard[x1][y1];
 
             // Moving the rook when castling
@@ -313,7 +309,7 @@ public class OnlineGame {
                         } else {
                             // Changes who is playing now
                             clearCanvas();
-                            drawBoard(tileArray);
+                            drawBoard();
                         }
 
                         // Update the board
@@ -345,15 +341,14 @@ public class OnlineGame {
             ChessPiece.moveChessPiece(selectedPiece, x2, y2);
 
             // Sends move data to server
-            move = new int[] {x1, y1, x2, y2};
-            client.moveHandler.sendMove(move);
+            client.moveHandler.sendMove(new int[] {x1, y1, x2, y2});
 
             // Moves piece in the canvas
             movePiece(selectedPiece);
 
             // Rotates the board if feature is activated
             if (boardCanFlip) {
-                turnBoard(leftNumbers, topNumbers);
+                turnBoard();
                 buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
             }
         }
@@ -361,7 +356,7 @@ public class OnlineGame {
         // Marks the places that the piece can move to
         else if (tilePiece != null && tilePiece.pieceColor.equals(playingSide)){
             // Resets previously marked moves
-            drawBoard(tileArray);
+            drawBoard();
 
             // Turn off the ability to choose if the board can be flipped
             hasStarted = true;
@@ -413,7 +408,7 @@ public class OnlineGame {
         // Changes who is playing now
         playingSide = (playingSide.equals("White")) ? "Black" : "White";
         clearCanvas();
-        drawBoard(tileArray);
+        drawBoard();
 
         // Detecting checking feature
         String checkedCheck = ChessPiece.checkChecking(ChessBoard);
@@ -437,7 +432,7 @@ public class OnlineGame {
     }
 
     // Draws the pieces and un-disables the tiles on the board
-    public static void drawBoard(Button[][] tileArray) {
+    public void drawBoard() {
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             tileArray[i][j].setDisable(false);
@@ -447,19 +442,19 @@ public class OnlineGame {
     }
 
     // Changes the Number/Sides depending on the Side of the Board
-    private static void turnBoard(VBox leftNumbers, HBox topNumbers) {
+    public void turnBoard() {
         for (int i = 0; i < 8; i++) {
-            Label left = (Label)(leftNumbers.getChildren().get(i));
+            Label left = (Label)(this.leftNumbers.getChildren().get(i));
             int pos = Math.abs(8 - (left.getText().charAt(0) - '1'));
             left.setText("" + pos);
 
-            Label top = (Label)(topNumbers.getChildren().get(i + 1));
+            Label top = (Label)(this.topNumbers.getChildren().get(i + 1));
             top.setText(String.valueOf((char)(8 - pos + 'A')));
         }
     }
 
     // Draws a single piece using information from the ChessBoard object
-    private static void drawPiece(ChessPiece piece) {
+    private void drawPiece(ChessPiece piece) {
         int pieceSource = 0, pieceColor = 0;
 
         pieceColor = switch (piece.pieceColor) {
@@ -478,7 +473,7 @@ public class OnlineGame {
             default -> pieceSource;
         };
 
-        if (!boardCanFlip || playingSide.equals("White")) {
+        if ( playerColor.equals("White")) {
             graphicsContext.drawImage(source,
                     pieceSource * 48, pieceColor * 48, 48, 48,
                     piece.pieceX * 60, piece.pieceY * (-60), 60, 60
@@ -493,7 +488,7 @@ public class OnlineGame {
     }
 
     // Clears canvas to later redraw on it
-    private static void clearCanvas() {
+    public void clearCanvas() {
         graphicsContext.clearRect(0, -(canvas.getHeight() - 60), canvas.getWidth(), canvas.getHeight());
     }
 
@@ -506,7 +501,7 @@ public class OnlineGame {
         // Changes who is playing now
         playingSide = (playingSide.equals("White")) ? "Black" : "White";
         clearCanvas();
-        drawBoard(tileArray);
+        drawBoard();
 
         // Detecting checking feature
         String checkedCheck = ChessPiece.checkChecking(ChessBoard);
@@ -519,7 +514,7 @@ public class OnlineGame {
 
         // Rotates the board if feature is activated
         if (boardCanFlip) {
-            turnBoard(leftNumbers, topNumbers);
+            turnBoard();
             buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
         }
 

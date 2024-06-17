@@ -47,23 +47,35 @@ public class Client implements Runnable {
             moveThread = new Thread(moveHandler);
             moveThread.start();
 
-            if (connected) Platform.runLater(() -> {
-                try {
-                    onlinegame.newGame();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-
             // reads incoming chat messages then prints in console
             String inMessage;
             while ((inMessage = textIn.readLine()) != null) {
-                System.out.println(inMessage);
+                if (inMessage.charAt(0) == '/') processServerCommand(inMessage);
+                else System.out.println(inMessage);
             }
 
         } catch (IOException e) {
             shutdown();
             Platform.runLater(() -> waitingroom.notification("Failed to connect to Server"));
+        }
+    }
+
+    public void processServerCommand(String message) {
+        switch (message) {
+            case "/black": {
+                OnlineGame.playerColor = "Black";
+                Platform.runLater(() -> {
+                    onlinegame.newGame();
+                    onlinegame.turnBoard();
+                    onlinegame.buttonBoard.setRotate(180);
+                });
+                break;
+            }
+            case "/white": {
+                OnlineGame.playerColor = "White";
+                Platform.runLater(() -> onlinegame.newGame());
+                break;
+            }
         }
     }
 
@@ -75,7 +87,6 @@ public class Client implements Runnable {
                     int x1 = dataIn.readInt(), y1 = dataIn.readInt();
                     int x2 = dataIn.readInt(), y2 = dataIn.readInt();
                     Platform.runLater(() -> onlinegame.updateMove(x1, y1, x2, y2));
-                    System.out.println(x1 +" "+ y1 +" "+ x2 +" "+ y2); // debug
                 }
             } catch (IOException e) {
                 shutdown();
@@ -88,8 +99,6 @@ public class Client implements Runnable {
                     dataOut.writeInt(move[i]);
                     dataOut.flush();
                 }
-                System.out.println(move[0] +" "+ move[1] +" "+ move[2] +" "+ move[3]); // debug
-                onlinegame.move = null;
             } catch (IOException e) {
                 shutdown();
             }
@@ -107,6 +116,7 @@ public class Client implements Runnable {
                     if (message.equals("/quit")) { // disconnect
                         textOut.println(message);
                         inputReader.close();
+                        Platform.runLater(() -> waitingroom.disconnect());
                         shutdown();
                     } else {
                         textOut.println(message); // sends to server

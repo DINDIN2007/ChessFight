@@ -44,8 +44,10 @@ public class Main extends Application {
                 if (!client.chatSocket.isClosed())
                     client.textOut.println("/quit");
             }
-            if (server != null)
-                server.shutdown();
+            if (server != null) {
+                if (!server.closed)
+                    server.shutdown();
+            }
             stage.close();
             System.exit(0);
         });

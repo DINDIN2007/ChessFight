@@ -36,13 +36,11 @@ public class Server implements Runnable {
                 Socket playerSocket = gameServerSocket.accept();
 
                 // creates handlers for each client connection and executes process in thread pool
-                ClientHandler ch = new ClientHandler(clientSocket);
-                connections.add(ch);
-                threadPool.execute(ch);
+                connections.add(new ClientHandler(clientSocket));
+                threadPool.execute(connections.getLast());
 
-                PlayerHandler ph = new PlayerHandler(playerSocket);
-                players.add(ph);
-                threadPool.execute(ph);
+                players.add(new PlayerHandler(playerSocket));
+                threadPool.execute(players.getLast());
             }
         } catch (Exception e) {
             shutdown();
@@ -53,15 +51,10 @@ public class Server implements Runnable {
         private Socket playerSocket;
         private DataOutputStream dataOut;
         private DataInputStream dataIn;
-        private String color;
+        private String color = "";
 
         public PlayerHandler(Socket socket) {
             this.playerSocket = socket;
-            this.color = switch (players.size()) {
-                case 0 -> "White";
-                case 1 -> "Black";
-                default -> "Spec"; // spectator (later feature maybe)
-            };
         }
 
         @Override
@@ -70,9 +63,24 @@ public class Server implements Runnable {
                 dataOut = new DataOutputStream(playerSocket.getOutputStream());
                 dataIn = new DataInputStream(playerSocket.getInputStream());
 
+                // sets colors for players
+                switch (connections.size()) {
+                    case 1: {
+                        connections.get(0).out.println("/white");
+                        this.color = "White";
+                        break;
+                    }
+                    case 2: {
+                        connections.get(1).out.println("/black");
+                        this.color = "Black";
+                        break;
+                    }
+                }
+
+                // replays moves made by players
                 while (!closed) {
                     int i = dataIn.readInt();
-                    for (PlayerHandler player : players) if (!player.color.equals(color)) {
+                    for (PlayerHandler player : players) if (!player.color.equals(this.color)) {
                         player.dataOut.writeInt(i);
                         player.dataOut.flush();
                     }
@@ -88,6 +96,7 @@ public class Server implements Runnable {
                 if (!playerSocket.isClosed()) {
                     playerSocket.close();
                 }
+                players.remove(this);
             } catch (IOException _) {}
         }
     }
@@ -113,22 +122,28 @@ public class Server implements Runnable {
 
                 String message;
                 while ((message = in.readLine()) != null) {
-                    if (message.startsWith("/username")) { // change username
-                        String[] messageSplit = message.split(" ", 2);
-                        if (messageSplit.length == 2) {
-                            serverLog(username + " set username to " + messageSplit[1]);
-                            username = messageSplit[1];
-                        } else {
-                            out.println("Invalid username");
-                        }
-                    } else if (message.startsWith("/quit")) { // disconnect
-                        serverLog(username + " disconnected");
+                    if (message.charAt(0) == '/') {
+                        processClientCommand(message);
                     } else {
                         broadcast(username + ": " + message);
                     }
                 }
             } catch (IOException e) {
                 shutdown();
+            }
+        }
+
+        public void processClientCommand(String message) {
+            if (message.startsWith("/username")) { // change username
+                String[] messageSplit = message.split(" ", 2);
+                if (messageSplit.length == 2) {
+                    serverLog(username + " set username to " + messageSplit[1]);
+                    username = messageSplit[1];
+                } else {
+                    out.println("Invalid username");
+                }
+            } else if (message.startsWith("/quit")) { // disconnect
+                serverLog(username + " disconnected");
             }
         }
 
@@ -152,6 +167,7 @@ public class Server implements Runnable {
                 if (!clientSocket.isClosed()) {
                     clientSocket.close();
                 }
+                connections.remove(this);
             } catch (IOException _) {}
         }
     }
