@@ -22,20 +22,22 @@ import javafx.util.Pair;
 import java.io.IOException;
 import java.util.Vector;
 
-import static cockyadolescents.truechessthegame.ChessPiece.*;
-import static cockyadolescents.truechessthegame.GameApplication.*;
+import static cockyadolescents.truechessthegame.ChessPiece.ChessBoard;
+import static cockyadolescents.truechessthegame.ChessPiece.score;
+import static cockyadolescents.truechessthegame.Main.*;
 
-public class Game {
+public class OnlineGame {
     private Button[][] tileArray= new Button[8][8];
     private static boolean lockIntoPiece = false, isPromoting = false;
-    public static boolean boardCanFlip = false, boxingOn = true;
-    private static int x1 = -1, y1 = -1, x2, y2, timeLeftWhite = 60000, timeLeftBlack = 60000;
-    private static String playingSide = "White", winner = "";
+    public static boolean boardCanFlip = false, boxingOn = false; // temp
+    public static int x1 = -1, y1 = -1, x2, y2;
+    private static int timeLeftWhite = 60000, timeLeftBlack = 60000;
+    public static String playingSide = "", winner = "", playerColor = "";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
-    public static boolean onlineGame = false, hasStarted = false, playerTurn = playingSide.equals("White");;
+    public static boolean onlineGame = true, hasStarted = false;
 
     @FXML private static Canvas canvas;
-    @FXML private GridPane buttonBoard, labelBoard;
+    @FXML public GridPane buttonBoard, labelBoard;
     @FXML private VBox leftNumbers;
     @FXML private HBox topNumbers;
     @FXML private static Label isCheckedLabel, whiteTimer, blackTimer;
@@ -52,22 +54,36 @@ public class Game {
     private Boxing boxGame = new Boxing();
     public static boolean isBoxing = false, boxingWon = false;
 
-    @FXML
+    /*@FXML
     public void home() throws IOException {
-        homepage.display();
-    }
+        client.textOut.println("/quit");
+        waitingroom.display();
+        waitingroom.notification("Disconnected");
+        waitingroom.clientThread = null;
+        client = null;
+    }*/
 
     @FXML
-    public void newGame() throws IOException {
-        maingame = null;
-        maingame = new Game();
-        maingame.startGame();
-        maingame.display();
+    public void newGame() {
+        try {
+            onlinegame = null;
+            onlinegame = new OnlineGame();
+            onlinegame.startGame();
+            onlinegame.display();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void display() {
         window.setScene(scene);
         music.startGame();
+    }
+
+    public void updateMove(int x1, int y1, int x2, int y2) {
+        ChessPiece selectedPiece = ChessBoard[x1][y1];
+        ChessPiece.moveChessPiece(selectedPiece, x2, y2);
+        movePiece(selectedPiece);
     }
 
     // Main game setup
@@ -116,9 +132,9 @@ public class Game {
         x1 = -1; y1 = -1;
 
         // Start animation loop
-        if (animationLoop != null) animationLoop.stop();
+        /*if (animationLoop != null) animationLoop.stop();
         animationLoop = new GameLoop(this, 10);
-        animationLoop.start();
+        animationLoop.start();*/
 
         // Assigns the pawn promotion buttons their function
         String[] possiblePromotions = {"Queen", "Rook", "Bishop", "Knight"};
@@ -127,10 +143,13 @@ public class Game {
         }
 
         // Create all elements in the previously mentioned containers
-        createBoard(buttonBoard, labelBoard, leftNumbers, topNumbers, promotionBar, window);
+        createBoard();
 
         // Stop any boxing game
         boxGame.remainingTime = 0;
+
+        root.lookup("#home").setDisable(true);
+        root.lookup("#newgame").setDisable(true);
     }
 
     // End game setup
@@ -159,19 +178,13 @@ public class Game {
         });
 
         Button rematchButton = (Button) root.lookup("#rematchbutton");
-        rematchButton.setOnAction(event -> {
-            try {
-                newGame();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        rematchButton.setOnAction(event -> newGame());
 
         window.setScene(scene);
     }
 
     // Creates the Gridpanes and the Numbers/Letters on the Side of the Board
-    private void createBoard(GridPane buttonBoard, GridPane labelBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar, Stage window) {
+    private void createBoard() {
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             // Creates new label to add to labelBoard
@@ -189,15 +202,19 @@ public class Game {
             tile.getStyleClass().add("boardTiles");
             tile.setOnAction(event -> {
                 try {
-                    tilePressed(event, buttonBoard, leftNumbers, topNumbers, promotionBar, window);
+                    tilePressed(event);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             });
             // tile.setText(i + " " + j); // Uncomment this to see the coordinates of the tiles
-            tileArray[i][j] = tile;
-
-            buttonBoard.add(tileArray[i][j], i, 7 - j);
+            /*if (playerColor.equals("White")) {*/
+                tileArray[i][j] = tile;
+                buttonBoard.add(tileArray[i][j], i, 7 - j);
+            /*} else {
+                tileArray[i][j] = tile;
+                buttonBoard.add(tileArray[i][j], 7-i, j);
+            }*/
         }}
 
         // Letter row and number column
@@ -225,7 +242,7 @@ public class Game {
     }
 
     // Either selects a piece or moves a piece to designated position through button clicks
-    public void tilePressed(ActionEvent event, GridPane buttonBoard, VBox leftNumbers, HBox topNumbers, VBox promotionBar, Stage window) throws IOException {
+    public void tilePressed(ActionEvent event) throws IOException {
         // Doesn't run this function while player is choosing what to promote his piece to
         if (isPromoting) return;
 
@@ -239,13 +256,13 @@ public class Game {
 
         // Unselect piece
         if (x1 == x2 && y1 == y2) {
-            drawBoard(tileArray);
+            drawBoard();
             x1 = -1; y1 = -1;
             lockIntoPiece = false;
         }
 
         // Go to marked place
-        else if (lockIntoPiece && !(tilePiece != null && tilePiece.pieceColor.equals(playingSide))) {
+        else if (lockIntoPiece && !(tilePiece != null && tilePiece.pieceColor.equals(playingSide)) && playerColor.equals(playingSide)) {
             ChessPiece selectedPiece = ChessBoard[x1][y1];
 
             // Moving the rook when castling
@@ -260,35 +277,25 @@ public class Game {
                 }
             }
 
-            // Detects en-passant
-            boolean hasEnPassanted = selectedPiece.pieceType.equals("Pawn")
-                        && tilePiece == null
-                        && Math.abs(selectedPiece.pieceX - moveX) == 1;
-
-            ChessPiece enPassantPawn = ChessBoard[moveX][selectedPiece.pieceY];
-
             // If capturing a piece, start the Boxing Match !!!
-            if ((tilePiece != null || hasEnPassanted) && boxingOn) {
+            if (tilePiece != null && boxingOn) {
                 boxGame = new Boxing();
                 Boxing.attack = selectedPiece;
-                Boxing.defense = (hasEnPassanted) ? enPassantPawn : tilePiece;
-
-                if (hasEnPassanted) tilePiece = enPassantPawn;
+                Boxing.defense = tilePiece;
 
                 boxGame.showBoxingPopup(window);
-                boxGame.remainingTime = 30;
 
                 PauseTransition pause = new PauseTransition(Duration.seconds(1));
-                ChessPiece finalTilePiece = tilePiece;
-
                 pause.setOnFinished(event1 -> {
-                    if (boxGame.remainingTime > 0) pause.play();
+                    if (boxGame.remainingTime > 0) {
+                        pause.play();
+                    }
 
                     else {
                         if (Boxing.attackWon) {
-                            if (finalTilePiece.pieceType.equals("King")) {
+                            if (tilePiece.pieceType.equals("King")) {
                                 try {
-                                    winner = (finalTilePiece.pieceColor.equals("White")) ? "Black" : "White";
+                                    winner = (tilePiece.pieceColor.equals("White")) ? "Black" : "White";
                                     endGame();
                                 } catch (IOException e) {
                                     throw new RuntimeException(e);
@@ -302,7 +309,7 @@ public class Game {
                         } else {
                             // Changes who is playing now
                             clearCanvas();
-                            drawBoard(tileArray);
+                            drawBoard();
                         }
 
                         // Update the board
@@ -327,20 +334,29 @@ public class Game {
                 }
             }
 
-            // Simply moves to empty tile
+            // Moves to empty tile
             else music.movePiece();
 
-            // Move the piece in ChessPiece 2D board array
+            // Moves piece in ChessPiece 2D board array
             ChessPiece.moveChessPiece(selectedPiece, x2, y2);
 
-            // Moves piece
+            // Sends move data to server
+            client.moveHandler.sendMove(new int[] {x1, y1, x2, y2});
+
+            // Moves piece in the canvas
             movePiece(selectedPiece);
+
+            // Rotates the board if feature is activated
+            if (boardCanFlip) {
+                turnBoard();
+                buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
+            }
         }
 
         // Marks the places that the piece can move to
         else if (tilePiece != null && tilePiece.pieceColor.equals(playingSide)){
             // Resets previously marked moves
-            drawBoard(tileArray);
+            drawBoard();
 
             // Turn off the ability to choose if the board can be flipped
             hasStarted = true;
@@ -374,7 +390,7 @@ public class Game {
     }
 
     // Moves piece to another position on the board
-    private void movePiece(ChessPiece selectedPiece) {
+    public void movePiece(ChessPiece selectedPiece) {
         // Disable special moves for pawn (2 step forward) or king (castle)
         selectedPiece.hasMoved = true;
 
@@ -392,7 +408,7 @@ public class Game {
         // Changes who is playing now
         playingSide = (playingSide.equals("White")) ? "Black" : "White";
         clearCanvas();
-        drawBoard(tileArray);
+        drawBoard();
 
         // Detecting checking feature
         String checkedCheck = ChessPiece.checkChecking(ChessBoard);
@@ -407,12 +423,6 @@ public class Game {
         }
         else isCheckedLabel.setText("");
 
-        // Rotates the board if feature is activated
-        if (boardCanFlip) {
-            turnBoard(leftNumbers, topNumbers);
-            buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
-        }
-
         // Resets which piece is selected
         x1 = -1; y1 = -1;
         lockIntoPiece = false;
@@ -422,7 +432,7 @@ public class Game {
     }
 
     // Draws the pieces and un-disables the tiles on the board
-    private static void drawBoard(Button[][] tileArray) {
+    public void drawBoard() {
         for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             tileArray[i][j].setDisable(false);
@@ -432,19 +442,19 @@ public class Game {
     }
 
     // Changes the Number/Sides depending on the Side of the Board
-    private static void turnBoard(VBox leftNumbers, HBox topNumbers) {
+    public void turnBoard() {
         for (int i = 0; i < 8; i++) {
-            Label left = (Label)(leftNumbers.getChildren().get(i));
+            Label left = (Label)(this.leftNumbers.getChildren().get(i));
             int pos = Math.abs(8 - (left.getText().charAt(0) - '1'));
             left.setText("" + pos);
 
-            Label top = (Label)(topNumbers.getChildren().get(i + 1));
+            Label top = (Label)(this.topNumbers.getChildren().get(i + 1));
             top.setText(String.valueOf((char)(8 - pos + 'A')));
         }
     }
 
     // Draws a single piece using information from the ChessBoard object
-    private static void drawPiece(ChessPiece piece) {
+    private void drawPiece(ChessPiece piece) {
         int pieceSource = 0, pieceColor = 0;
 
         pieceColor = switch (piece.pieceColor) {
@@ -463,7 +473,7 @@ public class Game {
             default -> pieceSource;
         };
 
-        if (!boardCanFlip || playingSide.equals("White")) {
+        if ( playerColor.equals("White")) {
             graphicsContext.drawImage(source,
                     pieceSource * 48, pieceColor * 48, 48, 48,
                     piece.pieceX * 60, piece.pieceY * (-60), 60, 60
@@ -478,7 +488,7 @@ public class Game {
     }
 
     // Clears canvas to later redraw on it
-    private static void clearCanvas() {
+    public void clearCanvas() {
         graphicsContext.clearRect(0, -(canvas.getHeight() - 60), canvas.getWidth(), canvas.getHeight());
     }
 
@@ -491,7 +501,7 @@ public class Game {
         // Changes who is playing now
         playingSide = (playingSide.equals("White")) ? "Black" : "White";
         clearCanvas();
-        drawBoard(tileArray);
+        drawBoard();
 
         // Detecting checking feature
         String checkedCheck = ChessPiece.checkChecking(ChessBoard);
@@ -504,7 +514,7 @@ public class Game {
 
         // Rotates the board if feature is activated
         if (boardCanFlip) {
-            turnBoard(leftNumbers, topNumbers);
+            turnBoard();
             buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
         }
 

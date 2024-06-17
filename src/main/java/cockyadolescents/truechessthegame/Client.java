@@ -1,51 +1,107 @@
 package cockyadolescents.truechessthegame;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import javafx.application.Platform;
+
+import java.io.*;
 import java.net.Socket;
 
-public class Client implements Runnable {
-    private Socket clientSocket;
-    private BufferedReader in;
-    private PrintWriter out;
-    private boolean done = false;
-    private static String host;
-    private static int port = 9999;
+import static cockyadolescents.truechessthegame.Main.*;
 
-    public Client(String address) {
-        host = address;
-    }
+public class Client implements Runnable {
+    public BufferedReader textIn;
+    public PrintWriter textOut;
+    public DataOutputStream dataOut;
+    public DataInputStream dataIn;
+
+    public boolean connected = false;
+    public Socket chatSocket, gameSocket;
+    private String address;
+    private int chatPort = 9999, gamePort = 9998;
+
+    public Client(String address) {this.address = address;}
+
+    InputHandler inputHandler;
+    MoveHandler moveHandler;
+    Thread inputThread; Thread moveThread;
 
     @Override
     public void run() {
         try {
-            clientSocket = new Socket(host, port);
-            out =  new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            chatSocket = new Socket(address, chatPort);
+            gameSocket = new Socket(address, gamePort);
 
-            InputHandler inputHandler = new InputHandler();
-            Thread thread = new Thread(inputHandler);
-            thread.start();
+            // Chat
+            textOut =  new PrintWriter(chatSocket.getOutputStream(), true);
+            textIn = new BufferedReader(new InputStreamReader(chatSocket.getInputStream()));
+            connected = true;
 
+            inputHandler = new InputHandler();
+            inputThread = new Thread(inputHandler);
+            inputThread.start();
+
+            // Game
+            dataOut = new DataOutputStream(gameSocket.getOutputStream());
+            dataIn = new DataInputStream(gameSocket.getInputStream());
+
+            moveHandler = new MoveHandler();
+            moveThread = new Thread(moveHandler);
+            moveThread.start();
+
+            // reads incoming chat messages then prints in console
             String inMessage;
-            while ((inMessage = in.readLine()) != null) {
-                System.out.println(inMessage);
+            while ((inMessage = textIn.readLine()) != null) {
+                if (inMessage.charAt(0) == '/') processServerCommand(inMessage);
+                else System.out.println(inMessage);
             }
+
         } catch (IOException e) {
             shutdown();
+            Platform.runLater(() -> waitingroom.notification("Failed to connect to Server"));
         }
     }
 
-    public void shutdown() {
-        done = true;
-        try {
-            in.close(); out.close();
-            if (!clientSocket.isClosed())
-                clientSocket.close();
-        } catch (IOException e) {
-            // ignore
+    public void processServerCommand(String message) {
+        switch (message) {
+            case "/black": {
+                OnlineGame.playerColor = "Black";
+                Platform.runLater(() -> {
+                    onlinegame.newGame();
+                    onlinegame.turnBoard();
+                    onlinegame.buttonBoard.setRotate(180);
+                });
+                break;
+            }
+            case "/white": {
+                OnlineGame.playerColor = "White";
+                Platform.runLater(() -> onlinegame.newGame());
+                break;
+            }
+        }
+    }
+
+    class MoveHandler implements Runnable {
+        @Override
+        public void run() {
+            try {;
+                while (connected) if (dataIn.available() != 0) { // receive move
+                    int x1 = dataIn.readInt(), y1 = dataIn.readInt();
+                    int x2 = dataIn.readInt(), y2 = dataIn.readInt();
+                    Platform.runLater(() -> onlinegame.updateMove(x1, y1, x2, y2));
+                }
+            } catch (IOException e) {
+                shutdown();
+            }
+        }
+
+        public void sendMove(int[] move) {
+            try {
+                for (int i = 0; i < 4; i++) {
+                    dataOut.writeInt(move[i]);
+                    dataOut.flush();
+                }
+            } catch (IOException e) {
+                shutdown();
+            }
         }
     }
 
@@ -53,15 +109,17 @@ public class Client implements Runnable {
         @Override
         public void run() {
             try {
-                BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
-                while (!done) {
-                    String message = inReader.readLine();
-                    if (message.equals("/quit")) {
-                        out.println(message);
-                        inReader.close();
+                BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
+                textOut.println(waitingroom.address);
+                while (connected) {
+                    String message = inputReader.readLine(); // reads user input
+                    if (message.equals("/quit")) { // disconnect
+                        textOut.println(message);
+                        inputReader.close();
+                        Platform.runLater(() -> waitingroom.disconnect());
                         shutdown();
                     } else {
-                        out.println(message);
+                        textOut.println(message); // sends to server
                     }
                 }
             } catch (IOException e) {
@@ -70,11 +128,22 @@ public class Client implements Runnable {
         }
     }
 
-    public static void main(String[] args) {
-        Client client = new Client("127.0.0.1");
-        client.run();
+    public void shutdown() {
+        connected = false;
+        System.out.println("Client shutting down");
+        try {
+            // closes io streams
+            if (textIn != null) {
+                textIn.close(); textOut.close();
+                dataIn.close(); dataOut.close();
+            }
+            // closes sockets
+            if (chatSocket != null && !chatSocket.isClosed()) {
+                chatSocket.close();
+                gameSocket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
-
-// cd IdeaProjects\ChessFight\target\classes
-// java cockyadolescents.truechessthegame.Client
