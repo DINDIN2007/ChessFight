@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+
 import java.io.IOException;
 import java.util.Objects;
 
@@ -11,10 +12,13 @@ public class GameApplication extends Application {
     public static Stage window;
     public static HomePage homepage;
     public static WaitingRoom waitingroom;
-    public static Game maingame;
     public static Setting settingroom;
-
     public static Audio music;
+
+    public static OfflineGame maingame;
+    public static OnlineGame onlinegame;
+    public static Client client;
+    public static Server server;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -25,7 +29,8 @@ public class GameApplication extends Application {
         // Set up the other pages
         homepage = new HomePage();
         waitingroom = new WaitingRoom();
-        maingame = new Game();
+        maingame = new OfflineGame();
+        onlinegame = new OnlineGame();
         settingroom = new Setting();
         music = new Audio();
 
@@ -41,7 +46,23 @@ public class GameApplication extends Application {
 
         // Start music
         music.playMusic();
+
+        // disconnects client and closes server
+        window.setOnCloseRequest(e -> {
+            if (client != null && client.chatSocket != null) {
+                if (!client.chatSocket.isClosed())
+                    client.textOut.println("/quit");
+            }
+            if (server != null) {
+                if (!server.closed)
+                    server.shutdown();
+            }
+            stage.close();
+            System.exit(0);
+        });
     }
 
-    public static void main(String[] args) {launch();}
+    public static void main(String[] args) {
+        launch();
+    }
 }

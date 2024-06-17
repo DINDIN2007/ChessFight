@@ -10,7 +10,7 @@ public class GameLoop extends AnimationTimer {
     private int iteration = 1;
 
     private Boxing boxingGameElement;
-    private Game chessGameElement;
+    private OfflineGame chessGameElement;
     private int typeOfGameLoop = 0;
 
     public GameLoop(double delay) {
@@ -23,7 +23,7 @@ public class GameLoop extends AnimationTimer {
         this.typeOfGameLoop = 1;
     }
 
-    public GameLoop(Game chessGameElement, double delay) {
+    public GameLoop(OfflineGame chessGameElement, double delay) {
         this.chessGameElement = chessGameElement;
         this.delay = delay / 1000;
         this.typeOfGameLoop = 2;
@@ -51,7 +51,7 @@ public class GameLoop extends AnimationTimer {
     private void update(double elapsedTime) throws IOException {
         switch(typeOfGameLoop) {
             case 1: boxingGameElement.updateElement(); break;
-            case 2: Game.update(); break;
+            case 2: OfflineGame.update(); break;
             default : System.out.println("Animation Timer Test : " + (iteration++));
         }
     }

@@ -8,7 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import java.io.IOException;
 
-import static cockyadolescents.truechessthegame.Game.*;
+import static cockyadolescents.truechessthegame.OfflineGame.*;
 import static cockyadolescents.truechessthegame.GameApplication.*;
 
 public class Setting {
@@ -59,7 +59,7 @@ public class Setting {
         }
 
         maingame = null;
-        maingame = new Game();
+        maingame = new OfflineGame();
         maingame.startGame();
     }
 
@@ -77,7 +77,7 @@ public class Setting {
             boxingbutton.getStyleClass().add("dark-button");
         }
 
-        maingame = new Game();
+        maingame = new OfflineGame();
         maingame.startGame();
     }
 }

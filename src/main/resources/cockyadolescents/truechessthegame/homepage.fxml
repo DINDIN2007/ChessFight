@@ -21,7 +21,7 @@
       </VBox.margin>
     </Label>
    <VBox alignment="TOP_CENTER" prefHeight="120.0" prefWidth="100.0">
-      <Button minWidth="191.2" onAction="#startGame" styleClass="dark-button" stylesheets="@style.css" text="Play on 1 Device" textAlignment="CENTER">
+      <Button minWidth="191.2" onAction="#playOffline" styleClass="dark-button" stylesheets="@style.css" text="Play on 1 Device" textAlignment="CENTER">
           <font>
               <Font name="Cooper Black" size="19.0" />
           </font>

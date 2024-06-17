@@ -24,7 +24,7 @@ import java.util.Vector;
 
 import static cockyadolescents.truechessthegame.ChessPiece.ChessBoard;
 import static cockyadolescents.truechessthegame.ChessPiece.score;
-import static cockyadolescents.truechessthegame.Main.*;
+import static cockyadolescents.truechessthegame.GameApplication.*;
 
 public class OnlineGame {
     private Button[][] tileArray= new Button[8][8];

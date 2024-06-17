@@ -24,7 +24,7 @@ public class HomePage {
     }
 
     @FXML
-    public void startGame() {
+    public void playOffline() {
         maingame.display();
     }
 

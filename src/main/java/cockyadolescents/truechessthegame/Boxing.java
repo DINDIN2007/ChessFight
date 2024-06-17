@@ -102,7 +102,7 @@ public class Boxing {
             if (remainingTime <= 0) {
                 timer.stop();
                 popup.hide();
-                Game.isBoxing = false;
+                OfflineGame.isBoxing = false;
             }
         }));
         timer.setCycleCount(Timeline.INDEFINITE);

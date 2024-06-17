@@ -38,7 +38,7 @@
          </HBox.margin>
       </Label>
       <TextField fx:id="addressField" promptText="Enter Address" />
-      <Button fx:id="joinServer" styleClass="orange-button" onAction="#joinServer" text="Join" mnemonicParsing="false"/>
+      <Button onAction="#joinServer" styleClass="orange-button"  text="Join" mnemonicParsing="false"/>
    </HBox>
 
    <HBox alignment="CENTER" spacing="5.0" prefHeight="50.0" prefWidth="200.0">

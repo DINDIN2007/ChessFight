@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="800.0" styleClass="mainGameBackground" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.Game">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="800.0" styleClass="mainGameBackground" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.OfflineGame">
    <children>
       <VBox alignment="CENTER" maxWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" styleClass="simpleBackground" stylesheets="@style.css">
          <children>

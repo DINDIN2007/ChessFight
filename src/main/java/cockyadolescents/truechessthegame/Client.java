@@ -5,7 +5,7 @@ import javafx.application.Platform;
 import java.io.*;
 import java.net.Socket;
 
-import static cockyadolescents.truechessthegame.Main.*;
+import static cockyadolescents.truechessthegame.GameApplication.*;
 
 public class Client implements Runnable {
     public BufferedReader textIn;

@@ -294,7 +294,7 @@ public class ChessPiece {
         if (piece.pieceType.equals("Pawn")) {
             if (Math.abs(piece.pieceY - newY) == 2) {
                 piece.enpassant = true;
-                System.out.println("RAN !");
+                // System.out.println("RAN !");
             }
             piece.numOfMoves++;
 

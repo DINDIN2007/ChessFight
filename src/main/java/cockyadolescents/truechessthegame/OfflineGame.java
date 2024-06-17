@@ -25,14 +25,14 @@ import java.util.Vector;
 import static cockyadolescents.truechessthegame.ChessPiece.*;
 import static cockyadolescents.truechessthegame.GameApplication.*;
 
-public class Game {
+public class OfflineGame {
     private Button[][] tileArray= new Button[8][8];
     private static boolean lockIntoPiece = false, isPromoting = false;
     public static boolean boardCanFlip = false, boxingOn = true;
     private static int x1 = -1, y1 = -1, x2, y2, timeLeftWhite = 60000, timeLeftBlack = 60000;
     private static String playingSide = "White", winner = "";
     private static Vector<Pair<Integer, Integer>> possibleMoves;
-    public static boolean onlineGame = false, hasStarted = false, playerTurn = playingSide.equals("White");;
+    public static boolean onlineGame = false, hasStarted = false;
 
     @FXML private static Canvas canvas;
     @FXML private GridPane buttonBoard, labelBoard;
@@ -60,7 +60,7 @@ public class Game {
     @FXML
     public void newGame() throws IOException {
         maingame = null;
-        maingame = new Game();
+        maingame = new OfflineGame();
         maingame.startGame();
         maingame.display();
     }
@@ -263,9 +263,9 @@ public class Game {
             // Detects en-passant
             boolean hasEnPassanted = selectedPiece.pieceType.equals("Pawn")
                         && tilePiece == null
-                        && Math.abs(selectedPiece.pieceX - moveX) == 1;
+                        && Math.abs(selectedPiece.pieceX - x2) == 1;
 
-            ChessPiece enPassantPawn = ChessBoard[moveX][selectedPiece.pieceY];
+            ChessPiece enPassantPawn = ChessBoard[x2][selectedPiece.pieceY];
 
             // If capturing a piece, start the Boxing Match !!!
             if ((tilePiece != null || hasEnPassanted) && boxingOn) {

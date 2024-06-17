@@ -23,7 +23,6 @@ import static cockyadolescents.truechessthegame.GameApplication.*;
 // Online game
 public class WaitingRoom {
     @FXML private TextField addressField;
-    @FXML private Button joinServer;
     @FXML private Label addressLabel;
     @FXML private Label notificationLabel;
     public String address;
@@ -47,7 +46,7 @@ public class WaitingRoom {
         window.setScene(scene);
         addressLabel = (Label) root.lookup("#hostAddress");
         notificationLabel = (Label) root.lookup("#notificationLabel");
-        Game.onlineGame = true; // to change some features in the normal game
+        OfflineGame.onlineGame = true; // to change some features in the normal game
         getDeviceAddress();
     }
 
@@ -55,6 +54,7 @@ public class WaitingRoom {
         try {
             waitingroom.display();
             waitingroom.notification("Disconnected");
+            ChessPiece.newGame();
             waitingroom.clientThread = null;
             client = null;
         } catch (IOException e) {
