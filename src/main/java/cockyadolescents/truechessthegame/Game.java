@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Vector;
 
 import static cockyadolescents.truechessthegame.ChessPiece.*;
-import static cockyadolescents.truechessthegame.Main.*;
+import static cockyadolescents.truechessthegame.GameApplication.*;
 
 public class Game {
     private Button[][] tileArray= new Button[8][8];
@@ -260,25 +260,35 @@ public class Game {
                 }
             }
 
+            // Detects en-passant
+            boolean hasEnPassanted = selectedPiece.pieceType.equals("Pawn")
+                        && tilePiece == null
+                        && Math.abs(selectedPiece.pieceX - moveX) == 1;
+
+            ChessPiece enPassantPawn = ChessBoard[moveX][selectedPiece.pieceY];
+
             // If capturing a piece, start the Boxing Match !!!
-            if (tilePiece != null && boxingOn) {
+            if ((tilePiece != null || hasEnPassanted) && boxingOn) {
                 boxGame = new Boxing();
                 Boxing.attack = selectedPiece;
-                Boxing.defense = tilePiece;
+                Boxing.defense = (hasEnPassanted) ? enPassantPawn : tilePiece;
+
+                if (hasEnPassanted) tilePiece = enPassantPawn;
 
                 boxGame.showBoxingPopup(window);
+                boxGame.remainingTime = 30;
 
                 PauseTransition pause = new PauseTransition(Duration.seconds(1));
+                ChessPiece finalTilePiece = tilePiece;
+
                 pause.setOnFinished(event1 -> {
-                    if (boxGame.remainingTime > 0) {
-                        pause.play();
-                    }
+                    if (boxGame.remainingTime > 0) pause.play();
 
                     else {
                         if (Boxing.attackWon) {
-                            if (tilePiece.pieceType.equals("King")) {
+                            if (finalTilePiece.pieceType.equals("King")) {
                                 try {
-                                    winner = (tilePiece.pieceColor.equals("White")) ? "Black" : "White";
+                                    winner = (finalTilePiece.pieceColor.equals("White")) ? "Black" : "White";
                                     endGame();
                                 } catch (IOException e) {
                                     throw new RuntimeException(e);
@@ -325,12 +335,6 @@ public class Game {
 
             // Moves piece
             movePiece(selectedPiece);
-
-            // Rotates the board if feature is activated
-            if (boardCanFlip) {
-                turnBoard(leftNumbers, topNumbers);
-                buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
-            }
         }
 
         // Marks the places that the piece can move to
@@ -402,6 +406,12 @@ public class Game {
             delay.play();
         }
         else isCheckedLabel.setText("");
+
+        // Rotates the board if feature is activated
+        if (boardCanFlip) {
+            turnBoard(leftNumbers, topNumbers);
+            buttonBoard.setRotate((buttonBoard.getRotate() == 180) ? 0 : 180);
+        }
 
         // Resets which piece is selected
         x1 = -1; y1 = -1;

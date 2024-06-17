@@ -1,20 +1,15 @@
 package cockyadolescents.truechessthegame;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
-import javafx.scene.control.ToggleButton;
-
-import javax.swing.*;
-import javax.swing.event.ChangeListener;
 import java.io.IOException;
 
 import static cockyadolescents.truechessthegame.Game.*;
-import static cockyadolescents.truechessthegame.Main.*;
+import static cockyadolescents.truechessthegame.GameApplication.*;
 
 public class Setting {
     private Scene scene;

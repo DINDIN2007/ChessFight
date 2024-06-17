@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.Vector;
 
 import static cockyadolescents.truechessthegame.ChessPiece.*;
-import static cockyadolescents.truechessthegame.Main.*;
+import static cockyadolescents.truechessthegame.GameApplication.*;
 
 public class HomePage {
     @FXML Label welcomeText;
