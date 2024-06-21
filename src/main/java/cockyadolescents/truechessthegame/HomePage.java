@@ -30,7 +30,7 @@ public class HomePage {
 
     @FXML
     public void playOnline() throws IOException {
-        waitingroom.display();
+        lobby.display();
     }
 
     @FXML

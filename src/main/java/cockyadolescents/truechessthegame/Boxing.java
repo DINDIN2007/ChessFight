@@ -45,9 +45,9 @@ public class Boxing {
 
     public void showBoxingPopup(Stage ownerStage) throws IOException {
         // Loads FXML file
-        root = FXMLLoader.load(getClass().getResource("Boxing.fxml"));
+        root = FXMLLoader.load(getClass().getResource("boxing.fxml"));
 
-        // Setting up the popUp and linking it to Boxing.fxml
+        // Setting up the popUp and linking it to boxing.fxml
         popup = new Popup();
         popup.getContent().add(root);
 

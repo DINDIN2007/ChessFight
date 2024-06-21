@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox styleClass="mainGameBackground" alignment="TOP_CENTER" stylesheets="@style.css" prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.WaitingRoom">
+<VBox styleClass="mainGameBackground" alignment="TOP_CENTER" stylesheets="@style.css" prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cockyadolescents.truechessthegame.Lobby">
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="140.0" />
    </padding>

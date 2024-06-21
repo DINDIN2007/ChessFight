@@ -21,7 +21,7 @@ import java.util.Enumeration;
 import static cockyadolescents.truechessthegame.GameApplication.*;
 
 // Online game
-public class WaitingRoom {
+public class Lobby {
     @FXML private TextField addressField;
     @FXML private Label addressLabel;
     @FXML private Label notificationLabel;
@@ -40,7 +40,7 @@ public class WaitingRoom {
             window.setScene(scene);
             return;
         }
-        root = FXMLLoader.load(getClass().getResource("waitingroom.fxml"));
+        root = FXMLLoader.load(getClass().getResource("lobby.fxml"));
         scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         window.setScene(scene);
@@ -52,10 +52,10 @@ public class WaitingRoom {
 
     public void disconnect() {
         try {
-            waitingroom.display();
-            waitingroom.notification("Disconnected");
+            lobby.display();
+            lobby.notification("Disconnected");
             ChessPiece.newGame();
-            waitingroom.clientThread = null;
+            lobby.clientThread = null;
             client = null;
         } catch (IOException e) {
             e.printStackTrace();

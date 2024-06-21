@@ -56,7 +56,7 @@ public class Client implements Runnable {
 
         } catch (IOException e) {
             shutdown();
-            Platform.runLater(() -> waitingroom.notification("Failed to connect to Server"));
+            Platform.runLater(() -> lobby.notification("Failed to connect to Server"));
         }
     }
 
@@ -110,13 +110,13 @@ public class Client implements Runnable {
         public void run() {
             try {
                 BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
-                textOut.println(waitingroom.address);
+                textOut.println(lobby.address);
                 while (connected) {
                     String message = inputReader.readLine(); // reads user input
                     if (message.equals("/quit")) { // disconnect
                         textOut.println(message);
                         inputReader.close();
-                        Platform.runLater(() -> waitingroom.disconnect());
+                        Platform.runLater(() -> lobby.disconnect());
                         shutdown();
                     } else {
                         textOut.println(message); // sends to server

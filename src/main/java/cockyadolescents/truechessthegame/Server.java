@@ -66,15 +66,16 @@ public class Server implements Runnable {
                 // sets colors for players
                 switch (connections.size()) {
                     case 1: {
-                        connections.get(0).out.println("/white");
+                        connections.getFirst().out.println("/white");
                         this.color = "White";
                         break;
                     }
                     case 2: {
-                        connections.get(1).out.println("/black");
+                        connections.getLast().out.println("/black");
                         this.color = "Black";
                         break;
                     }
+                    default: break;
                 }
 
                 // replays moves made by players
@@ -199,5 +200,5 @@ public class Server implements Runnable {
 }
 
 // to run from cmd
-// cd \IdeaProjects\ChessFight\target\classes
-// java cockyadolescents.truechessthegame.Server
+// cd IdeaProjects\ChessFight\target\classes
+// java cockyadolescents.truechessthegame.Main

@@ -11,7 +11,7 @@ import java.util.Objects;
 public class GameApplication extends Application {
     public static Stage window;
     public static HomePage homepage;
-    public static WaitingRoom waitingroom;
+    public static Lobby lobby;
     public static Setting settingroom;
     public static Audio music;
 
@@ -28,7 +28,7 @@ public class GameApplication extends Application {
 
         // Set up the other pages
         homepage = new HomePage();
-        waitingroom = new WaitingRoom();
+        lobby = new Lobby();
         maingame = new OfflineGame();
         onlinegame = new OnlineGame();
         settingroom = new Setting();

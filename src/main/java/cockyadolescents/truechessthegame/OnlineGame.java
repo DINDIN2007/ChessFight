@@ -354,7 +354,7 @@ public class OnlineGame {
         }
 
         // Marks the places that the piece can move to
-        else if (tilePiece != null && tilePiece.pieceColor.equals(playingSide)){
+        else if (tilePiece != null && tilePiece.pieceColor.equals(playingSide) && playerColor.equals(playingSide)){
             // Resets previously marked moves
             drawBoard();
 
