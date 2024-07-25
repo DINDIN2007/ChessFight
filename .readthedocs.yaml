@@ -1,0 +1,31 @@
+# .readthedocs.yml
+
+version: 2
+
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+  configuration: docs/conf.py
+
+# Optionally, you can specify additional requirements
+python:
+  version: 3.12.4
+  install:
+    - requirements: docs/requirements.txt
+
+# Build using the latest stable version of Read the Docs build environment
+build:
+  image: latest
+
+# Optionally, you can specify the build tools
+tools:
+  python: "3.12.4"
+
+# Optionally, you can specify the submodules to include
+submodules:
+  include: true
+  recursive: true
+
+# Optionally, you can specify the build commands
+build:
+  commands:
+    - sphinx-build -b html docs/ _build/html
